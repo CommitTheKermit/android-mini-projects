@@ -1,0 +1,479 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Search, 
+  Keyboard, 
+  MessageSquare, 
+  ChevronRight, 
+  ChevronLeft, 
+  SlidersHorizontal, 
+  Check,
+  RefreshCw,
+  Copy,
+  CheckCircle2,
+  Filter,
+  ArrowUpDown
+} from 'lucide-react';
+
+// --- [모의 데이터] 검색 결과에 표시될 키보드 목록 ---
+const mockKeyboards = [
+  {
+    id: 1,
+    name: "한성컴퓨터 GK898B 무접점",
+    brand: "한성컴퓨터",
+    description: "조용한 사무실에서 쓰기 좋은 보글보글한 키감의 끝판왕",
+    tags: ["무접점", "보글보글", "무선", "사무용"],
+    price: "169,000원",
+    imageColor: "bg-blue-100"
+  },
+  {
+    id: 2,
+    name: "로지텍 MX Keys S",
+    brand: "로지텍",
+    description: "펜타그래프의 정석, 완벽한 무선 사무용 키보드",
+    tags: ["펜타그래프", "저소음", "블루투스", "풀배열"],
+    price: "159,000원",
+    imageColor: "bg-slate-200"
+  },
+  {
+    id: 3,
+    name: "키크론 K3 PRO",
+    brand: "키크론",
+    description: "가볍게 들고 다니는 로우프로파일 기계식 키보드",
+    tags: ["휴대용", "기계식", "적축", "텐키리스"],
+    price: "144,000원",
+    imageColor: "bg-gray-800"
+  },
+  {
+    id: 4,
+    name: "레오폴드 FC900R BT",
+    brand: "레오폴드",
+    description: "클래식한 디자인과 정갈한 또각또각 타건감",
+    tags: ["갈축", "또각또각", "유무선", "풀배열"],
+    price: "175,000원",
+    imageColor: "bg-orange-100"
+  }
+];
+
+// --- [질문 데이터] 단계별 선택지 ---
+const questions = [
+  { id: 'usage', title: '어떤 용도로 사용하시나요?', options: ['사무용', '게임용', '상관없음'] },
+  { id: 'portability', title: '주로 어디서 사용하시나요?', options: ['책상에 놓고 쓸 거예요', '자주 가지고 다닐래요', '상관없음'] },
+  { id: 'sound', title: '타건 소리는 어느 정도가 좋나요?', options: ['조용해야 해요 (매우 낮음)', '조금 소리가 났으면 해요 (낮음)', '적당한 소리 (보통)', '경쾌한 소리 (조금 큼)', '타건감 위주 (시끄러워도 됨)'] },
+  { id: 'feel', title: '어떤 느낌의 키감을 선호하시나요?', options: ['또각또각 (걸림이 있는 느낌)', '서걱서걱 (부드럽게 들어가는 느낌)', '보글보글 (독특한 무접점 느낌)', '잘 모르겠어요'] },
+  { id: 'weight', title: '키를 누를 때의 무게감은요?', options: ['가볍게 눌렸으면 좋겠어요 (35~45g)', '보편적인게 좋아요 (45~55g)', '묵직한게 좋아요 (60g 이상)', '잘 모르겠어요'] },
+  { id: 'connection', title: '어떤 연결 방식을 원하시나요?', options: ['유선', '무선 USB 동글', '블루투스', '유/무선 모두', '상관없음'] },
+  { id: 'size', title: '원하시는 키보드 크기가 있나요?', options: ['숫자 패드가 있는 일반 키보드 (풀배열)', '숫자 패드가 있지만 콤팩트함 (1800배열)', '숫자 패드가 없음 (텐키리스)', '숫자 패드도, 일부 특수키도 없음 (75%/65%)', 'F1~F12키도 없는 미니 (60%)'] },
+  { id: 'budget', title: '예산은 어느 정도로 생각하시나요?', type: 'range', options: [] },
+  { id: 'language', title: '키보드 각인은 어떻게 할까요?', options: ['한국어, 영어가 모두 필요해요', '영어만 적혀있길 바라요', '한국어만 적혀있길 바라요', '상관없음'] },
+  { id: 'backlight', title: '백라이트(조명)가 필요하신가요?', options: ['화려한 RGB가 좋아요', '은은한 단색 조명이 좋아요', '없어도 돼요 (배터리 절약)'] },
+];
+
+export default function App() {
+  const [view, setView] = useState('home'); // home, step, results
+  const [loading, setLoading] = useState(false);
+
+  // --- HOME VIEW ---
+  const HomeView = () => {
+    const [query, setQuery] = useState('');
+    const templates = [
+      "조용한 사무실에서 눈치보지 않고 사용할 도각도각 소리가 나는 키보드 추천해줘",
+      "게임할 때 반응속도가 빠르고 화려한 RGB 조명이 있는 텐키리스 키보드 찾아줘",
+      "아이패드랑 같이 들고 다닐 작고 가벼운 블루투스 키보드 필요해"
+    ];
+
+    const handleSubmit = () => {
+      if(!query) return;
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setView('results');
+      }, 1500);
+    };
+
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen px-6 bg-slate-50 py-12">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-slate-800 mb-3">나만의 키보드 찾기</h1>
+          <p className="text-slate-600">어떤 키보드를 찾으시나요? 자유롭게 말해주세요.</p>
+        </div>
+
+        {/* 채팅창 섹션 */}
+        <div className="w-full max-w-2xl bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 relative">
+          <textarea 
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="예: 조용한 사무용 키보드를 추천해줘"
+            className="w-full h-32 p-2 outline-none resize-none text-slate-800 bg-transparent"
+          ></textarea>
+          <div className="flex justify-end mt-2">
+            <button 
+              onClick={handleSubmit}
+              disabled={!query}
+              className={`px-6 py-3 rounded-xl font-medium transition-colors flex items-center ${query ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' : 'bg-slate-100 text-slate-400'}`}
+            >
+              분석하기 <Search size={18} className="ml-2" />
+            </button>
+          </div>
+        </div>
+
+        {/* 템플릿 제공 섹션 */}
+        <div className="w-full max-w-2xl mb-12">
+          <p className="text-sm font-medium text-slate-500 mb-3 ml-1">이런 식으로 질문해 보세요:</p>
+          <div className="flex flex-col gap-2">
+            {templates.map((txt, idx) => (
+              <button 
+                key={idx}
+                onClick={() => setQuery(txt)}
+                className="text-left p-3.5 rounded-xl bg-slate-100/50 hover:bg-blue-50 text-slate-700 text-sm transition-colors border border-transparent hover:border-blue-100 shadow-sm"
+              >
+                "{txt}"
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 단계별 선택 작게 배치 */}
+        <div className="w-full max-w-2xl border-t border-slate-200 pt-8 flex flex-col items-center">
+          <p className="text-slate-500 text-sm mb-4">질문에 답하며 하나씩 찾고 싶다면?</p>
+          <button 
+            onClick={() => setView('step')}
+            className="flex items-center px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+          >
+            <SlidersHorizontal size={18} className="mr-2 text-indigo-500" /> 단계별로 선택하기
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // --- STEP BY STEP VIEW ---
+  const StepByStepView = () => {
+    const [step, setStep] = useState(0);
+    const [answers, setAnswers] = useState({});
+    const [minBudget, setMinBudget] = useState(0);
+    const [maxBudget, setMaxBudget] = useState(1000000);
+
+    const currentQ = questions[step];
+    const isLastStep = step === questions.length - 1;
+
+    const handleSelect = (option) => {
+      setAnswers({ ...answers, [currentQ.id]: option });
+      if (!isLastStep) {
+        setTimeout(() => setStep(step + 1), 200);
+      }
+    };
+
+    const handleComplete = () => {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setView('results');
+      }, 1500);
+    };
+
+    return (
+      <div className="max-w-2xl mx-auto pt-12 px-6 min-h-screen">
+        <button onClick={() => setView('home')} className="flex items-center text-slate-500 mb-6 hover:text-slate-800 transition-colors">
+          <ChevronLeft size={20} /> <span className="ml-1">처음으로</span>
+        </button>
+
+        {/* Progress Bar */}
+        <div className="w-full bg-slate-200 h-2 rounded-full mb-8 overflow-hidden">
+          <div 
+            className="bg-blue-600 h-full transition-all duration-300" 
+            style={{ width: `${((step + 1) / questions.length) * 100}%` }}
+          ></div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 sm:p-8 min-h-[400px] flex flex-col">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-8">{currentQ.title}</h2>
+          
+          <div className="flex-1 flex flex-col gap-3">
+            {currentQ.type === 'range' ? (
+              <div className="flex flex-col py-8 w-full">
+                <div className="flex items-center justify-between mb-12 px-2">
+                  <div className="text-center w-5/12 bg-slate-50 py-3 rounded-xl border border-slate-100 shadow-sm">
+                    <span className="block text-xs text-slate-500 mb-1">최소 금액</span>
+                    <span className="text-lg font-bold text-blue-600">{minBudget.toLocaleString()}원</span>
+                  </div>
+                  <span className="text-slate-400 font-medium w-2/12 text-center">~</span>
+                  <div className="text-center w-5/12 bg-slate-50 py-3 rounded-xl border border-slate-100 shadow-sm">
+                    <span className="block text-xs text-slate-500 mb-1">최대 금액</span>
+                    <span className="text-lg font-bold text-blue-600">
+                      {maxBudget >= 1000000 ? '1,000,000원+' : `${maxBudget.toLocaleString()}원`}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="relative w-full flex items-center h-6">
+                  {/* Background Track */}
+                  <div className="absolute left-0 right-0 h-2 bg-slate-200 rounded-lg pointer-events-none"></div>
+                  
+                  {/* Active Track */}
+                  <div 
+                    className="absolute h-2 bg-blue-500 rounded-lg pointer-events-none z-10"
+                    style={{ 
+                      left: `${(minBudget / 1000000) * 100}%`, 
+                      right: `${100 - (maxBudget / 1000000) * 100}%`
+                    }}
+                  ></div>
+                  
+                  {/* Min Slider */}
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="1000000" 
+                    step="10000"
+                    value={minBudget}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setMinBudget(Math.min(val, maxBudget - 10000));
+                    }}
+                    className="absolute w-full left-0 right-0 appearance-none bg-transparent pointer-events-none z-20 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer"
+                  />
+                  {/* Max Slider */}
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="1000000" 
+                    step="10000"
+                    value={maxBudget}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setMaxBudget(Math.max(val, minBudget + 10000));
+                    }}
+                    className="absolute w-full left-0 right-0 appearance-none bg-transparent pointer-events-none z-30 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer"
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-slate-400 mt-4 px-1">
+                  <span>0원</span>
+                  <span>100만원+</span>
+                </div>
+              </div>
+            ) : (
+              currentQ.options.map((opt, idx) => {
+                const isSelected = answers[currentQ.id] === opt;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleSelect(opt)}
+                    className={`p-4 rounded-xl text-left font-medium transition-all flex items-center justify-between border-2
+                      ${isSelected ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-slate-100 bg-white hover:border-slate-300 text-slate-700'}
+                    `}
+                  >
+                    {opt}
+                    {isSelected && <Check size={20} className="text-blue-600" />}
+                  </button>
+                )
+              })
+            )}
+          </div>
+
+          <div className="flex justify-between mt-8 pt-6 border-t border-slate-100">
+            <button 
+              onClick={() => setStep(Math.max(0, step - 1))}
+              disabled={step === 0}
+              className={`px-4 py-2 text-sm font-medium ${step === 0 ? 'text-slate-300' : 'text-slate-500 hover:text-slate-800'}`}
+            >
+              이전 질문
+            </button>
+            
+            {(currentQ.type === 'range' || isLastStep) && (
+              <button 
+                onClick={isLastStep ? handleComplete : () => setStep(step + 1)}
+                className="px-6 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-900 transition-colors shadow-sm"
+              >
+                {isLastStep ? '결과 보기' : '다음 질문'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // --- RESULT VIEW ---
+  const ResultView = () => {
+    const [activeFilter, setActiveFilter] = useState('전체');
+    const [sortOrder, setSortOrder] = useState('default'); 
+    const [copiedId, setCopiedId] = useState(null);
+
+    // 동적 필터 옵션 생성 (제조사 + 모든 태그 중복 제거)
+    const generateFilters = () => {
+      const allTags = new Set();
+      mockKeyboards.forEach(k => {
+        allTags.add(k.brand);
+        k.tags.forEach(t => allTags.add(t));
+      });
+      return ['전체', ...Array.from(allTags)];
+    };
+    const filterOptions = generateFilters();
+    
+    // 가격 문자열 -> 숫자 변환 함수
+    const getPriceNumber = (priceStr) => parseInt(priceStr.replace(/[^0-9]/g, ''), 10);
+
+    // 1. 필터링
+    let processedKeyboards = activeFilter === '전체' 
+      ? [...mockKeyboards] 
+      : mockKeyboards.filter(k => k.tags.includes(activeFilter) || k.brand === activeFilter);
+
+    // 2. 정렬
+    if (sortOrder === 'priceAsc') {
+      processedKeyboards.sort((a, b) => getPriceNumber(a.price) - getPriceNumber(b.price));
+    } else if (sortOrder === 'priceDesc') {
+      processedKeyboards.sort((a, b) => getPriceNumber(b.price) - getPriceNumber(a.price));
+    }
+
+    // 클립보드 복사 함수
+    const handleCopy = (text, id) => {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setCopiedId(id);
+        setTimeout(() => setCopiedId(null), 2000); // 2초 후 초기화
+      } catch (err) {
+        console.error('복사 실패', err);
+      }
+      document.body.removeChild(textArea);
+    };
+
+    return (
+      <div className="max-w-3xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
+        <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-10 px-4 py-4 flex items-center">
+          <button onClick={() => setView('home')} className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+            <ChevronLeft size={24} />
+          </button>
+          <h1 className="text-lg font-bold text-slate-800 ml-2">[{processedKeyboards.length}개의 제품 찾음]</h1>
+        </div>
+
+        <div className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 gap-4">
+            <div>
+              <h2 className="text-xl font-extrabold text-slate-900">
+                총 <span className="text-blue-600">{processedKeyboards.length}개</span>의 상품을 찾았어요
+              </h2>
+              <p className="text-slate-500 text-sm mt-1">입력하신 조건에 가장 잘 맞는 추천 목록입니다.</p>
+            </div>
+            
+            {/* 정렬 드롭다운 */}
+            <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 shrink-0 shadow-sm">
+              <ArrowUpDown size={16} className="text-slate-500 mr-2" />
+              <select 
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="bg-transparent text-sm font-medium text-slate-700 outline-none cursor-pointer"
+              >
+                <option value="default">기본 추천순</option>
+                <option value="priceAsc">낮은 가격순</option>
+                <option value="priceDesc">높은 가격순</option>
+              </select>
+            </div>
+          </div>
+
+          {/* 필터 영역 */}
+          <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex items-center text-slate-400 mr-1 shrink-0">
+              <Filter size={16} />
+            </div>
+            {filterOptions.map(f => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                  activeFilter === f 
+                    ? 'bg-slate-800 text-white shadow-sm' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {/* 제품 리스트 */}
+          <div className="space-y-4">
+            {processedKeyboards.length === 0 ? (
+               <div className="py-20 text-center text-slate-500">
+                 해당 조건에 맞는 제품이 없습니다.
+               </div>
+            ) : (
+              processedKeyboards.map((item) => (
+                <div key={item.id} className="flex p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  
+                  <div className={`w-28 h-28 shrink-0 rounded-xl ${item.imageColor} flex items-center justify-center`}>
+                    <Keyboard size={40} className="text-black/20" />
+                  </div>
+                  
+                  <div className="flex flex-col ml-4 sm:ml-5 flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <h3 className="text-lg font-bold text-slate-900 truncate pr-2">{item.name}</h3>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation(); 
+                          handleCopy(item.name, item.id);
+                        }}
+                        className="p-1.5 shrink-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
+                        title="제품명 복사"
+                      >
+                        {copiedId === item.id ? (
+                          <CheckCircle2 size={18} className="text-green-500" />
+                        ) : (
+                          <Copy size={18} />
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-slate-500 text-sm mt-1 leading-snug line-clamp-2">
+                      {item.description}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-1.5 mt-2.5">
+                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-md font-bold">
+                        {item.brand}
+                      </span>
+                      {item.tags.map((tag, idx) => (
+                        <span key={idx} className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-md font-medium">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-auto pt-3 text-right">
+                      <span className="text-lg font-bold text-slate-900">{item.price}</span>
+                    </div>
+                  </div>
+
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="mt-10 flex justify-center">
+             <button onClick={() => setView('home')} className="flex items-center px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors shadow-sm">
+               <RefreshCw size={18} className="mr-2" /> 처음부터 다시 찾기
+             </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      {loading && (
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+          <div className="animate-spin text-blue-600 mb-4">
+            <RefreshCw size={40} />
+          </div>
+          <p className="text-slate-800 font-bold text-lg animate-pulse">취향을 분석하고 있어요...</p>
+        </div>
+      )}
+
+      {view === 'home' && <HomeView />}
+      {view === 'step' && <StepByStepView />}
+      {view === 'results' && <ResultView />}
+    </div>
+  );
+}
