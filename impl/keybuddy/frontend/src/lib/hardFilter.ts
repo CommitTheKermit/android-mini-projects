@@ -118,6 +118,24 @@ export function checkHardConstraintViolation(keyboard: Keyboard, hardTag: HardTa
 }
 
 // ---------------------------------------------------------------------------
+// detectNoResult (Sub-AC 6-1)
+// ---------------------------------------------------------------------------
+
+/** `detectNoResult` 반환 타입 */
+export type NoResultSignal = { type: 'NO_MATCH' } | { type: 'OK' };
+
+/**
+ * 하드 제약 필터 결과가 빈 배열이면 `{ type: 'NO_MATCH' }` 신호를 반환하고,
+ * 1개 이상이면 `{ type: 'OK' }`를 반환한다.
+ *
+ * @param filterResults - filterByHardConstraints 의 반환값
+ * @returns NoResultSignal - 결과 유무 신호 객체
+ */
+export function detectNoResult(filterResults: Keyboard[]): NoResultSignal {
+  return filterResults.length === 0 ? { type: 'NO_MATCH' } : { type: 'OK' };
+}
+
+// ---------------------------------------------------------------------------
 // filterByHardConstraints (Sub-AC 4-2)
 // ---------------------------------------------------------------------------
 

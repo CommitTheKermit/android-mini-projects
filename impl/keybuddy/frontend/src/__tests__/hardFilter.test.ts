@@ -15,6 +15,7 @@ import {
   checkBudgetViolation,
   checkHardConstraintViolation,
   filterByHardConstraints,
+  detectNoResult,
 } from '../lib/hardFilter';
 import type { Keyboard } from '../types';
 
@@ -867,5 +868,69 @@ describe('filterByHardConstraints - 위반 키보드 섞인 목록, violations==
     filterByHardConstraints(keyboards, [{ type: 'layout', value: '텐키리스' }]);
     expect(keyboards).toHaveLength(original.length);
     keyboards.forEach((kb, i) => expect(kb).toBe(original[i]));
+  });
+});
+
+// ===========================================================================
+// detectNoResult 테스트 (Sub-AC 6-1)
+// ===========================================================================
+
+describe('detectNoResult - 빈 배열 -> { type: "NO_MATCH" }', () => {
+  it('빈 배열 -> { type: "NO_MATCH" }', () => {
+    expect(detectNoResult([])).toEqual({ type: 'NO_MATCH' });
+  });
+
+  it('filterByHardConstraints 결과가 빈 배열 -> { type: "NO_MATCH" }', () => {
+    const keyboards = [makeFullKeyboard({ layout: '풀배열' })];
+    const filtered = filterByHardConstraints(keyboards, [{ type: 'layout', value: '텐키리스' }]);
+    expect(filtered).toHaveLength(0);
+    expect(detectNoResult(filtered)).toEqual({ type: 'NO_MATCH' });
+  });
+
+  it('모든 키보드가 위반 -> filterByHardConstraints 빈 배열 -> NO_MATCH', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '미니' }),
+      makeFullKeyboard({ layout: '풀배열' }),
+      makeFullKeyboard({ layout: '98키' }),
+    ];
+    const filtered = filterByHardConstraints(keyboards, [{ type: 'layout', value: '텐키리스' }]);
+    expect(detectNoResult(filtered)).toEqual({ type: 'NO_MATCH' });
+  });
+});
+
+describe('detectNoResult - 1개 이상 -> { type: "OK" }', () => {
+  it('요소 1개 배열 -> { type: "OK" }', () => {
+    expect(detectNoResult([makeFullKeyboard({})])).toEqual({ type: 'OK' });
+  });
+
+  it('요소 2개 배열 -> { type: "OK" }', () => {
+    expect(detectNoResult([makeFullKeyboard({}), makeFullKeyboard({ layout: '풀배열' })])).toEqual({
+      type: 'OK',
+    });
+  });
+
+  it('요소 여러 개 배열 -> { type: "OK" }', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '텐키리스' }),
+    ];
+    expect(detectNoResult(keyboards)).toEqual({ type: 'OK' });
+  });
+
+  it('filterByHardConstraints 결과가 1개 이상 -> { type: "OK" }', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '풀배열' }),
+    ];
+    const filtered = filterByHardConstraints(keyboards, [{ type: 'layout', value: '텐키리스' }]);
+    expect(filtered).toHaveLength(1);
+    expect(detectNoResult(filtered)).toEqual({ type: 'OK' });
+  });
+
+  it('빈 제약(제약 없음) -> 전체 반환 -> { type: "OK" }', () => {
+    const keyboards = [makeFullKeyboard({}), makeFullKeyboard({ layout: '풀배열' })];
+    const filtered = filterByHardConstraints(keyboards, []);
+    expect(detectNoResult(filtered)).toEqual({ type: 'OK' });
   });
 });
