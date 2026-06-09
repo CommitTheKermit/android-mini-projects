@@ -18,6 +18,8 @@ import {
   getFieldValues,
   hasField,
   hasValue,
+  findInvalidFieldNames,
+  type PredicateRuleEntry,
 } from '../lib/datasetSchema';
 import type { Keyboard } from '../types';
 
@@ -483,5 +485,127 @@ describe('extractDatasetSchema - 반환 타입 확인', () => {
         expect(set2).toContain(value);
       });
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 11. findInvalidFieldNames - 속성명 무결성 검사
+// ---------------------------------------------------------------------------
+
+describe('findInvalidFieldNames - 속성명 무결성 검사', () => {
+  // 테스트용 유효 스키마: SAMPLE_DATASET에서 추출
+  // 포함 필드: product_name, brand, price, image_url, switch_type,
+  //           connection, layout, key_force, weight_g, wireless_type,
+  //           engraving, backlight
+
+  it('모든 field가 스키마에 있으면 빈 배열을 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: PredicateRuleEntry[] = [
+      { predicates: [{ field: 'connection' }, { field: 'layout' }] },
+      { predicates: [{ field: 'switch_type' }, { field: 'price' }] },
+    ];
+    const invalid = findInvalidFieldNames(ruleTable, schema);
+    expect(invalid).toEqual([]);
+  });
+
+  it('모든 field가 스키마에 없으면 모든 field를 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: PredicateRuleEntry[] = [
+      { predicates: [{ field: 'nonexistent_a' }] },
+      { predicates: [{ field: 'nonexistent_b' }] },
+    ];
+    const invalid = findInvalidFieldNames(ruleTable, schema);
+    expect(invalid).toContain('nonexistent_a');
+    expect(invalid).toContain('nonexistent_b');
+    expect(invalid).toHaveLength(2);
+  });
+
+  it('유효/무효 속성명이 혼재될 때 무효 속성명만 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    // switch_type, connection: 유효 / invalid_field_x, fake_prop: 무효
+    const ruleTable: PredicateRuleEntry[] = [
+      { predicates: [{ field: 'switch_type' }, { field: 'invalid_field_x' }] },
+      { predicates: [{ field: 'connection' }, { field: 'fake_prop' }] },
+    ];
+    const invalid = findInvalidFieldNames(ruleTable, schema);
+    expect(invalid).toContain('invalid_field_x');
+    expect(invalid).toContain('fake_prop');
+    expect(invalid).not.toContain('switch_type');
+    expect(invalid).not.toContain('connection');
+    expect(invalid).toHaveLength(2);
+  });
+
+  it('무효 속성명 하나만 혼재된 경우 해당 속성명만 탐지한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: PredicateRuleEntry[] = [
+      { predicates: [{ field: 'price' }] },
+      { predicates: [{ field: 'weight_g' }] },
+      { predicates: [{ field: 'backlight' }, { field: 'typo_backlight' }] },
+    ];
+    const invalid = findInvalidFieldNames(ruleTable, schema);
+    expect(invalid).toEqual(['typo_backlight']);
+  });
+
+  it('같은 무효 속성명이 여러 술어에 반복되어도 중복 없이 1건만 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: PredicateRuleEntry[] = [
+      { predicates: [{ field: 'bad_field' }] },
+      { predicates: [{ field: 'bad_field' }, { field: 'also_bad' }] },
+      { predicates: [{ field: 'bad_field' }] },
+    ];
+    const invalid = findInvalidFieldNames(ruleTable, schema);
+    // bad_field는 중복 없이 1번만
+    expect(invalid.filter((f) => f === 'bad_field')).toHaveLength(1);
+    expect(invalid).toContain('also_bad');
+    expect(invalid).toHaveLength(2);
+  });
+
+  it('빈 규칙표이면 항상 빈 배열을 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const invalid = findInvalidFieldNames([], schema);
+    expect(invalid).toEqual([]);
+  });
+
+  it('빈 스키마이면 모든 참조 field를 무효로 반환한다', () => {
+    const ruleTable: PredicateRuleEntry[] = [
+      { predicates: [{ field: 'connection' }, { field: 'layout' }] },
+    ];
+    const invalid = findInvalidFieldNames(ruleTable, {});
+    expect(invalid).toContain('connection');
+    expect(invalid).toContain('layout');
+    expect(invalid).toHaveLength(2);
+  });
+
+  it('predicates가 빈 배열인 엔트리가 있어도 다른 엔트리는 정상 검사된다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: PredicateRuleEntry[] = [
+      { predicates: [] },
+      { predicates: [{ field: 'switch_type' }, { field: 'phantom_field' }] },
+    ];
+    const invalid = findInvalidFieldNames(ruleTable, schema);
+    expect(invalid).toEqual(['phantom_field']);
+  });
+
+  it('SOFT_TAG_RULE_TABLE 호환: 실제 규칙표의 모든 field는 스키마에 존재한다', () => {
+    // 실제 keyboards.json 기반 schema와 함께 현재 규칙표의 무결성 확인
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    // SAMPLE_DATASET에 있는 필드만 유효 - 규칙표 field 목록과 비교
+    const softTagFields: PredicateRuleEntry[] = [
+      {
+        predicates: [
+          { field: 'switch_type' },
+          { field: 'connection' },
+          { field: 'layout' },
+          { field: 'backlight' },
+          { field: 'engraving' },
+          { field: 'wireless_type' },
+          { field: 'price' },
+          { field: 'weight_g' },
+        ],
+      },
+    ];
+    const invalid = findInvalidFieldNames(softTagFields, schema);
+    // 모두 유효한 Keyboard 필드여야 함
+    expect(invalid).toEqual([]);
   });
 });

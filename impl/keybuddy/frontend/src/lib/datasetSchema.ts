@@ -92,3 +92,42 @@ export function hasValue(
   const valueSet = schema[field];
   return valueSet !== undefined && valueSet.has(value);
 }
+
+// ---------------------------------------------------------------------------
+// 속성명 무결성 검사
+// ---------------------------------------------------------------------------
+
+/**
+ * 속성 술어를 가지는 규칙 엔트리 구조.
+ * SoftTagRuleEntry와 독립적인 제네릭 타입으로 순환 의존 없이 사용한다.
+ */
+export interface PredicateRuleEntry {
+  predicates: Array<{ field: string }>;
+}
+
+/**
+ * 규칙표의 모든 술어에서 참조하는 속성 이름을 추출하여
+ * 스키마 맵에 존재하지 않는 속성명을 반환한다.
+ *
+ * - 규칙표의 모든 엔트리의 모든 술어에서 field 이름을 수집한다
+ * - 수집된 field 중 schema에 없는 것만 반환한다 (중복 없이)
+ * - 빈 규칙표 또는 빈 스키마에서도 안전하게 동작한다
+ *
+ * @param ruleTable - 속성 술어를 가진 규칙 엔트리 배열
+ * @param schema - extractDatasetSchema로 생성된 속성명 맵
+ * @returns 스키마에 없는 (무효한) 속성명 배열 (중복 없음)
+ */
+export function findInvalidFieldNames(
+  ruleTable: PredicateRuleEntry[],
+  schema: DatasetSchema,
+): string[] {
+  const referencedFields = new Set<string>();
+
+  for (const entry of ruleTable) {
+    for (const predicate of entry.predicates) {
+      referencedFields.add(predicate.field);
+    }
+  }
+
+  return Array.from(referencedFields).filter((field) => !hasField(schema, field));
+}
