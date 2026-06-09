@@ -78,7 +78,7 @@ exit_conditions:
     criteria: 자유형과 단계선택이 동일 태그 스키마로 정규화되어 같은 검색을 사용
 
 metadata:
-  version: 1
+  version: "1"
   ambiguity_score: 0.12
   interview_id: interview_20260609_072514
   qa_passed_iteration: 2
