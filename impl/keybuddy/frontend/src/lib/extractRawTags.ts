@@ -190,5 +190,37 @@ export async function extractRawTags(naturalLanguageInput: string): Promise<Extr
   return parseAndSanitize(textBlock.text);
 }
 
+/**
+ * extractRawTags의 출력(또는 임의의 unknown 객체)을 받아
+ * 스키마에 정의되지 않은 키와 허용되지 않는 열거형 값을 제거하고
+ * 정제된 ExtractedTags를 반환한다.
+ *
+ * - 최상위에 hardConstraints / softIntentTags 외 키는 무시
+ * - hardConstraints 중 HARD_CONSTRAINT_KEYS 밖 키 제거
+ * - 열거형 키에 HARD_CONSTRAINT_ENUMS 밖 값이 오면 해당 키 제거
+ * - 숫자 키에 number 타입이 아닌 값이 오면 해당 키 제거
+ * - softIntentTags 항목 중 SOFT_INTENT_VOCAB 밖 값 제거
+ */
+export function sanitizeTags(raw: unknown): ExtractedTags {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+    return { hardConstraints: {}, softIntentTags: [] };
+  }
+
+  const record = raw as Record<string, unknown>;
+
+  const hardConstraints =
+    typeof record['hardConstraints'] === 'object' &&
+    record['hardConstraints'] !== null &&
+    !Array.isArray(record['hardConstraints'])
+      ? sanitizeHardConstraints(record['hardConstraints'] as Record<string, unknown>)
+      : {};
+
+  const softIntentTags = Array.isArray(record['softIntentTags'])
+    ? sanitizeSoftIntentTags(record['softIntentTags'])
+    : [];
+
+  return { hardConstraints, softIntentTags };
+}
+
 // 내부 유틸 (테스트 접근용)
 export { SOFT_INTENT_VOCAB, parseAndSanitize };
