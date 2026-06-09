@@ -1,0 +1,113 @@
+goal: >
+  keybuddy 키보드 추천을 'LLM이 결과를 직접 선택'하는 방식에서 '태그 파이프라인'으로 전환한다.
+  자유형 자연어와 10단계 선택 입력을 동일한 태그 스키마(하드 제약 + 소프트 의도)로 추출하고,
+  빌드 시 LLM이 1회 생성한 정적 '소프트태그->속성' 규칙표를 쿼리 시점에 속성 술어로 확장한 뒤,
+  하드 제약은 결정론 필터(위반 제외)로, 소프트 의도는 점수(겹칠수록 상위 랭크)로 검색하여
+  결과와 매칭 근거를 보여준다. 검색/스코어링/결과 생성 경로에는 LLM 호출이 없다.
+
+constraints:
+  - 기존 impl/keybuddy/frontend (Vite + React 18.3 + TypeScript + Tailwind 4) 내부에서 구현하며 백엔드를 추가하지 않는다
+  - 태그 추출에만 기존 @anthropic-ai/sdk(^0.69.0)를 재사용하고 새 추천용 런타임 의존성을 추가하지 않는다
+  - 하드 제약(price/connection/layout 등)은 결정론 필터로 처리하여 검색 결과에 위반 키보드가 0건이 되도록 보장한다
+  - 소프트 의도 태그->속성 규칙표는 빌드 시 LLM이 1회 생성한 정적 산출물(저장소에 체크인)이며, 런타임/쿼리 시 LLM으로 규칙을 생성하지 않는다
+  - 쿼리 시 LLM은 입력->태그 추출에만 사용하고, 검색/스코어링/결과 생성/매칭 근거는 LLM 호출 없이 결정론적으로 수행한다
+  - 키보드 레코드를 사전 소프트태깅하지 않고, 쿼리 시점에 규칙표로 속성 술어를 확장하는 방식만 사용한다
+  - 자유형 자연어와 10단계 선택 입력은 동일한 태그 스키마로 정규화되어 같은 검색 엔진을 사용한다
+  - 태그 스키마(하드 차원 + 소프트 의도 어휘)는 코드에 정적으로 정의되고, 추출 결과 중 스키마 밖 값은 폐기한다
+  - 무결과(하드 제약 만족 0건) 시 사전 정의된 하드 제약 우선순위의 역순으로 1개씩 완화하며 결과가 나올 때까지 재검색하고, '조건 충족 없음' 신호와 완화된 제약/단계를 결과에 기록한다
+
+acceptance_criteria:
+  - 자유형 자연어 입력이 정적 태그 스키마(하드 제약 + 소프트 의도)로 추출되고 스키마 밖 값은 폐기된다 (추출 출력이 스키마 검증을 통과)
+  - 10단계 선택 옵션이 LLM 없이 동일 태그 스키마로 1:1 변환되어 자유형과 같은 검색 엔진에 입력된다
+  - 모든 소프트 의도 태그가 정적 규칙표에 속성 술어 매핑을 가지며, 규칙은 데이터에 존재하는 속성/값만 참조한다
+  - 추출된 하드 제약이 주어지면 검색 결과의 어떤 키보드도 하드 제약을 위반하지 않는다 (하드 제약 위반 0건 단위테스트)
+  - 소프트 의도 태그가 더 많이 겹치는 키보드가 더 높은 점수와 상위 랭크를 받는다 (점수 단조성 단위테스트)
+  - 하드 제약을 만족하는 키보드가 0개면 '조건 충족 없음'을 신호하고 하드 제약을 우선순위 역순으로 1개씩 완화하며 결과가 나올 때까지 재검색해 근접 결과를 반환한다 (완화된 제약과 완화 단계 수가 결과에 기록된다)
+  - 각 결과에 매칭된 태그와 하드 제약 충족 여부가 결정론적으로 포함되며 검색/결과 경로에서 LLM 호출이 0회다
+  - 대표 자연어 쿼리 5-10개 의도 골드셋에서 각 쿼리의 기대 태그가 추출되고 기대 속성을 가진 키보드가 상위 N(예 5)에 포함된다
+
+ontology_schema:
+  name: TagRecommendationPipeline
+  description: 자연어/단계선택 입력을 태그로 추출하고 정적 규칙표로 확장해 하드필터+소프트점수로 결정론 검색하는 추천 파이프라인
+  fields:
+    - name: extractedTags
+      type: object
+      description: 입력(자유형/단계선택)에서 추출된 태그 묶음 (hardConstraints + softIntentTags)
+    - name: hardConstraints
+      type: object
+      description: 반드시 만족해야 하는 속성 술어 (예 price<=N, connection=무선, layout=텐키리스)
+    - name: softIntentTags
+      type: array
+      description: 조용함/사무용/게이밍/휴대성 등 의도 태그 문자열 목록
+    - name: ruleTable
+      type: object
+      description: 빌드 시 LLM이 1회 생성한 정적 소프트태그->속성 술어 규칙표 (저장소 체크인)
+    - name: keyboard
+      type: object
+      description: 카탈로그 레코드 (product_name, brand, price, switch_type, connection, layout, key_force, weight_g, wireless_type, engraving, backlight, image_url)
+    - name: searchResult
+      type: object
+      description: 결정론 검색 결과 (keyboardIndex, score, matchedTags, satisfiesHardConstraints, isFallback, relaxedConstraints, relaxationStepCount)
+
+evaluation_principles:
+  - name: constraint_safety
+    description: 하드 제약을 위반하는 키보드가 결과에 절대 노출되지 않는다
+    weight: 0.35
+  - name: intent_fidelity
+    description: 소프트 의도 태그가 올바른 속성으로 매핑되어 의도에 맞는 키보드가 상위 랭크된다
+    weight: 0.3
+  - name: determinism
+    description: 검색/스코어링/결과 생성이 LLM 호출 없이 재현 가능하다
+    weight: 0.2
+  - name: transparency
+    description: 각 결과에 매칭 태그와 제약 충족/완화 여부 등 근거가 표시된다
+    weight: 0.15
+
+exit_conditions:
+  - name: constraint_tests_pass
+    description: 하드 제약 위반 0건 단위테스트 통과
+    criteria: 모든 하드 제약 테스트 케이스에서 위반 결과가 0건
+  - name: goldset_intent_pass
+    description: 의도 골드셋 통과
+    criteria: 대표 쿼리 5-10개에서 기대 태그가 추출되고 기대 속성을 가진 키보드가 상위 N에 포함
+  - name: deterministic_search
+    description: 검색 경로 LLM 미호출
+    criteria: 검색/스코어링/결과/근거 생성 함수가 LLM/네트워크 호출 없이 동작
+  - name: both_inputs_supported
+    description: 두 입력 모두 동일 엔진 사용
+    criteria: 자유형과 단계선택이 동일 태그 스키마로 정규화되어 같은 검색을 사용
+
+metadata:
+  version: 1
+  ambiguity_score: 0.12
+  interview_id: interview_20260609_072514
+  qa_passed_iteration: 2
+  qa_score: 0.92
+  project_type: brownfield
+  context_references:
+    - path: impl/keybuddy/frontend/src/lib/recommend.ts
+      role: primary
+      summary: 현재 LLM 직접 추천 로직 (교체 대상)
+    - path: impl/keybuddy/frontend/src/types.ts
+      role: reference
+      summary: Keyboard/Recommendation/RecommendInput 타입 정의
+    - path: impl/keybuddy/frontend/src/App.tsx
+      role: reference
+      summary: 홈/단계선택/결과 3뷰 (입력 UI와 결과 렌더)
+    - path: impl/keybuddy/frontend/src/data/keyboards.json
+      role: primary
+      summary: 추천 후보 카탈로그 (약 100개)
+    - path: impl/output/keyboards.json
+      role: reference
+      summary: 크롤링 원본 데이터 및 스키마
+  existing_patterns:
+    - 인덱스 첨부 카탈로그 직렬화(환각 방지)
+    - 구조화 출력(JSON Schema) 강제
+    - 프롬프트 캐싱
+    - 클라이언트 사이드 단독 실행(백엔드 없음)
+  existing_dependencies:
+    - "@anthropic-ai/sdk ^0.69.0"
+    - React 18.3
+    - Vite
+    - TypeScript
+    - Tailwind CSS 4
