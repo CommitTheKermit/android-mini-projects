@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { checkLayoutViolation, checkSwitchViolation, checkFormFactorViolation } from '../lib/hardFilter';
+import { checkLayoutViolation, checkSwitchViolation, checkFormFactorViolation, checkBudgetViolation } from '../lib/hardFilter';
 import type { Keyboard } from '../types';
 
 // 테스트용 최소 키보드 픽스처 생성 헬퍼 (layout 기반)
@@ -340,5 +340,97 @@ describe('checkFormFactorViolation - formFactorTag 없음 시 false 반환', () 
 
   it('빈 문자열 태그 + 98키 키보드 -> false', () => {
     expect(checkFormFactorViolation(makeKeyboardWithFormFactor('98키'), '')).toBe(false);
+  });
+});
+
+// ===========================================================================
+// checkBudgetViolation 테스트
+// ===========================================================================
+
+// 예산 테스트용 키보드 픽스처 헬퍼 (price 기반)
+function makeKeyboardWithPrice(price: number): Keyboard {
+  return {
+    product_name: '예산 테스트 키보드',
+    brand: '테스트',
+    price,
+    image_url: '',
+    switch_type: '기계식',
+    connection: '유선',
+    layout: '텐키리스',
+    key_force: '45g',
+    weight_g: 800,
+    wireless_type: '유선',
+    engraving: '한/영 정각',
+    backlight: '없음',
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 10. 가격이 상한 이하 -> false (위반 아님)
+// ---------------------------------------------------------------------------
+
+describe('checkBudgetViolation - 가격이 상한 이하 시 false 반환', () => {
+  it('가격(50000)이 상한(100000)보다 작으면 -> false', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(50000), 100000)).toBe(false);
+  });
+
+  it('가격(100000)이 상한(100000)과 같으면(경계값) -> false', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(100000), 100000)).toBe(false);
+  });
+
+  it('가격(1)이 상한(200000)보다 훨씬 작으면 -> false', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(1), 200000)).toBe(false);
+  });
+
+  it('가격(99999)이 상한(100000)보다 1 작으면 -> false', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(99999), 100000)).toBe(false);
+  });
+
+  it('가격(0)이 상한(50000)보다 작으면 -> false', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(0), 50000)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 11. 가격이 상한 초과 -> true (위반)
+// ---------------------------------------------------------------------------
+
+describe('checkBudgetViolation - 가격이 상한 초과 시 true 반환', () => {
+  it('가격(100001)이 상한(100000)보다 1 크면 -> true', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(100001), 100000)).toBe(true);
+  });
+
+  it('가격(200000)이 상한(100000)보다 2배 크면 -> true', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(200000), 100000)).toBe(true);
+  });
+
+  it('가격(150000)이 상한(100000) 초과 -> true', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(150000), 100000)).toBe(true);
+  });
+
+  it('가격(500000)이 상한(300000) 초과 -> true', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(500000), 300000)).toBe(true);
+  });
+
+  it('가격(80001)이 상한(80000) 경계 초과 -> true', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(80001), 80000)).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 12. budgetTag가 0 이하 -> false (제약 없음, 위반 아님)
+// ---------------------------------------------------------------------------
+
+describe('checkBudgetViolation - budgetTag가 0 이하 시 false 반환 (제약 없음)', () => {
+  it('budgetTag가 0이면 제약 없음 -> false', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(999999), 0)).toBe(false);
+  });
+
+  it('budgetTag가 음수(-1)이면 제약 없음 -> false', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(100000), -1)).toBe(false);
+  });
+
+  it('budgetTag가 매우 큰 음수이면 제약 없음 -> false', () => {
+    expect(checkBudgetViolation(makeKeyboardWithPrice(1000000), -999999)).toBe(false);
   });
 });

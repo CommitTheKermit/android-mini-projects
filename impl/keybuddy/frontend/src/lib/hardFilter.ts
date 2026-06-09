@@ -45,3 +45,18 @@ export function checkFormFactorViolation(keyboard: Keyboard, formFactorTag: stri
   if (!formFactorTag) return false;
   return keyboard.layout !== formFactorTag;
 }
+
+/**
+ * 키보드 가격이 예산 상한(budgetTag)을 초과하면 true(위반),
+ * 이하이면 false(통과)를 반환한다.
+ *
+ * budgetTag가 0 이하이면 제약 없음으로 간주해 false를 반환한다.
+ * 경계값(price === budgetTag)은 false(통과)로 처리한다.
+ *
+ * @param keyboard - 카탈로그 레코드
+ * @param budgetTag - hardConstraints.price_max 값 (제약 없으면 0 또는 음수)
+ */
+export function checkBudgetViolation(keyboard: Keyboard, budgetTag: number): boolean {
+  if (budgetTag <= 0) return false;
+  return keyboard.price > budgetTag;
+}
