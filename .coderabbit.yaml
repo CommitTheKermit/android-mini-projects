@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "ko-KR"
+early_access: false
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "main"
+  path_filters:
+    - "!**/*.lock"
+    - "!**/node_modules/**"
+    - "!impl/output/**"
+    - "!impl/keybuddy/frontend/src/data/keyboards.json"
+  path_instructions:
+    - path: "impl/keybuddy/frontend/**/*.{ts,tsx}"
+      instructions: >-
+        React + TypeScript 코드를 리뷰한다. 불필요한 리렌더, any 남용,
+        에러 처리 누락, 의도 추출/추천 로직의 경계 조건을 중점적으로 본다.
+        리뷰는 한국어로 작성한다.
+    - path: "impl/**/*.py"
+      instructions: >-
+        Python 크롤러 코드를 리뷰한다. 네트워크 예외 처리, 파싱 실패 대응,
+        하드코딩된 셀렉터/경로, 레이트리밋 미준수를 중점적으로 본다.
+        리뷰는 한국어로 작성한다.
+  tools:
+    ruff:
+      enabled: true
+    eslint:
+      enabled: true
+    markdownlint:
+      enabled: true
+chat:
+  auto_reply: true
