@@ -163,6 +163,76 @@ function buildResults(
 }
 
 // ---------------------------------------------------------------------------
+// relaxAndSearch (Sub-AC 6-3)
+// ---------------------------------------------------------------------------
+
+/**
+ * relaxAndSearch 반환 타입.
+ * relaxationSteps는 relaxedConstraints.length와 항상 동일하다.
+ */
+export interface RelaxAndSearchResult<T> {
+  results: T[];
+  relaxedConstraints: string[];
+  relaxationSteps: number;
+}
+
+/**
+ * hardConstraints + searchFn을 받아 결과가 0개이면
+ * 역순 우선순위(HARD_CONSTRAINT_RELAXATION_ORDER) 순서대로
+ * 제약을 1개씩 제거하며 searchFn을 재호출한다.
+ *
+ * 첫 번째 비공(非空) 결과 시점에
+ * `{ results, relaxedConstraints, relaxationSteps }` 를 반환한다.
+ *
+ * - 원본 hardConstraints를 변경하지 않는다 (순수 함수).
+ * - searchFn 에는 LLM 호출이 없어야 하며, 이 함수 자체도 LLM 없이 동작한다.
+ *
+ * @param hardConstraints - 하드 제약 객체
+ * @param searchFn        - (constraints: HardConstraints) => T[] 동기 검색 함수
+ * @returns RelaxAndSearchResult<T>
+ */
+export function relaxAndSearch<T>(
+  hardConstraints: HardConstraints,
+  searchFn: (constraints: HardConstraints) => T[],
+): RelaxAndSearchResult<T> {
+  // 1. 초기 검색 - 제약 완화 없이 먼저 시도
+  const initial = searchFn(hardConstraints);
+  if (initial.length > 0) {
+    return { results: initial, relaxedConstraints: [], relaxationSteps: 0 };
+  }
+
+  // 2. 결과 0건 - HARD_CONSTRAINT_RELAXATION_ORDER 순서로 완화
+  const activeKeys = HARD_CONSTRAINT_RELAXATION_ORDER.filter(
+    (k) => Object.prototype.hasOwnProperty.call(hardConstraints, k),
+  );
+
+  const currentConstraints: HardConstraints = { ...hardConstraints };
+  const relaxedConstraints: string[] = [];
+
+  for (const key of activeKeys) {
+    delete currentConstraints[key];
+    relaxedConstraints.push(key as string);
+
+    // 복사본을 전달해 searchFn이 수신한 인수가 이후 변경되지 않도록 보장한다
+    const results = searchFn({ ...currentConstraints });
+    if (results.length > 0) {
+      return {
+        results,
+        relaxedConstraints: [...relaxedConstraints],
+        relaxationSteps: relaxedConstraints.length,
+      };
+    }
+  }
+
+  // 3. 모든 제약 완화 후에도 결과 없음
+  return {
+    results: [],
+    relaxedConstraints: [...relaxedConstraints],
+    relaxationSteps: relaxedConstraints.length,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // 공개 API: 검색 엔진 진입점
 // ---------------------------------------------------------------------------
 
