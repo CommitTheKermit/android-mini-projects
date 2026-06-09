@@ -116,3 +116,84 @@ export function isHardConstraintKey(value: string): value is HardConstraintKey {
 export function isValidHardEnumValue(key: HardEnumKey, value: string): boolean {
   return (HARD_CONSTRAINT_ENUMS[key] as readonly string[]).includes(value);
 }
+
+// ---------------------------------------------------------------------------
+// validateTagSchema: 임의 객체가 태그 스키마를 준수하는지 검증
+// ---------------------------------------------------------------------------
+
+export interface TagSchemaValidationResult {
+  valid: boolean;
+  errors: string[];
+}
+
+/**
+ * ExtractedTags 형태의 객체가 스키마를 준수하는지 검증한다.
+ *
+ * 검증 규칙:
+ * - 최상위 키는 hardConstraints, softIntentTags만 허용
+ * - hardConstraints 키는 HARD_CONSTRAINT_KEYS 내에 있어야 함
+ * - hardConstraints 열거형 키의 값은 HARD_CONSTRAINT_ENUMS 허용 값이어야 함
+ * - hardConstraints 숫자 키의 값은 number 타입이어야 함
+ * - softIntentTags 항목은 SOFT_INTENT_VOCAB 내에 있어야 함
+ */
+export function validateTagSchema(obj: unknown): TagSchemaValidationResult {
+  const errors: string[] = [];
+
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+    return { valid: false, errors: ['입력이 객체가 아닙니다'] };
+  }
+
+  const record = obj as Record<string, unknown>;
+  const allowedTopKeys = new Set(['hardConstraints', 'softIntentTags']);
+
+  for (const key of Object.keys(record)) {
+    if (!allowedTopKeys.has(key)) {
+      errors.push(`알 수 없는 키: ${key}`);
+    }
+  }
+
+  // hardConstraints 검증
+  if ('hardConstraints' in record) {
+    const hc = record['hardConstraints'];
+    if (typeof hc !== 'object' || hc === null || Array.isArray(hc)) {
+      errors.push('hardConstraints가 객체가 아닙니다');
+    } else {
+      const constraints = hc as Record<string, unknown>;
+      for (const [key, value] of Object.entries(constraints)) {
+        if (!isHardConstraintKey(key)) {
+          errors.push(`hardConstraints에 알 수 없는 키: ${key}`);
+          continue;
+        }
+        if ((HARD_ENUM_KEYS as readonly string[]).includes(key)) {
+          if (typeof value !== 'string') {
+            errors.push(`${key}의 값은 문자열이어야 합니다`);
+          } else if (!isValidHardEnumValue(key as HardEnumKey, value)) {
+            errors.push(`${key}에 허용되지 않는 값: ${value}`);
+          }
+        } else if ((HARD_NUMERIC_KEYS as readonly string[]).includes(key)) {
+          if (typeof value !== 'number') {
+            errors.push(`${key}의 값은 숫자여야 합니다`);
+          }
+        }
+      }
+    }
+  }
+
+  // softIntentTags 검증
+  if ('softIntentTags' in record) {
+    const tags = record['softIntentTags'];
+    if (!Array.isArray(tags)) {
+      errors.push('softIntentTags가 배열이 아닙니다');
+    } else {
+      for (const tag of tags) {
+        if (typeof tag !== 'string') {
+          errors.push(`소프트 태그는 문자열이어야 합니다: ${String(tag)}`);
+        } else if (!isSoftIntentTag(tag)) {
+          errors.push(`소프트 태그 어휘에 없는 값: ${tag}`);
+        }
+      }
+    }
+  }
+
+  return { valid: errors.length === 0, errors };
+}

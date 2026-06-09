@@ -8,6 +8,7 @@ import {
   isSoftIntentTag,
   isHardConstraintKey,
   isValidHardEnumValue,
+  validateTagSchema,
 } from '../lib/tagSchema';
 
 describe('HARD_NUMERIC_KEYS', () => {
@@ -172,5 +173,135 @@ describe('isValidHardEnumValue()', () => {
     expect(isValidHardEnumValue('connection', '위성')).toBe(false);
     expect(isValidHardEnumValue('layout', '알수없음')).toBe(false);
     expect(isValidHardEnumValue('backlight', '레이저')).toBe(false);
+  });
+});
+
+describe('validateTagSchema()', () => {
+  it('유효한 전체 객체는 통과한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { price_max: 200000, connection: '무선' },
+      softIntentTags: ['조용함', '사무용'],
+    });
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it('빈 객체는 통과한다', () => {
+    const result = validateTagSchema({});
+    expect(result.valid).toBe(true);
+  });
+
+  it('hardConstraints만 있는 객체는 통과한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { layout: '텐키리스', price_max: 150000 },
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  it('softIntentTags만 있는 객체는 통과한다', () => {
+    const result = validateTagSchema({ softIntentTags: ['게이밍', 'RGB'] });
+    expect(result.valid).toBe(true);
+  });
+
+  it('null 입력은 오류를 반환한다', () => {
+    const result = validateTagSchema(null);
+    expect(result.valid).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(0);
+  });
+
+  it('배열 입력은 오류를 반환한다', () => {
+    const result = validateTagSchema([]);
+    expect(result.valid).toBe(false);
+  });
+
+  it('문자열 입력은 오류를 반환한다', () => {
+    const result = validateTagSchema('invalid');
+    expect(result.valid).toBe(false);
+  });
+
+  it('최상위에 알 수 없는 키가 있으면 오류를 반환한다', () => {
+    const result = validateTagSchema({ unknownKey: 'value' });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('unknownKey'))).toBe(true);
+  });
+
+  it('hardConstraints에 알 수 없는 키가 있으면 오류를 반환한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { brand: 'Leopold' },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('brand'))).toBe(true);
+  });
+
+  it('열거형 키에 허용되지 않는 값이 있으면 오류를 반환한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { connection: '위성통신' },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('위성통신'))).toBe(true);
+  });
+
+  it('숫자 키에 문자열 값이 있으면 오류를 반환한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { price_max: '200000' },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('price_max'))).toBe(true);
+  });
+
+  it('softIntentTags에 스키마 밖 태그가 있으면 오류를 반환한다', () => {
+    const result = validateTagSchema({ softIntentTags: ['알수없는태그'] });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('알수없는태그'))).toBe(true);
+  });
+
+  it('softIntentTags가 배열이 아니면 오류를 반환한다', () => {
+    const result = validateTagSchema({ softIntentTags: '조용함' });
+    expect(result.valid).toBe(false);
+  });
+
+  it('여러 오류가 한 번에 수집된다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { brand: 'Leopold', connection: '위성통신' },
+      softIntentTags: ['알수없는태그'],
+      unknownTopKey: 1,
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('layout 유효 열거형 값은 통과한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { layout: '풀배열' },
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  it('switch_type 허용 값은 통과한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { switch_type: '기계식' },
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  it('backlight 허용 값은 통과한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { backlight: 'RGB 백라이트' },
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  it('engraving 허용 값은 통과한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { engraving: '한/영 정각' },
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  it('weight_max_g 숫자 값은 통과한다', () => {
+    const result = validateTagSchema({
+      hardConstraints: { weight_max_g: 800 },
+    });
+    expect(result.valid).toBe(true);
   });
 });
