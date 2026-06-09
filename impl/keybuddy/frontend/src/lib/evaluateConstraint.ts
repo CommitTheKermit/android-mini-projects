@@ -158,3 +158,34 @@ export function buildConstraintStatusMap(
   }
   return statusMap;
 }
+
+// ---------------------------------------------------------------------------
+// filterByConstraintPredicates (Sub-AC 3-1)
+// ---------------------------------------------------------------------------
+
+/**
+ * 속성 술어(hard constraint predicate) 목록과 키보드 카탈로그를 입력받아
+ * 술어를 하나라도 위반하는 키보드를 제거하는 결정론 필터 함수.
+ *
+ * - constraints가 빈 배열이면 모든 키보드를 그대로 반환한다.
+ * - 하나라도 술어를 위반하는(evaluateConstraint가 false 반환) 키보드는 결과에 포함하지 않는다.
+ * - 원본 배열을 변경하지 않는다(순수 함수).
+ * - LLM 호출 없이 결정론적으로 동작한다.
+ *
+ * 위반(violation) 정의:
+ *   evaluateConstraint(constraint, keyboardAttributes) === false -> 위반
+ *   모든 constraints가 true를 반환하는 키보드만 통과
+ *
+ * @param keyboards   - 필터 대상 키보드 카탈로그
+ * @param constraints - 적용할 속성 술어(Constraint) 배열
+ * @returns 모든 술어를 만족하는(위반하지 않는) 키보드 목록
+ */
+export function filterByConstraintPredicates<T extends KeyboardAttributes>(
+  keyboards: T[],
+  constraints: Constraint[],
+): T[] {
+  if (constraints.length === 0) return keyboards.slice();
+  return keyboards.filter((kb) =>
+    constraints.every((c) => evaluateConstraint(c, kb as KeyboardAttributes)),
+  );
+}
