@@ -768,11 +768,12 @@ describe('searchKeyboards - 복합 시나리오 통합 검증', () => {
 
     const output = searchKeyboards(tags, CATALOG);
 
-    // 하드 제약: switch_type=무접점, layout=텐키리스
-    // 카탈로그에서 무접점+텐키리스는 idx2지만 connection=무선 -> switch_type만 필터링됨
-    // layout=텐키리스 + switch_type=무접점 -> idx2(무접점 텐키리스 무선)
+    // 하드 제약: switch_type=무접점, layout=텐키리스, connection=유선, price_max=300000
+    // 카탈로그의 유일한 무접점+텐키리스는 idx2지만 connection=무선이라 유선 요구를 위반한다.
+    // -> 완화 우선순위상 connection이 먼저 완화되어 idx2가 근접 결과로 반환된다 (fallback).
     expect(output.results.length).toBeGreaterThan(0);
-    expect(output.isFallback).toBe(false);
+    expect(output.isFallback).toBe(true);
+    expect(output.relaxedConstraints).toContain('connection');
 
     // 결과 키보드는 모두 텐키리스이어야 한다
     const layoutViolations = output.results.filter((r) => r.keyboard.layout !== '텐키리스').length;

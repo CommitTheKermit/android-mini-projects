@@ -84,18 +84,87 @@ export function checkBudgetViolation(keyboard: Keyboard, budgetTag: number): boo
   return keyboard.price > budgetTag;
 }
 
+/**
+ * 키보드 가격이 예산 하한(priceMinTag) 미만이면 true(위반),
+ * 이상이면 false(통과)를 반환한다. priceMinTag가 0 이하이면 제약 없음.
+ * 경계값(price === priceMinTag)은 false(통과)로 처리한다.
+ */
+export function checkPriceMinViolation(keyboard: Keyboard, priceMinTag: number): boolean {
+  if (priceMinTag <= 0) return false;
+  return keyboard.price < priceMinTag;
+}
+
+/**
+ * 키보드 무게가 상한(weightMaxTag)을 초과하면 true(위반), 이하면 false(통과).
+ * weightMaxTag가 0 이하이면 제약 없음으로 간주한다. 경계값은 통과.
+ */
+export function checkWeightMaxViolation(keyboard: Keyboard, weightMaxTag: number): boolean {
+  if (weightMaxTag <= 0) return false;
+  return keyboard.weight_g > weightMaxTag;
+}
+
+/**
+ * 연결 방식 위반 판정. 호환 매칭을 적용한다:
+ * - '유선+무선' 키보드는 유선/무선 어느 요구든 충족한다 (위반 아님).
+ * - 그 외에는 connection 값이 요구와 정확히 일치해야 한다.
+ *
+ * 예: 요구 '무선' -> '무선'/'유선+무선' 통과, '유선' 위반.
+ *     요구 '유선+무선' -> '유선+무선'만 통과.
+ * connectionTag가 없으면 제약 없음으로 false.
+ */
+export function checkConnectionViolation(keyboard: Keyboard, connectionTag: string): boolean {
+  if (!connectionTag) return false;
+  if (keyboard.connection === '유선+무선') return false;
+  return keyboard.connection !== connectionTag;
+}
+
+/**
+ * 무선 방식 위반 판정. 부분 일치(contains)를 적용한다:
+ * 키보드 wireless_type 문자열이 요구 값을 포함하지 않으면 위반.
+ * 예: 요구 '블루투스' -> '전용동글(리시버), 블루투스' 통과.
+ * wirelessTag가 없으면 제약 없음으로 false.
+ */
+export function checkWirelessTypeViolation(keyboard: Keyboard, wirelessTag: string): boolean {
+  if (!wirelessTag) return false;
+  return !keyboard.wireless_type.includes(wirelessTag);
+}
+
+/**
+ * 각인 위반 판정. engraving 값이 요구와 정확히 일치하지 않으면 위반.
+ * engravingTag가 없으면 제약 없음으로 false.
+ */
+export function checkEngravingViolation(keyboard: Keyboard, engravingTag: string): boolean {
+  if (!engravingTag) return false;
+  return keyboard.engraving !== engravingTag;
+}
+
+/**
+ * 백라이트 위반 판정. backlight 값이 요구와 정확히 일치하지 않으면 위반.
+ * backlightTag가 없으면 제약 없음으로 false.
+ */
+export function checkBacklightViolation(keyboard: Keyboard, backlightTag: string): boolean {
+  if (!backlightTag) return false;
+  return keyboard.backlight !== backlightTag;
+}
+
 // ---------------------------------------------------------------------------
 // 디스패처: checkHardConstraintViolation (Sub-AC 4-1-5)
 // ---------------------------------------------------------------------------
 
 /**
- * hardTag.type을 판별해 Sub-AC 4-1-1~4-1-4의 각 함수로 라우팅한다.
+ * hardTag.type을 판별해 각 세부 위반 판정 함수로 라우팅한다.
  *
  * 라우팅 규칙:
- * - 'layout'      -> checkLayoutViolation      (Sub-AC 4-1-1)
- * - 'switch_type' -> checkSwitchViolation      (Sub-AC 4-1-2)
- * - 'form_factor' -> checkFormFactorViolation  (Sub-AC 4-1-3)
- * - 'price_max'   -> checkBudgetViolation      (Sub-AC 4-1-4)
+ * - 'layout'        -> checkLayoutViolation
+ * - 'switch_type'   -> checkSwitchViolation
+ * - 'form_factor'   -> checkFormFactorViolation
+ * - 'price_max'     -> checkBudgetViolation
+ * - 'price_min'     -> checkPriceMinViolation
+ * - 'weight_max_g'  -> checkWeightMaxViolation
+ * - 'connection'    -> checkConnectionViolation (호환 매칭)
+ * - 'wireless_type' -> checkWirelessTypeViolation (부분 일치)
+ * - 'engraving'     -> checkEngravingViolation
+ * - 'backlight'     -> checkBacklightViolation
  * - 기타(알 수 없는 유형) -> false (위반 없음, 안전한 기본값)
  *
  * @param keyboard - 카탈로그 레코드
@@ -112,6 +181,18 @@ export function checkHardConstraintViolation(keyboard: Keyboard, hardTag: HardTa
       return checkFormFactorViolation(keyboard, hardTag.value as string);
     case 'price_max':
       return checkBudgetViolation(keyboard, hardTag.value as number);
+    case 'price_min':
+      return checkPriceMinViolation(keyboard, hardTag.value as number);
+    case 'weight_max_g':
+      return checkWeightMaxViolation(keyboard, hardTag.value as number);
+    case 'connection':
+      return checkConnectionViolation(keyboard, hardTag.value as string);
+    case 'wireless_type':
+      return checkWirelessTypeViolation(keyboard, hardTag.value as string);
+    case 'engraving':
+      return checkEngravingViolation(keyboard, hardTag.value as string);
+    case 'backlight':
+      return checkBacklightViolation(keyboard, hardTag.value as string);
     default:
       return false;
   }

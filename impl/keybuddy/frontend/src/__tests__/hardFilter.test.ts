@@ -586,20 +586,20 @@ describe('checkHardConstraintViolation - type:price_max -> checkBudgetViolation 
 // 17. 알 수 없는 type -> false 반환 (안전한 기본값)
 // ---------------------------------------------------------------------------
 
-describe('checkHardConstraintViolation - 알 수 없는 type -> false 반환', () => {
-  it('type: "connection" (미구현 유형) -> false', () => {
-    const kb = makeDispatcherKeyboard();
-    expect(checkHardConstraintViolation(kb, { type: 'connection', value: '무선' })).toBe(false);
+describe('checkHardConstraintViolation - 추가 유형 라우팅 및 알 수 없는 type 처리', () => {
+  it('type: "connection" 불일치 -> true (호환 매칭: 유선 키보드는 무선 요구 위반)', () => {
+    const kb = makeDispatcherKeyboard(); // connection: 유선
+    expect(checkHardConstraintViolation(kb, { type: 'connection', value: '무선' })).toBe(true);
   });
 
-  it('type: "wireless_type" (미구현 유형) -> false', () => {
-    const kb = makeDispatcherKeyboard();
-    expect(checkHardConstraintViolation(kb, { type: 'wireless_type', value: '블루투스' })).toBe(false);
+  it('type: "wireless_type" 불일치 -> true (부분 일치 실패)', () => {
+    const kb = makeDispatcherKeyboard(); // wireless_type: 유선
+    expect(checkHardConstraintViolation(kb, { type: 'wireless_type', value: '블루투스' })).toBe(true);
   });
 
-  it('type: "weight_max_g" (미구현 유형) -> false', () => {
-    const kb = makeDispatcherKeyboard();
-    expect(checkHardConstraintViolation(kb, { type: 'weight_max_g', value: 500 })).toBe(false);
+  it('type: "weight_max_g" 초과 -> true', () => {
+    const kb = makeDispatcherKeyboard(); // weight_g: 800
+    expect(checkHardConstraintViolation(kb, { type: 'weight_max_g', value: 500 })).toBe(true);
   });
 
   it('type: "unknown_type" -> false', () => {
