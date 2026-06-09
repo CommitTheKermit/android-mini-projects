@@ -1,0 +1,3 @@
+functions/.env
+functions/.env.local
+functions/**/*.env
