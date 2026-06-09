@@ -493,3 +493,114 @@ export function guidedAnswersToSoftTags(answers: Record<string, string>): SoftIn
   // 중복 제거 (순서 유지)
   return [...new Set(tags)];
 }
+
+// ===========================================================================
+// 디스패처: 단계 번호 + 선택값 -> TagSet
+// Sub-AC 2-1-C: 단계 번호와 선택값을 받아 하드/소프트 매핑 함수에 라우팅
+// ===========================================================================
+
+/**
+ * 한 단계의 입력에서 생성된 하드 제약 + 소프트 태그 묶음.
+ *
+ * hard: 결정론 필터에 쓰이는 HardConstraints (한 단계 기여분)
+ * soft: 점수 가중치로 쓰이는 SoftIntentTag[]
+ */
+export interface TagSet {
+  hard: HardConstraints;
+  soft: SoftIntentTag[];
+}
+
+/**
+ * 단계 번호(0-9)와 선택값을 받아 적절한 매핑 함수에 라우팅하고
+ * TagSet { hard, soft }를 반환하는 디스패처 함수.
+ *
+ * stepIndex - App.tsx questions 배열 인덱스 (0-9):
+ *   0: 용도     - 소프트 전용
+ *   1: 휴대성   - 소프트 전용
+ *   2: 소리     - 소프트 전용
+ *   3: 키감     - 하드 + 소프트
+ *   4: 키압     - 소프트 전용
+ *   5: 연결방식 - 하드 + 소프트
+ *   6: 크기     - 하드 + 소프트
+ *   7: 예산     - 하드 전용 (value: { min, max })
+ *   8: 각인     - 하드 + 소프트
+ *   9: 백라이트 - 하드 + 소프트
+ *
+ * 예산 단계(7)는 value로 { min: number; max: number }를 받는다.
+ * 나머지 단계는 string을 받는다.
+ * 알 수 없는 단계 번호나 타입 불일치는 { hard: {}, soft: [] }를 반환한다.
+ *
+ * LLM 호출 없이 결정론적으로 동작한다.
+ */
+export function dispatchStepToTagSet(
+  stepIndex: number,
+  value: string | { min: number; max: number },
+): TagSet {
+  switch (stepIndex) {
+    case 0: // 용도
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: {}, soft: mapPurposeToSoftTags(value) };
+    case 1: // 휴대성
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: {}, soft: mapPortabilityToSoftTags(value) };
+    case 2: // 소리
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: {}, soft: mapSoundToSoftTags(value) };
+    case 3: // 키감
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: mapKeyFeelToConstraints(value), soft: mapKeyFeelToSoftTags(value) };
+    case 4: // 키압
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: {}, soft: mapKeyForceToSoftTags(value) };
+    case 5: // 연결방식
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: mapConnectionToConstraints(value), soft: mapConnectionToSoftTags(value) };
+    case 6: // 크기
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: mapLayoutToConstraints(value), soft: mapLayoutToSoftTags(value) };
+    case 7: // 예산 (슬라이더 - { min, max } 형태)
+      if (typeof value === 'string') return { hard: {}, soft: [] };
+      return { hard: mapBudgetToConstraints(value), soft: [] };
+    case 8: // 각인
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: mapEngravingToConstraints(value), soft: mapEngravingToSoftTags(value) };
+    case 9: // 백라이트
+      if (typeof value !== 'string') return { hard: {}, soft: [] };
+      return { hard: mapBacklightToConstraints(value), soft: mapBacklightToSoftTags(value) };
+    default:
+      return { hard: {}, soft: [] };
+  }
+}
+
+/**
+ * App.tsx questions[].id -> stepIndex 매핑 테이블.
+ * dispatchStepIdToTagSet에서 사용한다.
+ */
+export const STEP_ID_TO_INDEX: Readonly<Record<string, number>> = {
+  용도: 0,
+  휴대성: 1,
+  소리: 2,
+  키감: 3,
+  키압: 4,
+  연결방식: 5,
+  크기: 6,
+  예산: 7,
+  각인: 8,
+  백라이트: 9,
+};
+
+/**
+ * 단계 ID 문자열('용도', '연결방식' 등)과 선택값을 받아
+ * dispatchStepToTagSet으로 라우팅한 뒤 TagSet을 반환한다.
+ *
+ * 알 수 없는 단계 ID -> { hard: {}, soft: [] }
+ * LLM 호출 없이 결정론적으로 동작한다.
+ */
+export function dispatchStepIdToTagSet(
+  stepId: string,
+  value: string | { min: number; max: number },
+): TagSet {
+  const idx = STEP_ID_TO_INDEX[stepId];
+  if (idx === undefined) return { hard: {}, soft: [] };
+  return dispatchStepToTagSet(idx, value);
+}
