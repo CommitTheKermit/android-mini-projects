@@ -1,0 +1,2 @@
+[functions.recommend]
+verify_jwt = false

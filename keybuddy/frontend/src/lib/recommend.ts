@@ -4,22 +4,26 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const localFunctionUrl = import.meta.env.VITE_SUPABASE_RECOMMEND_URL;
 
-function getRecommendUrl(): string {
+function getRecommendTarget(): { url: string; headers: Record<string, string> } {
   if (localFunctionUrl) {
-    return localFunctionUrl;
+    return { url: localFunctionUrl, headers: supabaseAnonKey ? { apikey: supabaseAnonKey } : {} };
   }
   if (!supabaseUrl) {
     throw new Error('VITE_SUPABASE_URL이 설정되지 않았습니다.');
   }
-  return `${supabaseUrl.replace(/\/$/, '')}/functions/v1/recommend`;
+  return {
+    url: `${supabaseUrl.replace(/\/$/, '')}/functions/v1/recommend`,
+    headers: supabaseAnonKey ? { apikey: supabaseAnonKey } : {},
+  };
 }
 
 export async function recommend(input: RecommendInput): Promise<RecommendResult> {
-  const response = await fetch(getRecommendUrl(), {
+  const target = getRecommendTarget();
+  const response = await fetch(target.url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(supabaseAnonKey ? { Authorization: `Bearer ${supabaseAnonKey}` } : {}),
+      ...target.headers,
     },
     body: JSON.stringify(input),
   });

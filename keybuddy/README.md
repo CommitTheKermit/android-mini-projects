@@ -39,6 +39,9 @@ React 브라우저
 ```
 
 브라우저에는 `OPENAI_API_KEY`가 내려가지 않습니다.
+Supabase publishable key(`sb_publishable_...`)는 JWT가 아니므로 `Authorization` 헤더가
+아니라 `apikey` 헤더로 보냅니다. `recommend` 함수는 공개 추천 엔드포인트라
+`supabase/config.toml`에서 `verify_jwt = false`로 설정합니다.
 
 ## 로컬 준비
 
@@ -138,6 +141,19 @@ Edge Function 배포:
 ```bash
 cd keybuddy
 supabase functions deploy recommend
+```
+
+새 publishable key(`sb_publishable_...`)를 쓰는 경우 JWT 검증 설정이 반영되어야 하므로,
+문제가 있으면 아래처럼 project ref와 API 배포 옵션을 한 줄로 명시합니다.
+
+```bash
+supabase functions deploy recommend --project-ref your-project-ref --use-api
+```
+
+현재 프로젝트라면 아래처럼 실행합니다.
+
+```bash
+supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api
 ```
 
 프론트 정적 배포는 Supabase Hosting이 아니라 Vercel, Netlify, GitHub Pages 같은 정적
