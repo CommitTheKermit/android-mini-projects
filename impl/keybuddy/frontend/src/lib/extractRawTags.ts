@@ -20,6 +20,7 @@ import {
   type HardConstraintKey,
   type SoftIntentTag,
 } from './tagSchema';
+import { INTENT_VOCABULARY, isIntentTag } from './intentProfile';
 
 // ---------------------------------------------------------------------------
 // 타입 정의
@@ -262,6 +263,102 @@ export async function extractAndValidateTags(input: string): Promise<ExtractedTa
     throw new Error(`태그 스키마 검증 실패: ${validationResult.errors.join(', ')}`);
   }
   return sanitized;
+}
+
+// ---------------------------------------------------------------------------
+// 의도 + 명시 제약 분리 추출 (하네싱 1단계)
+// ---------------------------------------------------------------------------
+
+/** extractIntentInput 결과: 통제 의도 어휘 + 명시 제약 */
+export interface IntentExtraction {
+  /** INTENT_VOCABULARY 내 의도 태그 */
+  intents: string[];
+  /** 사용자가 명시한 하드 제약 */
+  hardConstraints: HardConstraints;
+  /** 사용자가 직접 언급한 소프트 속성 선호 */
+  softIntentTags: SoftIntentTag[];
+}
+
+const INTENT_SYSTEM_PROMPT = `당신은 키보드 추천 시스템의 의도/제약 추출기입니다.
+사용자의 자연어 입력에서 아래 3가지를 분리해 추출하세요.
+
+1) intents: 사용자의 고수준 사용 목적(use-case). 아래 어휘에서만 선택(복수 가능, 없으면 []):
+   [${INTENT_VOCABULARY.map((v) => `"${v}"`).join(', ')}]
+
+2) hardConstraints: 사용자가 명시적으로 요구한 구체 제약(없으면 {}):
+   숫자: "price_max","price_min","weight_max_g"
+   열거형:
+   - "connection": "유선" | "무선" | "유선+무선"
+   - "layout": "풀배열" | "텐키리스" | "미니" | "98키" | "99키" | "96키"
+   - "switch_type": "기계식" | "펜타그래프" | "무접점 자석축" | "무접점 광축" | "멤브레인" | "무접점"
+   - "wireless_type": "전용동글(리시버)" | "블루투스" | "전용동글(리시버), 블루투스" | "블루투스, 전용동글(리시버)" | "유선"
+   - "engraving": "한/영 정각" | "영문 정각" | "레이저각인 키캡" | "정보없음"
+   - "backlight": "RGB 백라이트" | "레인보우 백라이트" | "단색 백라이트" | "없음"
+
+3) softIntentTags: 사용자가 직접 언급한 구체 속성 선호. 아래 어휘에서만(없으면 []):
+   [${(SOFT_INTENT_VOCAB as readonly string[]).map((v) => `"${v}"`).join(', ')}]
+
+규칙:
+- 사용 목적(사무/게임/휴대)은 intents로, 구체 속성 선호(RGB/무선/텐키리스 등)는 hardConstraints나 softIntentTags로 분리합니다.
+- 어휘/스키마 밖 값은 포함하지 않습니다.
+- 반드시 유효한 JSON만 반환합니다 (코드 블록 없이).
+
+응답 형식: {"intents": [...], "hardConstraints": {...}, "softIntentTags": [...]}`;
+
+interface RawIntentResponse {
+  intents?: unknown[];
+  hardConstraints?: Record<string, unknown>;
+  softIntentTags?: unknown[];
+}
+
+function sanitizeIntents(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((x): x is string => typeof x === 'string' && isIntentTag(x));
+}
+
+/** LLM 응답 텍스트를 IntentExtraction으로 파싱/정제한다(어휘 밖 값 폐기). */
+export function parseIntentInput(text: string): IntentExtraction {
+  const jsonStr = extractJsonObject(text);
+  if (jsonStr === null) return { intents: [], hardConstraints: {}, softIntentTags: [] };
+  let parsed: RawIntentResponse;
+  try {
+    parsed = JSON.parse(jsonStr) as RawIntentResponse;
+  } catch {
+    return { intents: [], hardConstraints: {}, softIntentTags: [] };
+  }
+  const hardConstraints =
+    parsed.hardConstraints && typeof parsed.hardConstraints === 'object'
+      ? sanitizeHardConstraints(parsed.hardConstraints)
+      : {};
+  const softIntentTags = Array.isArray(parsed.softIntentTags)
+    ? sanitizeSoftIntentTags(parsed.softIntentTags)
+    : [];
+  return { intents: sanitizeIntents(parsed.intents), hardConstraints, softIntentTags };
+}
+
+/**
+ * 자유형 자연어를 LLM으로 {의도 어휘, 명시 하드 제약, 명시 소프트 태그}로 분리 추출한다.
+ * 어휘/스키마 밖 값은 폐기된다. 입력 정규화 단계에서만 호출(검색 경로 미사용).
+ */
+export async function extractIntentInput(naturalLanguageInput: string): Promise<IntentExtraction> {
+  const client = getClient();
+
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 1024,
+    system: INTENT_SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: buildUserMessage(naturalLanguageInput) }],
+  });
+
+  const textBlock = response.content.find((b) => b.type === 'text');
+  if (!textBlock || textBlock.type !== 'text') {
+    return { intents: [], hardConstraints: {}, softIntentTags: [] };
+  }
+
+  if (import.meta.env?.DEV) {
+    console.debug('[keybuddy] 의도/제약 추출 원문:', textBlock.text);
+  }
+  return parseIntentInput(textBlock.text);
 }
 
 // 내부 유틸 (테스트 접근용)
