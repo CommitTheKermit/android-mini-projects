@@ -18,3 +18,15 @@ export function checkLayoutViolation(keyboard: Keyboard, layoutTag: string): boo
   if (!layoutTag) return false;
   return keyboard.layout !== layoutTag;
 }
+
+/**
+ * 키보드의 switch_type 속성과 switchTag가 불일치하면 true(위반),
+ * 일치하거나 switchTag가 없으면 false(통과)를 반환한다.
+ *
+ * @param keyboard - 카탈로그 레코드
+ * @param switchTag - hardConstraints.switch_type 값 (없으면 빈 문자열)
+ */
+export function checkSwitchViolation(keyboard: Keyboard, switchTag: string): boolean {
+  if (!switchTag) return false;
+  return keyboard.switch_type !== switchTag;
+}
