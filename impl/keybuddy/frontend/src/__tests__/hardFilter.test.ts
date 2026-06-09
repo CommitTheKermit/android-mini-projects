@@ -14,6 +14,7 @@ import {
   checkFormFactorViolation,
   checkBudgetViolation,
   checkHardConstraintViolation,
+  filterByHardConstraints,
 } from '../lib/hardFilter';
 import type { Keyboard } from '../types';
 
@@ -637,5 +638,234 @@ describe('checkHardConstraintViolation - 복합 시나리오', () => {
     const kb = makeDispatcherKeyboard(); // price: 100000, layout: 텐키리스
     expect(checkHardConstraintViolation(kb, { type: 'price_max', value: 50000 })).toBe(true);
     expect(checkHardConstraintViolation(kb, { type: 'layout', value: '텐키리스' })).toBe(false);
+  });
+});
+
+// ===========================================================================
+// filterByHardConstraints 테스트 (Sub-AC 4-2)
+// ===========================================================================
+
+// 다양한 속성을 가진 키보드 픽스처 헬퍼
+function makeFullKeyboard(overrides: Partial<Keyboard>): Keyboard {
+  return {
+    product_name: '기본 키보드',
+    brand: '기본브랜드',
+    price: 100000,
+    image_url: '',
+    switch_type: '기계식',
+    connection: '유선',
+    layout: '텐키리스',
+    key_force: '45g',
+    weight_g: 800,
+    wireless_type: '유선',
+    engraving: '한/영 정각',
+    backlight: '없음',
+    ...overrides,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 19. hardTags 빈 배열 -> 전체 키보드 반환
+// ---------------------------------------------------------------------------
+
+describe('filterByHardConstraints - hardTags 빈 배열', () => {
+  it('hardTags가 빈 배열이면 모든 키보드를 그대로 반환한다', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '풀배열' }),
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '미니' }),
+    ];
+    const result = filterByHardConstraints(keyboards, []);
+    expect(result).toHaveLength(3);
+  });
+
+  it('빈 키보드 배열 + 빈 태그 배열 -> 빈 배열 반환', () => {
+    expect(filterByHardConstraints([], [])).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 20. layout 단일 하드 제약 필터링
+// ---------------------------------------------------------------------------
+
+describe('filterByHardConstraints - layout 단일 제약', () => {
+  it('텐키리스 제약: 위반(풀배열, 미니) 제외 -> 텐키리스만 남음', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '풀배열' }),
+      makeFullKeyboard({ layout: '미니' }),
+      makeFullKeyboard({ layout: '텐키리스' }),
+    ];
+    const result = filterByHardConstraints(keyboards, [{ type: 'layout', value: '텐키리스' }]);
+    expect(result).toHaveLength(2);
+    result.forEach((kb) => expect(kb.layout).toBe('텐키리스'));
+  });
+
+  it('풀배열 제약: 위반 키보드가 모두 제외된다', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '미니' }),
+      makeFullKeyboard({ layout: '96키' }),
+    ];
+    const result = filterByHardConstraints(keyboards, [{ type: 'layout', value: '풀배열' }]);
+    expect(result).toHaveLength(0);
+  });
+
+  it('결과의 모든 키보드가 layout 제약을 위반하지 않는다(violations===0)', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '풀배열' }),
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '98키' }),
+      makeFullKeyboard({ layout: '텐키리스' }),
+    ];
+    const tags = [{ type: 'layout', value: '텐키리스' }] as const;
+    const result = filterByHardConstraints(keyboards, [...tags]);
+    const violations = result.filter((kb) => kb.layout !== '텐키리스').length;
+    expect(violations).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 21. price_max 단일 하드 제약 필터링
+// ---------------------------------------------------------------------------
+
+describe('filterByHardConstraints - price_max 단일 제약', () => {
+  it('100000원 상한: 초과 키보드 제외 -> 이하 키보드만 남음', () => {
+    const keyboards = [
+      makeFullKeyboard({ price: 80000 }),
+      makeFullKeyboard({ price: 100000 }),
+      makeFullKeyboard({ price: 150000 }),
+      makeFullKeyboard({ price: 200000 }),
+    ];
+    const result = filterByHardConstraints(keyboards, [{ type: 'price_max', value: 100000 }]);
+    expect(result).toHaveLength(2);
+    result.forEach((kb) => expect(kb.price).toBeLessThanOrEqual(100000));
+  });
+
+  it('결과의 모든 키보드 가격이 상한 이하 (violations===0)', () => {
+    const keyboards = [
+      makeFullKeyboard({ price: 50000 }),
+      makeFullKeyboard({ price: 99999 }),
+      makeFullKeyboard({ price: 100001 }),
+      makeFullKeyboard({ price: 300000 }),
+    ];
+    const maxPrice = 100000;
+    const result = filterByHardConstraints(keyboards, [{ type: 'price_max', value: maxPrice }]);
+    const violations = result.filter((kb) => kb.price > maxPrice).length;
+    expect(violations).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 22. 복합 하드 제약 (layout + price_max) 필터링
+// ---------------------------------------------------------------------------
+
+describe('filterByHardConstraints - 복합 제약 (layout + price_max)', () => {
+  it('텐키리스 + 100000원 상한: 두 조건 모두 만족하는 키보드만 남음', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스', price: 80000 }),   // 통과
+      makeFullKeyboard({ layout: '텐키리스', price: 150000 }),  // price 위반
+      makeFullKeyboard({ layout: '풀배열', price: 80000 }),     // layout 위반
+      makeFullKeyboard({ layout: '풀배열', price: 200000 }),    // 둘 다 위반
+      makeFullKeyboard({ layout: '텐키리스', price: 100000 }),  // 통과 (경계값)
+    ];
+    const result = filterByHardConstraints(keyboards, [
+      { type: 'layout', value: '텐키리스' },
+      { type: 'price_max', value: 100000 },
+    ]);
+    expect(result).toHaveLength(2);
+    result.forEach((kb) => {
+      expect(kb.layout).toBe('텐키리스');
+      expect(kb.price).toBeLessThanOrEqual(100000);
+    });
+  });
+
+  it('복합 제약 결과의 위반 건수 === 0', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스', price: 70000, switch_type: '기계식' }),
+      makeFullKeyboard({ layout: '미니', price: 50000, switch_type: '기계식' }),       // layout 위반
+      makeFullKeyboard({ layout: '텐키리스', price: 200000, switch_type: '기계식' }),  // price 위반
+      makeFullKeyboard({ layout: '텐키리스', price: 90000, switch_type: '무접점' }),   // switch 위반
+      makeFullKeyboard({ layout: '텐키리스', price: 60000, switch_type: '기계식' }),   // 통과
+    ];
+    const hardTags = [
+      { type: 'layout', value: '텐키리스' },
+      { type: 'price_max', value: 100000 },
+      { type: 'switch_type', value: '기계식' },
+    ];
+    const result = filterByHardConstraints(keyboards, hardTags);
+    // 결과의 모든 키보드가 모든 제약을 만족하는지 검증
+    result.forEach((kb) => {
+      expect(kb.layout).toBe('텐키리스');
+      expect(kb.price).toBeLessThanOrEqual(100000);
+      expect(kb.switch_type).toBe('기계식');
+    });
+    // 위반 키보드 2개(미니, price 200000, switch 무접점)가 제외됨
+    expect(result).toHaveLength(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 23. 위반 키보드가 섞인 목록에서 위반이 0건임을 검증 (Sub-AC 4-2 핵심 검증)
+// ---------------------------------------------------------------------------
+
+describe('filterByHardConstraints - 위반 키보드 섞인 목록, violations===0 보장', () => {
+  it('다양한 위반 유형이 섞인 목록에서 결과의 모든 키보드가 제약을 위반하지 않는다', () => {
+    const hardTags = [
+      { type: 'layout', value: '텐키리스' },
+      { type: 'price_max', value: 150000 },
+      { type: 'switch_type', value: '기계식' },
+    ];
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스', price: 100000, switch_type: '기계식' }),  // 통과
+      makeFullKeyboard({ layout: '풀배열', price: 100000, switch_type: '기계식' }),    // layout 위반
+      makeFullKeyboard({ layout: '텐키리스', price: 200000, switch_type: '기계식' }),  // price 위반
+      makeFullKeyboard({ layout: '텐키리스', price: 100000, switch_type: '펜타그래프' }), // switch 위반
+      makeFullKeyboard({ layout: '미니', price: 300000, switch_type: '무접점' }),      // 전부 위반
+      makeFullKeyboard({ layout: '텐키리스', price: 120000, switch_type: '기계식' }),  // 통과
+      makeFullKeyboard({ layout: '텐키리스', price: 150000, switch_type: '기계식' }),  // 통과 (경계값)
+    ];
+    const result = filterByHardConstraints(keyboards, hardTags);
+
+    // violations === 0 검증
+    const layoutViolations = result.filter((kb) => kb.layout !== '텐키리스').length;
+    const priceViolations = result.filter((kb) => kb.price > 150000).length;
+    const switchViolations = result.filter((kb) => kb.switch_type !== '기계식').length;
+    expect(layoutViolations).toBe(0);
+    expect(priceViolations).toBe(0);
+    expect(switchViolations).toBe(0);
+    expect(result).toHaveLength(3);
+  });
+
+  it('모든 키보드가 위반할 때 결과는 빈 배열', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '풀배열' }),
+      makeFullKeyboard({ layout: '미니' }),
+      makeFullKeyboard({ layout: '98키' }),
+    ];
+    const result = filterByHardConstraints(keyboards, [{ type: 'layout', value: '텐키리스' }]);
+    expect(result).toHaveLength(0);
+  });
+
+  it('알 수 없는 type은 위반 없음으로 처리 -> 통과', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '풀배열' }),
+    ];
+    // 알 수 없는 type은 무조건 false(위반 없음)
+    const result = filterByHardConstraints(keyboards, [{ type: 'unknown_field', value: '임의값' }]);
+    expect(result).toHaveLength(2);
+  });
+
+  it('원본 배열을 변경하지 않는다 (순수 함수)', () => {
+    const keyboards = [
+      makeFullKeyboard({ layout: '텐키리스' }),
+      makeFullKeyboard({ layout: '풀배열' }),
+    ];
+    const original = keyboards.slice();
+    filterByHardConstraints(keyboards, [{ type: 'layout', value: '텐키리스' }]);
+    expect(keyboards).toHaveLength(original.length);
+    keyboards.forEach((kb, i) => expect(kb).toBe(original[i]));
   });
 });

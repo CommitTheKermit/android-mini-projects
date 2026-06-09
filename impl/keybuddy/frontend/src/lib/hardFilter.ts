@@ -116,3 +116,25 @@ export function checkHardConstraintViolation(keyboard: Keyboard, hardTag: HardTa
       return false;
   }
 }
+
+// ---------------------------------------------------------------------------
+// filterByHardConstraints (Sub-AC 4-2)
+// ---------------------------------------------------------------------------
+
+/**
+ * keyboards 목록에서 hardTags의 모든 제약을 만족하는 키보드만 반환한다.
+ *
+ * - hardTags가 빈 배열이면 모든 키보드를 그대로 반환한다.
+ * - 하나라도 위반하는 키보드는 결과에 포함하지 않는다.
+ * - 원본 배열을 변경하지 않는다(순수 함수).
+ *
+ * @param keyboards - 필터 대상 키보드 목록
+ * @param hardTags  - 적용할 하드 제약 태그 배열
+ * @returns 모든 하드 제약을 만족하는 키보드 목록
+ */
+export function filterByHardConstraints(keyboards: Keyboard[], hardTags: HardTag[]): Keyboard[] {
+  if (hardTags.length === 0) return keyboards.slice();
+  return keyboards.filter(
+    (kb) => !hardTags.some((tag) => checkHardConstraintViolation(kb, tag)),
+  );
+}
