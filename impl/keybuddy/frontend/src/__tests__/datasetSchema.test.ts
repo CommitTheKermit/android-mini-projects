@@ -19,7 +19,10 @@ import {
   hasField,
   hasValue,
   findInvalidFieldNames,
+  findRulesWithInvalidValues,
   type PredicateRuleEntry,
+  type RuleEntryWithValues,
+  type PredicateWithValue,
 } from '../lib/datasetSchema';
 import type { Keyboard } from '../types';
 
@@ -607,5 +610,272 @@ describe('findInvalidFieldNames - 속성명 무결성 검사', () => {
     const invalid = findInvalidFieldNames(softTagFields, schema);
     // 모두 유효한 Keyboard 필드여야 함
     expect(invalid).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 12. findRulesWithInvalidValues - 속성 값 무결성 검사
+// ---------------------------------------------------------------------------
+
+describe('findRulesWithInvalidValues - 속성 값 무결성 검사', () => {
+  // SAMPLE_DATASET 기반 스키마:
+  //   connection: {'유선', '무선'}
+  //   layout: {'텐키리스', '미니', '풀배열'}
+  //   switch_type: {'기계식', '펜타그래프', '멤브레인'}
+  //   backlight: {'RGB 백라이트', '없음', '레인보우 백라이트'}
+  //   engraving: {'한/영 정각'}
+  //   wireless_type: {'유선', '블루투스'}
+  //   price: {42800, 89000, 18900}
+  //   weight_g: {916, 222, 711}
+
+  function makeRule(predicates: PredicateWithValue[]): RuleEntryWithValues {
+    return { predicates };
+  }
+
+  // --- eq 술어: 유효한 값 ---
+
+  it('eq 술어에서 스키마에 존재하는 정확한 값이면 빈 배열을 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'connection', op: 'eq', value: '유선' }]),
+      makeRule([{ field: 'layout', op: 'eq', value: '텐키리스' }]),
+      makeRule([{ field: 'switch_type', op: 'eq', value: '기계식' }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(0);
+  });
+
+  it('eq 술어에서 스키마에 없는 값(오탈자 connection)을 탐지한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const badRule = makeRule([{ field: 'connection', op: 'eq', value: '위성' }]);
+    const goodRule = makeRule([{ field: 'connection', op: 'eq', value: '유선' }]);
+    const ruleTable: RuleEntryWithValues[] = [badRule, goodRule];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(1);
+    expect(invalid[0]).toBe(badRule);
+  });
+
+  it('eq 술어에서 스키마에 없는 layout 값을 탐지한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'layout', op: 'eq', value: '96키' }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(1);
+  });
+
+  it('eq 술어에서 스키마에 없는 switch_type 값(오탈자)을 탐지한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    // '무접점축'은 스키마에 없음 (실제 값은 '기계식', '펜타그래프', '멤브레인')
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'switch_type', op: 'eq', value: '무접점축' }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(1);
+  });
+
+  it('eq 술어에서 여러 규칙 중 무효 값을 가진 규칙만 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const bad1 = makeRule([{ field: 'connection', op: 'eq', value: '블루투스' }]);
+    const good1 = makeRule([{ field: 'connection', op: 'eq', value: '무선' }]);
+    const bad2 = makeRule([{ field: 'layout', op: 'eq', value: '96배열' }]);
+    const good2 = makeRule([{ field: 'layout', op: 'eq', value: '풀배열' }]);
+    const ruleTable: RuleEntryWithValues[] = [bad1, good1, bad2, good2];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(2);
+    expect(invalid).toContain(bad1);
+    expect(invalid).toContain(bad2);
+    expect(invalid).not.toContain(good1);
+    expect(invalid).not.toContain(good2);
+  });
+
+  // --- eq 술어: 스키마에 없는 속성명 ---
+
+  it('eq 술어에서 속성명이 스키마에 없는 경우 해당 규칙은 탐지 대상에서 제외한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    // 'nonexistent_field'는 스키마에 없으므로 검사 범위 아님
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'nonexistent_field', op: 'eq', value: '임의값' }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    // 속성명이 없으면 이 함수의 검사 범위가 아님 - 빈 결과
+    expect(invalid).toHaveLength(0);
+  });
+
+  // --- contains 술어: 유효한 부분 문자열 ---
+
+  it('contains 술어에서 스키마 값에 포함되는 부분 문자열이면 빈 배열을 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    // 'RGB 백라이트'에 'RGB'가 포함됨
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'backlight', op: 'contains', value: 'RGB' }]),
+      makeRule([{ field: 'backlight', op: 'contains', value: '백라이트' }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(0);
+  });
+
+  it('contains 술어에서 switch_type에 포함되는 무접점 부분 문자열은 유효하다', () => {
+    // SAMPLE_DATASET의 switch_type: 기계식, 펜타그래프, 멤브레인 - '무접점'은 없음
+    // REAL_SAMPLE 기반 schema 사용
+    const REAL_SAMPLE: Keyboard[] = [
+      makeKeyboard({ switch_type: '무접점 자석축', connection: '유선', layout: '풀배열', backlight: 'RGB 백라이트' }),
+      makeKeyboard({ switch_type: '무접점 광축', connection: '무선', layout: '텐키리스', backlight: '없음' }),
+      makeKeyboard({ switch_type: '기계식', connection: '유선', layout: '미니', backlight: 'RGB 백라이트' }),
+    ];
+    const schema = extractDatasetSchema(REAL_SAMPLE);
+    // '무접점'은 '무접점 자석축', '무접점 광축' 에 포함됨 -> 유효
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'switch_type', op: 'contains', value: '무접점' }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(0);
+  });
+
+  it('contains 술어에서 스키마 값에 포함되지 않는 부분 문자열을 탐지한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    // '인풋라그'는 어떤 backlight 값에도 포함되지 않음
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'backlight', op: 'contains', value: '인풋라그' }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(1);
+  });
+
+  it('contains 술어에서 스키마에 없는 속성명이면 탐지 대상에서 제외한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'unknown_field', op: 'contains', value: '검색어' }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(0);
+  });
+
+  // --- lte/gte 술어: 수치 임계값 ---
+
+  it('lte 술어는 값 집합 검사 대상이 아니므로 항상 유효로 처리한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    // price 100000은 스키마의 실제 가격과 다르지만 lte 비교 임계값이므로 무효 아님
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'price', op: 'lte', value: 100000 }]),
+      makeRule([{ field: 'weight_g', op: 'lte', value: 800 }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(0);
+  });
+
+  it('gte 술어는 값 집합 검사 대상이 아니므로 항상 유효로 처리한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'price', op: 'gte', value: 50000 }]),
+      makeRule([{ field: 'weight_g', op: 'gte', value: 900 }]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(0);
+  });
+
+  // --- 혼합 술어: 한 규칙 내 유효/무효 술어 ---
+
+  it('한 규칙 내 하나의 술어라도 무효 값이면 해당 규칙을 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    // 첫 술어는 유효, 두 번째는 무효
+    const mixedRule = makeRule([
+      { field: 'connection', op: 'eq', value: '유선' },         // 유효
+      { field: 'layout', op: 'eq', value: '존재하지않는레이아웃' }, // 무효
+    ]);
+    const ruleTable: RuleEntryWithValues[] = [mixedRule];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(1);
+    expect(invalid[0]).toBe(mixedRule);
+  });
+
+  it('모든 술어가 유효한 규칙은 반환하지 않는다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([
+        { field: 'connection', op: 'eq', value: '유선' },
+        { field: 'layout', op: 'eq', value: '풀배열' },
+        { field: 'price', op: 'lte', value: 50000 },
+        { field: 'backlight', op: 'contains', value: 'RGB' },
+      ]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(0);
+  });
+
+  // --- 경계 케이스 ---
+
+  it('빈 규칙표이면 항상 빈 배열을 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const invalid = findRulesWithInvalidValues([], schema);
+    expect(invalid).toEqual([]);
+  });
+
+  it('빈 스키마이면 모든 규칙이 탐지 대상에서 제외된다 (속성명 없음)', () => {
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([{ field: 'connection', op: 'eq', value: '유선' }]),
+      makeRule([{ field: 'layout', op: 'eq', value: '텐키리스' }]),
+    ];
+    // 빈 스키마에서는 어떤 field도 존재하지 않으므로 검사 범위 아님
+    const invalid = findRulesWithInvalidValues(ruleTable, {});
+    expect(invalid).toHaveLength(0);
+  });
+
+  it('predicates가 빈 배열인 규칙은 반환하지 않는다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const ruleTable: RuleEntryWithValues[] = [
+      makeRule([]),
+    ];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(0);
+  });
+
+  it('여러 규칙 중 무효 값을 가진 규칙 2개를 정확히 반환한다', () => {
+    const schema = extractDatasetSchema(SAMPLE_DATASET);
+    const bad1 = makeRule([{ field: 'switch_type', op: 'eq', value: '광축' }]);
+    const bad2 = makeRule([{ field: 'engraving', op: 'eq', value: '레이저각인 키캡' }]); // SAMPLE_DATASET에 없는 값
+    const good1 = makeRule([{ field: 'switch_type', op: 'eq', value: '기계식' }]);
+    const good2 = makeRule([{ field: 'engraving', op: 'eq', value: '한/영 정각' }]);
+    const ruleTable: RuleEntryWithValues[] = [bad1, good1, bad2, good2];
+    const invalid = findRulesWithInvalidValues(ruleTable, schema);
+    expect(invalid).toHaveLength(2);
+    expect(invalid).toContain(bad1);
+    expect(invalid).toContain(bad2);
+  });
+
+  // --- SOFT_TAG_RULE_TABLE 호환성 확인 ---
+
+  it('실제 SOFT_TAG_RULE_TABLE의 eq 술어 값은 REAL_SAMPLE 스키마에 모두 유효하다', () => {
+    // REAL_SAMPLE: 실제 keyboards.json의 다양한 값을 포함한 데이터셋
+    const REAL_SAMPLE: Keyboard[] = [
+      makeKeyboard({ switch_type: '기계식', connection: '유선', layout: '풀배열', backlight: 'RGB 백라이트', wireless_type: '유선', engraving: '한/영 정각' }),
+      makeKeyboard({ switch_type: '펜타그래프', connection: '무선', layout: '텐키리스', backlight: '없음', wireless_type: '블루투스', engraving: '한/영 정각' }),
+      makeKeyboard({ switch_type: '멤브레인', connection: '유선+무선', layout: '미니', backlight: '레인보우 백라이트', wireless_type: '전용동글(리시버), 블루투스', engraving: '영문 정각' }),
+      makeKeyboard({ switch_type: '무접점 자석축', connection: '유선', layout: '풀배열', backlight: '단색 백라이트', wireless_type: '유선', engraving: '레이저각인 키캡' }),
+      makeKeyboard({ switch_type: '무접점 광축', connection: '무선', layout: '텐키리스', backlight: 'RGB 백라이트', wireless_type: '블루투스, 전용동글(리시버)', engraving: '정보없음' }),
+      makeKeyboard({ switch_type: '무접점', connection: '유선+무선', layout: '미니', backlight: '없음', wireless_type: '전용동글(리시버)', engraving: '한/영 정각' }),
+    ];
+    const schema = extractDatasetSchema(REAL_SAMPLE);
+
+    // SOFT_TAG_RULE_TABLE의 eq 술어만 추출하여 검사
+    // 알려진 eq 술어 값 목록 (softTagRules.ts에서 참조)
+    const eqPredicateRules: RuleEntryWithValues[] = [
+      makeRule([{ field: 'switch_type', op: 'eq', value: '펜타그래프' }]),
+      makeRule([{ field: 'switch_type', op: 'eq', value: '멤브레인' }]),
+      makeRule([{ field: 'switch_type', op: 'eq', value: '기계식' }]),
+      makeRule([{ field: 'connection', op: 'eq', value: '유선' }]),
+      makeRule([{ field: 'connection', op: 'eq', value: '무선' }]),
+      makeRule([{ field: 'connection', op: 'eq', value: '유선+무선' }]),
+      makeRule([{ field: 'layout', op: 'eq', value: '텐키리스' }]),
+      makeRule([{ field: 'layout', op: 'eq', value: '미니' }]),
+      makeRule([{ field: 'layout', op: 'eq', value: '풀배열' }]),
+      makeRule([{ field: 'backlight', op: 'eq', value: '없음' }]),
+      makeRule([{ field: 'engraving', op: 'eq', value: '한/영 정각' }]),
+      makeRule([{ field: 'engraving', op: 'eq', value: '영문 정각' }]),
+      makeRule([{ field: 'engraving', op: 'eq', value: '레이저각인 키캡' }]),
+    ];
+
+    const invalid = findRulesWithInvalidValues(eqPredicateRules, schema);
+    expect(invalid).toHaveLength(0);
   });
 });

@@ -131,3 +131,70 @@ export function findInvalidFieldNames(
 
   return Array.from(referencedFields).filter((field) => !hasField(schema, field));
 }
+
+// ---------------------------------------------------------------------------
+// 속성 값 무결성 검사
+// ---------------------------------------------------------------------------
+
+/**
+ * 속성 값 무결성 검사용 술어 타입.
+ * field, op, value를 모두 포함하는 제네릭 술어 구조.
+ */
+export interface PredicateWithValue {
+  field: string;
+  op: string;
+  value: string | number;
+}
+
+/**
+ * 속성 값 무결성 검사용 규칙 엔트리 타입.
+ * SoftTagRuleEntry와 독립적인 제네릭 타입으로 순환 의존 없이 사용한다.
+ */
+export interface RuleEntryWithValues {
+  predicates: PredicateWithValue[];
+}
+
+/**
+ * 규칙표의 술어에서 속성명이 스키마에 존재하는 경우에 한해
+ * 해당 속성의 허용 값 집합에 없는 값을 참조하는 규칙 항목을 반환한다.
+ *
+ * 검사 대상 op별 동작:
+ * - eq: value가 스키마의 해당 속성 값 집합에 정확히 포함되어야 한다
+ * - contains: value(문자열)가 스키마 값 중 적어도 하나의 부분 문자열이어야 한다
+ * - lte/gte: 수치 임계값이므로 값 집합 검사 대상에서 제외한다
+ *
+ * 속성명이 스키마에 없는 경우는 이 함수의 검사 범위가 아니다 (findInvalidFieldNames 담당).
+ *
+ * @param ruleTable - 술어를 가진 규칙 엔트리 배열
+ * @param schema - extractDatasetSchema로 생성된 속성명->값 집합 맵
+ * @returns 스키마 존재 속성의 허용 값 범위를 벗어난 값을 가진 규칙 엔트리 배열
+ */
+export function findRulesWithInvalidValues<T extends RuleEntryWithValues>(
+  ruleTable: T[],
+  schema: DatasetSchema,
+): T[] {
+  return ruleTable.filter((entry) =>
+    entry.predicates.some((pred) => {
+      // 속성이 스키마에 없으면 이 함수의 검사 범위가 아님
+      if (!hasField(schema, pred.field)) return false;
+
+      const allowedValues = getFieldValues(schema, pred.field);
+
+      if (pred.op === 'eq') {
+        // 정확히 일치하는 값이 허용 집합에 없으면 무효
+        return !allowedValues.has(pred.value);
+      }
+
+      if (pred.op === 'contains' && typeof pred.value === 'string') {
+        // 스키마 값 중 적어도 하나가 pred.value를 부분 문자열로 포함해야 유효
+        const searchValue = pred.value;
+        return !Array.from(allowedValues).some(
+          (v) => typeof v === 'string' && v.includes(searchValue),
+        );
+      }
+
+      // lte/gte는 수치 비교 임계값이므로 값 집합 검사 대상 아님
+      return false;
+    }),
+  );
+}
