@@ -30,3 +30,18 @@ export function checkSwitchViolation(keyboard: Keyboard, switchTag: string): boo
   if (!switchTag) return false;
   return keyboard.switch_type !== switchTag;
 }
+
+/**
+ * 키보드의 폼팩터(layout 속성)와 formFactorTag가 불일치하면 true(위반),
+ * 일치하거나 formFactorTag가 없으면 false(통과)를 반환한다.
+ *
+ * 폼팩터는 키보드의 물리적 크기/형태를 나타내며 layout 필드에 저장된다.
+ * (풀배열, 텐키리스, 미니, 98키, 99키, 96키 등)
+ *
+ * @param keyboard - 카탈로그 레코드
+ * @param formFactorTag - 요청된 폼팩터 태그 값 (없으면 빈 문자열)
+ */
+export function checkFormFactorViolation(keyboard: Keyboard, formFactorTag: string): boolean {
+  if (!formFactorTag) return false;
+  return keyboard.layout !== formFactorTag;
+}

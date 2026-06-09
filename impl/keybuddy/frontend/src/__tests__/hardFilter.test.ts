@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { checkLayoutViolation, checkSwitchViolation } from '../lib/hardFilter';
+import { checkLayoutViolation, checkSwitchViolation, checkFormFactorViolation } from '../lib/hardFilter';
 import type { Keyboard } from '../types';
 
 // 테스트용 최소 키보드 픽스처 생성 헬퍼 (layout 기반)
@@ -224,5 +224,121 @@ describe('checkSwitchViolation - switchTag 없음 시 false 반환', () => {
 
   it('빈 문자열 태그 + 멤브레인 키보드 -> false', () => {
     expect(checkSwitchViolation(makeKeyboardWithSwitch('멤브레인'), '')).toBe(false);
+  });
+});
+
+// ===========================================================================
+// checkFormFactorViolation 테스트
+// ===========================================================================
+
+// 폼팩터 테스트용 키보드 픽스처 헬퍼 (layout 기반)
+function makeKeyboardWithFormFactor(layout: string): Keyboard {
+  return {
+    product_name: '폼팩터 테스트 키보드',
+    brand: '테스트',
+    price: 90000,
+    image_url: '',
+    switch_type: '기계식',
+    connection: '유선',
+    layout,
+    key_force: '45g',
+    weight_g: 800,
+    wireless_type: '유선',
+    engraving: '한/영 정각',
+    backlight: '없음',
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 7. 폼팩터 일치 -> false (위반 아님)
+// ---------------------------------------------------------------------------
+
+describe('checkFormFactorViolation - 일치 시 false 반환', () => {
+  it('풀배열 키보드에 풀배열 태그 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('풀배열'), '풀배열')).toBe(false);
+  });
+
+  it('텐키리스 키보드에 텐키리스 태그 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('텐키리스'), '텐키리스')).toBe(false);
+  });
+
+  it('미니 키보드에 미니 태그 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('미니'), '미니')).toBe(false);
+  });
+
+  it('98키 키보드에 98키 태그 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('98키'), '98키')).toBe(false);
+  });
+
+  it('99키 키보드에 99키 태그 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('99키'), '99키')).toBe(false);
+  });
+
+  it('96키 키보드에 96키 태그 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('96키'), '96키')).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 8. 폼팩터 불일치 -> true (위반)
+// ---------------------------------------------------------------------------
+
+describe('checkFormFactorViolation - 불일치 시 true 반환', () => {
+  it('풀배열 키보드에 텐키리스 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('풀배열'), '텐키리스')).toBe(true);
+  });
+
+  it('텐키리스 키보드에 풀배열 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('텐키리스'), '풀배열')).toBe(true);
+  });
+
+  it('미니 키보드에 풀배열 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('미니'), '풀배열')).toBe(true);
+  });
+
+  it('미니 키보드에 텐키리스 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('미니'), '텐키리스')).toBe(true);
+  });
+
+  it('98키 키보드에 텐키리스 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('98키'), '텐키리스')).toBe(true);
+  });
+
+  it('96키 키보드에 미니 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('96키'), '미니')).toBe(true);
+  });
+
+  it('99키 키보드에 풀배열 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('99키'), '풀배열')).toBe(true);
+  });
+
+  it('풀배열 키보드에 미니 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('풀배열'), '미니')).toBe(true);
+  });
+
+  it('텐키리스 키보드에 96키 태그 -> true', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('텐키리스'), '96키')).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 9. formFactorTag 없음(빈 문자열) -> false (제약 없음, 위반 아님)
+// ---------------------------------------------------------------------------
+
+describe('checkFormFactorViolation - formFactorTag 없음 시 false 반환', () => {
+  it('빈 문자열 태그 -> false (제약 없음)', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('풀배열'), '')).toBe(false);
+  });
+
+  it('빈 문자열 태그 + 텐키리스 키보드 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('텐키리스'), '')).toBe(false);
+  });
+
+  it('빈 문자열 태그 + 미니 키보드 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('미니'), '')).toBe(false);
+  });
+
+  it('빈 문자열 태그 + 98키 키보드 -> false', () => {
+    expect(checkFormFactorViolation(makeKeyboardWithFormFactor('98키'), '')).toBe(false);
   });
 });
