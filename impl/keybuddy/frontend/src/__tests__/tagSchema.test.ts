@@ -304,4 +304,62 @@ describe('validateTagSchema()', () => {
     });
     expect(result.valid).toBe(true);
   });
+
+  // --- 하드 제약 필드 누락/타입 오류 ---
+  it('hardConstraints가 null이면 오류를 반환한다', () => {
+    const result = validateTagSchema({ hardConstraints: null });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('hardConstraints'))).toBe(true);
+  });
+
+  it('hardConstraints가 배열이면 오류를 반환한다', () => {
+    const result = validateTagSchema({ hardConstraints: [] });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('hardConstraints'))).toBe(true);
+  });
+
+  it('hardConstraints가 문자열이면 오류를 반환한다', () => {
+    const result = validateTagSchema({ hardConstraints: 'connection=무선' });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('hardConstraints'))).toBe(true);
+  });
+
+  it('price_min 숫자 값은 통과한다', () => {
+    const result = validateTagSchema({ hardConstraints: { price_min: 50000 } });
+    expect(result.valid).toBe(true);
+  });
+
+  it('price_min에 문자열이 오면 오류를 반환한다', () => {
+    const result = validateTagSchema({ hardConstraints: { price_min: '50000' } });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('price_min'))).toBe(true);
+  });
+
+  // --- 소프트 의도 필드 누락/타입 오류 ---
+  it('softIntentTags가 null이면 오류를 반환한다', () => {
+    const result = validateTagSchema({ softIntentTags: null });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('softIntentTags'))).toBe(true);
+  });
+
+  it('softIntentTags 요소에 숫자가 있으면 오류를 반환한다', () => {
+    const result = validateTagSchema({ softIntentTags: ['조용함', 42] });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('42'))).toBe(true);
+  });
+
+  it('softIntentTags 요소에 null이 있으면 오류를 반환한다', () => {
+    const result = validateTagSchema({ softIntentTags: [null] });
+    expect(result.valid).toBe(false);
+  });
+
+  it('softIntentTags가 없는 객체(hardConstraints만)는 softIntentTags 오류 없이 통과한다', () => {
+    const result = validateTagSchema({ hardConstraints: {} });
+    expect(result.errors.some((e) => e.includes('softIntentTags'))).toBe(false);
+  });
+
+  it('hardConstraints가 없는 객체(softIntentTags만)는 hardConstraints 오류 없이 통과한다', () => {
+    const result = validateTagSchema({ softIntentTags: ['게이밍'] });
+    expect(result.errors.some((e) => e.includes('hardConstraints'))).toBe(false);
+  });
 });
