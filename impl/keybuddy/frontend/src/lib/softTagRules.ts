@@ -235,6 +235,25 @@ export const SOFT_TAG_RULE_TABLE: SoftTagRuleEntry[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// 맵(Map) 형태 뷰 - soft-tag -> 속성 술어 배열
+// ---------------------------------------------------------------------------
+
+/**
+ * SOFT_TAG_RULE_MAP: 소프트 의도 태그를 키, 속성 술어 배열을 값으로 하는 맵 뷰.
+ *
+ * SOFT_TAG_RULE_TABLE(배열)과 동일한 정보를 Record 형태로 제공한다.
+ * 각 값(AttributePredicate[])은 {field, op, value} 구조의 술어 객체 배열이며,
+ * 이는 개념적으로 {attribute, operator, value} 형태에 대응한다.
+ *   - field  = attribute (비교 대상 키보드 속성명)
+ *   - op     = operator  (eq | contains | lte | gte)
+ *   - value  = value     (비교 값)
+ */
+export const SOFT_TAG_RULE_MAP: Readonly<Record<SoftIntentTag, AttributePredicate[]>> =
+  Object.fromEntries(
+    SOFT_TAG_RULE_TABLE.map((entry) => [entry.tag, entry.predicates]),
+  ) as Record<SoftIntentTag, AttributePredicate[]>;
+
+// ---------------------------------------------------------------------------
 // 완전성 검사
 // ---------------------------------------------------------------------------
 
