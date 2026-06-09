@@ -1,0 +1,194 @@
+/**
+ * extractRawTags: 자유형 자연어 -> 원시 태그 추출
+ *
+ * LLM(Anthropic Claude)을 호출하여 자연어 입력에서
+ * hardConstraints + softIntentTags 구조의 ExtractedTags를 반환한다.
+ *
+ * 반환된 객체는 tagSchema 검증을 거쳐 스키마 밖 값은 폐기된다.
+ */
+
+import Anthropic from '@anthropic-ai/sdk';
+import {
+  HARD_CONSTRAINT_ENUMS,
+  HARD_NUMERIC_KEYS,
+  SOFT_INTENT_VOCAB,
+  isSoftIntentTag,
+  isHardConstraintKey,
+  isValidHardEnumValue,
+  type HardEnumKey,
+  type HardConstraintKey,
+  type SoftIntentTag,
+} from './tagSchema';
+
+// ---------------------------------------------------------------------------
+// 타입 정의
+// ---------------------------------------------------------------------------
+
+export interface HardConstraints {
+  price_max?: number;
+  price_min?: number;
+  weight_max_g?: number;
+  connection?: (typeof HARD_CONSTRAINT_ENUMS)['connection'][number];
+  layout?: (typeof HARD_CONSTRAINT_ENUMS)['layout'][number];
+  switch_type?: (typeof HARD_CONSTRAINT_ENUMS)['switch_type'][number];
+  wireless_type?: (typeof HARD_CONSTRAINT_ENUMS)['wireless_type'][number];
+  engraving?: (typeof HARD_CONSTRAINT_ENUMS)['engraving'][number];
+  backlight?: (typeof HARD_CONSTRAINT_ENUMS)['backlight'][number];
+}
+
+export interface ExtractedTags {
+  hardConstraints: HardConstraints;
+  softIntentTags: SoftIntentTag[];
+}
+
+// ---------------------------------------------------------------------------
+// LLM 프롬프트 구성
+// ---------------------------------------------------------------------------
+
+const SYSTEM_PROMPT = `당신은 키보드 추천 시스템의 태그 추출기입니다.
+사용자의 자연어 입력에서 키보드 검색에 필요한 하드 제약과 소프트 의도 태그를 추출하세요.
+
+응답은 반드시 아래 JSON 스키마를 따르세요:
+
+{
+  "hardConstraints": {
+    // 숫자 필드 (해당 없으면 생략):
+    // "price_max": <number>,   // 최대 가격(원)
+    // "price_min": <number>,   // 최소 가격(원)
+    // "weight_max_g": <number>, // 최대 무게(g)
+    //
+    // 열거형 필드 (해당 없으면 생략):
+    // "connection": "유선" | "무선" | "유선+무선",
+    // "layout": "풀배열" | "텐키리스" | "미니" | "98키" | "99키" | "96키",
+    // "switch_type": "기계식" | "펜타그래프" | "무접점 자석축" | "무접점 광축" | "멤브레인" | "무접점",
+    // "wireless_type": "전용동글(리시버)" | "블루투스" | "전용동글(리시버), 블루투스" | "블루투스, 전용동글(리시버)" | "유선",
+    // "engraving": "한/영 정각" | "영문 정각" | "레이저각인 키캡" | "정보없음",
+    // "backlight": "RGB 백라이트" | "레인보우 백라이트" | "단색 백라이트" | "없음"
+  },
+  "softIntentTags": [
+    // 아래 어휘 목록에서만 선택 (복수 가능):
+    // "조용함", "저소음", "고소음", "경쾌함",
+    // "사무용", "게이밍", "휴대성", "가벼움", "무거움",
+    // "타건감", "RGB", "백라이트", "백라이트없음",
+    // "무선", "멀티페어링", "가성비", "기계식", "무접점",
+    // "펜타그래프", "한영각인", "영문각인", "풀배열", "텍키리스", "미니"
+  ]
+}
+
+규칙:
+- hardConstraints에는 사용자가 명시적으로 요구한 조건만 포함합니다 (없으면 빈 객체 {})
+- softIntentTags는 사용자의 의도를 나타내는 태그 목록으로, 위 어휘 목록에 있는 값만 사용합니다
+- 스키마에 정의되지 않은 키나 값은 포함하지 않습니다
+- 반드시 유효한 JSON만 반환합니다 (코드 블록 없이)`;
+
+function buildUserMessage(naturalLanguageInput: string): string {
+  return `사용자 입력: "${naturalLanguageInput}"`;
+}
+
+// ---------------------------------------------------------------------------
+// LLM 클라이언트 팩토리 (테스트에서 주입 가능)
+// ---------------------------------------------------------------------------
+
+export type AnthropicClient = Pick<Anthropic, 'messages'>;
+
+let _clientOverride: AnthropicClient | null = null;
+
+/** 테스트에서 모킹 클라이언트를 주입할 때 사용 */
+export function _setClientForTest(client: AnthropicClient | null): void {
+  _clientOverride = client;
+}
+
+function getClient(): AnthropicClient {
+  if (_clientOverride !== null) return _clientOverride;
+  const apiKey = typeof import.meta !== 'undefined' ? (import.meta.env?.VITE_ANTHROPIC_API_KEY ?? '') : '';
+  if (!apiKey) {
+    throw new Error(
+      'ANTHROPIC API 키가 없습니다. VITE_ANTHROPIC_API_KEY 환경변수를 설정하세요.',
+    );
+  }
+  return new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+}
+
+// ---------------------------------------------------------------------------
+// 응답 파싱 및 스키마 정제
+// ---------------------------------------------------------------------------
+
+interface RawLLMResponse {
+  hardConstraints?: Record<string, unknown>;
+  softIntentTags?: unknown[];
+}
+
+function sanitizeHardConstraints(raw: Record<string, unknown>): HardConstraints {
+  const result: HardConstraints = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (!isHardConstraintKey(key)) continue;
+
+    if ((HARD_NUMERIC_KEYS as readonly string[]).includes(key)) {
+      if (typeof value === 'number') {
+        (result as Record<string, unknown>)[key] = value;
+      }
+    } else {
+      if (typeof value === 'string' && isValidHardEnumValue(key as HardEnumKey, value)) {
+        (result as Record<string, unknown>)[key] = value;
+      }
+    }
+  }
+  return result;
+}
+
+function sanitizeSoftIntentTags(raw: unknown[]): SoftIntentTag[] {
+  return raw.filter((t): t is SoftIntentTag => typeof t === 'string' && isSoftIntentTag(t));
+}
+
+function parseAndSanitize(text: string): ExtractedTags {
+  let parsed: RawLLMResponse;
+  try {
+    parsed = JSON.parse(text) as RawLLMResponse;
+  } catch {
+    return { hardConstraints: {}, softIntentTags: [] };
+  }
+
+  const hardConstraints =
+    parsed.hardConstraints && typeof parsed.hardConstraints === 'object'
+      ? sanitizeHardConstraints(parsed.hardConstraints)
+      : {};
+
+  const softIntentTags = Array.isArray(parsed.softIntentTags)
+    ? sanitizeSoftIntentTags(parsed.softIntentTags)
+    : [];
+
+  return { hardConstraints, softIntentTags };
+}
+
+// ---------------------------------------------------------------------------
+// 공개 API
+// ---------------------------------------------------------------------------
+
+const MODEL = 'claude-haiku-4-5';
+
+/**
+ * 자유형 자연어 문자열을 입력받아 LLM을 호출하고
+ * 하드 제약 + 소프트 의도 태그를 포함하는 ExtractedTags를 반환한다.
+ *
+ * 검색/스코어링 경로에는 사용하지 않는다 - 입력 정규화 단계에서만 호출.
+ */
+export async function extractRawTags(naturalLanguageInput: string): Promise<ExtractedTags> {
+  const client = getClient();
+
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 1024,
+    system: SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: buildUserMessage(naturalLanguageInput) }],
+  });
+
+  const textBlock = response.content.find((b) => b.type === 'text');
+  if (!textBlock || textBlock.type !== 'text') {
+    return { hardConstraints: {}, softIntentTags: [] };
+  }
+
+  return parseAndSanitize(textBlock.text);
+}
+
+// 내부 유틸 (테스트 접근용)
+export { SOFT_INTENT_VOCAB, parseAndSanitize };
