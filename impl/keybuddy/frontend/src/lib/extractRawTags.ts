@@ -141,10 +141,28 @@ function sanitizeSoftIntentTags(raw: unknown[]): SoftIntentTag[] {
   return raw.filter((t): t is SoftIntentTag => typeof t === 'string' && isSoftIntentTag(t));
 }
 
+/**
+ * LLM 응답 텍스트에서 JSON 객체 문자열을 추출한다.
+ * 코드펜스(```json ... ```)나 앞뒤 설명이 섞여 와도 첫 '{' ~ 마지막 '}' 구간을 사용한다.
+ */
+function extractJsonObject(text: string): string | null {
+  const trimmed = text.trim();
+  const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  const body = fence ? fence[1] : trimmed;
+  const start = body.indexOf('{');
+  const end = body.lastIndexOf('}');
+  if (start === -1 || end === -1 || end < start) return null;
+  return body.slice(start, end + 1);
+}
+
 function parseAndSanitize(text: string): ExtractedTags {
+  const jsonStr = extractJsonObject(text);
+  if (jsonStr === null) {
+    return { hardConstraints: {}, softIntentTags: [] };
+  }
   let parsed: RawLLMResponse;
   try {
-    parsed = JSON.parse(text) as RawLLMResponse;
+    parsed = JSON.parse(jsonStr) as RawLLMResponse;
   } catch {
     return { hardConstraints: {}, softIntentTags: [] };
   }
@@ -165,7 +183,7 @@ function parseAndSanitize(text: string): ExtractedTags {
 // 공개 API
 // ---------------------------------------------------------------------------
 
-const MODEL = 'claude-haiku-4-5';
+const MODEL = 'claude-sonnet-4-6';
 
 /**
  * 자유형 자연어 문자열을 입력받아 LLM을 호출하고
@@ -188,6 +206,9 @@ export async function extractRawTags(naturalLanguageInput: string): Promise<Extr
     return { hardConstraints: {}, softIntentTags: [] };
   }
 
+  if (import.meta.env?.DEV) {
+    console.debug('[keybuddy] LLM 추출 원문:', textBlock.text);
+  }
   return parseAndSanitize(textBlock.text);
 }
 

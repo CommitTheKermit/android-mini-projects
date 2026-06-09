@@ -104,6 +104,37 @@ export function buildSummary(output: SearchOutput): string {
 export async function recommend(input: RecommendInput): Promise<RecommendResult> {
   const tags = await inputToTags(input);
   const output = searchKeyboards(tags, catalog);
+
+  // 개발 모드 전용: 입력에서 추출된 태그와 검색 결과를 브라우저 콘솔에 출력 (프로덕션 빌드 제외)
+  if (import.meta.env.DEV) {
+    const inputDesc =
+      input.mode === 'freeform' ? `자유형 "${input.query}"` : '단계선택';
+    console.groupCollapsed(
+      `%c[keybuddy] 태그 추출 결과 - ${inputDesc}`,
+      'color:#2563eb;font-weight:bold',
+    );
+    console.log('하드 제약 (결정론 필터):', tags.hardConstraints);
+    console.log('소프트 의도 (점수 랭킹):', tags.softIntentTags);
+    console.log(
+      `검색 결과 ${output.results.length}건` +
+        (output.isFallback
+          ? ` · 완화됨(${output.relaxedConstraints.join(', ') || '-'})`
+          : ' · 완화 없음'),
+    );
+    console.table(
+      output.results.slice(0, 5).map((r) => ({
+        제품: r.keyboard.product_name,
+        가격: r.keyboard.price,
+        스위치: r.keyboard.switch_type,
+        배열: r.keyboard.layout,
+        연결: r.keyboard.connection,
+        점수: r.score,
+        매칭태그: r.matchedTags.join(','),
+      })),
+    );
+    console.groupEnd();
+  }
+
   return {
     summary: buildSummary(output),
     recommendations: toRecommendations(output),
