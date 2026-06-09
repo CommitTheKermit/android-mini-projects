@@ -259,9 +259,9 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
 
-    it('12개 초과 결과의 요약 생성(MAX_RESULTS 경계) - LLM 미호출', () => {
-      const items = Array.from({ length: 15 }, (_, i) =>
-        makeSearchResultItem({ keyboardIndex: i, score: 15 - i }),
+    it('MAX_RESULTS 초과 결과의 요약 생성(경계) - LLM 미호출', () => {
+      const items = Array.from({ length: 35 }, (_, i) =>
+        makeSearchResultItem({ keyboardIndex: i, score: 35 - i }),
       );
       const output = makeSearchOutput({ results: items });
 
@@ -364,15 +364,15 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
 
-    it('MAX_RESULTS(12개) 초과 결과 슬라이스 변환 - LLM 미호출', () => {
-      const items = Array.from({ length: 20 }, (_, i) =>
-        makeSearchResultItem({ keyboardIndex: i, score: 20 - i }),
+    it('MAX_RESULTS(30개) 초과 결과 슬라이스 변환 - LLM 미호출', () => {
+      const items = Array.from({ length: 40 }, (_, i) =>
+        makeSearchResultItem({ keyboardIndex: i, score: 40 - i }),
       );
       const output = makeSearchOutput({ results: items });
 
       const recs = toRecommendations(output);
 
-      expect(recs).toHaveLength(12);
+      expect(recs).toHaveLength(30);
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
   });

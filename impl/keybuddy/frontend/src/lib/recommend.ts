@@ -30,7 +30,7 @@ import type { SearchOutput, SearchResultItem } from './searchEngine';
 const catalog = rawCatalog as Keyboard[];
 
 /** 결과로 노출할 최대 추천 개수 */
-const MAX_RESULTS = 12;
+const MAX_RESULTS = 30;
 
 /** 완화된 제약 라벨 -> 사용자 표시용 한글 (하드 키는 변환, 필수 태그는 태그명 그대로) */
 const RELAX_LABELS: Record<string, string> = {
