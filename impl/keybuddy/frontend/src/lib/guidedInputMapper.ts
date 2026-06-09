@@ -11,7 +11,7 @@
  * 각 함수는 단일 단계(dimension)를 담당하는 순수 함수다.
  */
 
-import type { HardConstraints } from './extractRawTags';
+import type { HardConstraints, ExtractedTags } from './extractRawTags';
 import type { SoftIntentTag } from './tagSchema';
 
 // ---------------------------------------------------------------------------
@@ -603,4 +603,30 @@ export function dispatchStepIdToTagSet(
   const idx = STEP_ID_TO_INDEX[stepId];
   if (idx === undefined) return { hard: {}, soft: [] };
   return dispatchStepToTagSet(idx, value);
+}
+
+// ===========================================================================
+// selectionOptionConverter: 단계 선택 입력 -> ExtractedTags (자연어와 동일 인터페이스)
+// Sub-AC 2-2b: 선택 옵션을 자유형 자연어와 동일한 ExtractedTags 형태로 변환
+// ===========================================================================
+
+/**
+ * 단계별 선택 입력(answers + budget)을 ExtractedTags 형태로 통합 변환한다.
+ *
+ * 자유형 자연어 경로(extractRawTags)와 동일한 인터페이스를 반환하여
+ * 하드 필터 + 소프트 스코어링 파이프라인이 두 입력 경로에 공통으로 사용된다.
+ *
+ * - hardConstraints: guidedAnswersToHardConstraints 결과 (결정론 필터용)
+ * - softIntentTags: guidedAnswersToSoftTags 결과 (소프트 점수용, 중복 제거)
+ *
+ * LLM 호출 없이 결정론적으로 동작한다.
+ */
+export function selectionOptionConverter(
+  answers: Record<string, string>,
+  budget: { min: number; max: number },
+): ExtractedTags {
+  return {
+    hardConstraints: guidedAnswersToHardConstraints(answers, budget),
+    softIntentTags: guidedAnswersToSoftTags(answers),
+  };
 }
