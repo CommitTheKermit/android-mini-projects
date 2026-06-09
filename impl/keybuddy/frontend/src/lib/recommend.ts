@@ -1,14 +1,14 @@
 /**
- * recommend: 태그 파이프라인 추천 진입점
+ * recommend: 의도->다차원 프로파일 하네싱 추천 진입점
  *
- * 기존 'LLM이 결과를 직접 선택'하던 방식을 '태그 파이프라인'으로 교체한다.
+ *   자유형 자연어 -> extractIntentInput (LLM: 의도 어휘 + 명시 제약) ─┐
+ *                                                                     ├─> expandIntents (결정론 확장)
+ *   단계선택      -> 용도->의도 + selectionOptionConverter(명시) ──────┘        |
+ *                                                                              v
+ *                                                          searchWithProfile (하드 필터+소프트 점수+완화)
  *
- *   자유형 자연어 -> extractAndValidateTags (LLM 태그 추출) ─┐
- *                                                            ├─> searchKeyboards (결정론 검색) -> 결과
- *   단계선택      -> selectionOptionConverter (결정론 변환) ─┘
- *
- * - LLM 호출은 자유형 입력의 '태그 추출' 단계에서만 발생한다.
- * - 검색/스코어링/결과/매칭 근거 생성에는 LLM 호출이 없다 (결정론).
+ * - LLM 호출은 자유형의 '의도/제약 추출' 단계에서만 발생한다.
+ * - 의도->프로파일 확장 / 검색 / 스코어링 / 결과 생성에는 LLM 호출이 없다 (결정론).
  * - 단계선택 경로는 LLM 호출 없이 완전히 결정론적으로 동작한다 (오프라인 가능).
  *
  * 공개 시그니처 recommend(input): Promise<RecommendResult> 는 유지하여
@@ -17,16 +17,22 @@
 
 import rawCatalog from '../data/keyboards.json';
 import type { Keyboard, Recommendation, RecommendInput, RecommendResult } from '../types';
-import { extractAndValidateTags, type ExtractedTags } from './extractRawTags';
-import { selectionOptionConverter } from './guidedInputMapper';
-import { searchKeyboards, type SearchOutput, type SearchResultItem } from './searchEngine';
+import { extractIntentInput, type ExtractedTags } from './extractRawTags';
+import {
+  selectionOptionConverter,
+  PURPOSE_OPTIONS,
+  PORTABILITY_OPTIONS,
+} from './guidedInputMapper';
+import { expandIntents } from './intentProfile';
+import { searchWithProfile } from './intentSearch';
+import type { SearchOutput, SearchResultItem } from './searchEngine';
 
 const catalog = rawCatalog as Keyboard[];
 
 /** 결과로 노출할 최대 추천 개수 */
 const MAX_RESULTS = 12;
 
-/** 완화된 하드 제약 키 -> 사용자 표시용 한글 라벨 */
+/** 완화된 제약 라벨 -> 사용자 표시용 한글 (하드 키는 변환, 필수 태그는 태그명 그대로) */
 const RELAX_LABELS: Record<string, string> = {
   price_min: '최소 가격',
   price_max: '최대 가격',
@@ -43,16 +49,30 @@ function relaxLabel(key: string): string {
   return RELAX_LABELS[key] ?? key;
 }
 
-/**
- * 입력을 ExtractedTags로 정규화한다.
- * - 자유형: LLM으로 태그 추출 (extractAndValidateTags)
- * - 단계선택: 규칙 기반 결정론 변환 (selectionOptionConverter), LLM 미호출
- */
-async function inputToTags(input: RecommendInput): Promise<ExtractedTags> {
+/** 단계선택 답변에서 통제 의도 어휘를 도출한다 (용도/휴대성 -> 의도). */
+function guidedIntents(answers: Record<string, string>): string[] {
+  const intents: string[] = [];
+  if (answers['용도'] === PURPOSE_OPTIONS.OFFICE) intents.push('사무용');
+  if (answers['용도'] === PURPOSE_OPTIONS.GAMING) intents.push('게이밍');
+  if (answers['휴대성'] === PORTABILITY_OPTIONS.PORTABLE) intents.push('휴대용');
+  return intents;
+}
+
+/** 입력을 {의도, 명시 제약}으로 정규화한다. 자유형은 LLM, 단계선택은 결정론. */
+async function inputToIntentInput(
+  input: RecommendInput,
+): Promise<{ intents: string[]; explicit: ExtractedTags }> {
   if (input.mode === 'freeform') {
-    return extractAndValidateTags(input.query);
+    const inp = await extractIntentInput(input.query);
+    return {
+      intents: inp.intents,
+      explicit: { hardConstraints: inp.hardConstraints, softIntentTags: inp.softIntentTags },
+    };
   }
-  return selectionOptionConverter(input.answers, input.budget);
+  return {
+    intents: guidedIntents(input.answers),
+    explicit: selectionOptionConverter(input.answers, input.budget),
+  };
 }
 
 /** 결과 1건의 매칭 근거 문장을 결정론적으로 생성한다 (LLM 미사용). */
@@ -92,29 +112,32 @@ export function buildSummary(output: SearchOutput): string {
 }
 
 /**
- * 태그 파이프라인 추천.
+ * 의도->프로파일 하네싱 추천.
  *
- * 1. 입력 -> ExtractedTags (자유형은 LLM 추출, 단계선택은 결정론 변환)
- * 2. searchKeyboards: 하드 제약 필터(위반 제외) + 소프트 의도 점수 랭킹
- *    - 결과 0건 시 하드 제약을 우선순위 역순으로 1개씩 완화해 재검색
- * 3. 결과 + 매칭 근거를 RecommendResult 로 변환
+ * 1. 입력 -> {의도, 명시 제약} (자유형은 LLM, 단계선택은 결정론)
+ * 2. expandIntents: 의도를 차원별 프로파일로 펼침 (필수->하드, 선호->소프트, 명시 우선)
+ * 3. searchWithProfile: 하드(명시+필수) 필터 + 소프트 점수 랭킹, 0건이면 단계 완화
+ * 4. 결과 + 매칭 근거를 RecommendResult 로 변환
  *
- * 2~3 단계에는 LLM 호출이 없다.
+ * 2~4 단계에는 LLM 호출이 없다.
  */
 export async function recommend(input: RecommendInput): Promise<RecommendResult> {
-  const tags = await inputToTags(input);
-  const output = searchKeyboards(tags, catalog);
+  const { intents, explicit } = await inputToIntentInput(input);
+  const expanded = expandIntents({ intents, explicit });
+  const output = searchWithProfile(expanded, catalog);
 
-  // 개발 모드 전용: 입력에서 추출된 태그와 검색 결과를 브라우저 콘솔에 출력 (프로덕션 빌드 제외)
+  // 개발 모드 전용: 의도/확장 태그와 검색 결과를 브라우저 콘솔에 출력 (프로덕션 빌드 제외)
   if (import.meta.env.DEV) {
-    const inputDesc =
-      input.mode === 'freeform' ? `자유형 "${input.query}"` : '단계선택';
+    const inputDesc = input.mode === 'freeform' ? `자유형 "${input.query}"` : '단계선택';
     console.groupCollapsed(
-      `%c[keybuddy] 태그 추출 결과 - ${inputDesc}`,
+      `%c[keybuddy] 의도 하네싱 결과 - ${inputDesc}`,
       'color:#2563eb;font-weight:bold',
     );
-    console.log('하드 제약 (결정론 필터):', tags.hardConstraints);
-    console.log('소프트 의도 (점수 랭킹):', tags.softIntentTags);
+    console.log('의도 (intents):', intents);
+    console.log('명시 제약:', explicit.hardConstraints, explicit.softIntentTags);
+    console.log('확장 하드 제약:', expanded.hardConstraints);
+    console.log('필수 승격 태그 (하드):', expanded.requiredTags);
+    console.log('선호 태그 (소프트 점수):', expanded.softIntentTags);
     console.log(
       `검색 결과 ${output.results.length}건` +
         (output.isFallback
