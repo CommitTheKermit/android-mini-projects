@@ -52,6 +52,18 @@ export interface BooleanFlagConstraint {
 export type Constraint = NumericRangeConstraint | EnumMatchConstraint | BooleanFlagConstraint;
 
 /**
+ * ID를 가진 제약 타입.
+ * buildConstraintStatusMap 입력으로 사용된다.
+ */
+export type IdentifiedConstraint = Constraint & { id: string };
+
+/**
+ * 제약 상태 맵 타입.
+ * 제약 ID -> pass(true) / fail(false)
+ */
+export type ConstraintStatusMap = Record<string, boolean>;
+
+/**
  * 키보드 속성 맵.
  * Keyboard 레코드의 string | number 필드 및 추가 파생 필드를 포함할 수 있다.
  */
@@ -115,4 +127,34 @@ export function evaluateConstraint(
     default:
       return false;
   }
+}
+
+// ---------------------------------------------------------------------------
+// 전체 제약 상태 맵 빌더: buildConstraintStatusMap (Sub-AC 7-2b)
+// ---------------------------------------------------------------------------
+
+/**
+ * 하드 제약 목록 전체와 키보드 속성을 입력받아
+ * 각 제약 ID를 키로 pass/fail 상태를 값으로 하는 맵을 반환한다.
+ *
+ * 내부적으로 evaluateConstraint(Sub-AC 7-2a)를 활용한다.
+ *
+ * 설계 원칙:
+ * - 빈 제약 목록 -> 빈 맵 반환 (경계 케이스 안전 처리)
+ * - 동일 ID가 여러 번 등장하면 마지막 평가 결과가 맵에 기록된다
+ * - 순수 함수: LLM 호출 없이 결정론적으로 동작, 동일 입력 -> 동일 출력
+ *
+ * @param constraints - ID를 포함한 하드 제약 배열 (IdentifiedConstraint[])
+ * @param attributes  - 키보드 속성 맵 (KeyboardAttributes)
+ * @returns ConstraintStatusMap - { [constraintId]: boolean(pass/fail) }
+ */
+export function buildConstraintStatusMap(
+  constraints: IdentifiedConstraint[],
+  attributes: KeyboardAttributes,
+): ConstraintStatusMap {
+  const statusMap: ConstraintStatusMap = {};
+  for (const constraint of constraints) {
+    statusMap[constraint.id] = evaluateConstraint(constraint, attributes);
+  }
+  return statusMap;
 }
