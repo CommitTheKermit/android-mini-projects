@@ -254,6 +254,31 @@ export const SOFT_TAG_RULE_MAP: Readonly<Record<SoftIntentTag, AttributePredicat
   ) as Record<SoftIntentTag, AttributePredicate[]>;
 
 // ---------------------------------------------------------------------------
+// expand_soft_tag: 소프트 태그 -> 속성 술어 배열 확장 함수
+// ---------------------------------------------------------------------------
+
+/**
+ * 소프트 의도 태그를 속성 술어 배열로 확장한다.
+ *
+ * 쿼리 시점에 정적 규칙표(SOFT_TAG_RULE_MAP)를 참조하여 태그에 대응하는
+ * 속성 술어 배열을 반환한다. LLM 호출 없이 결정론적으로 동작한다.
+ *
+ * @param tag - 확장할 소프트 의도 태그 (임의 문자열 허용)
+ * @param ruleMap - 사용할 규칙 맵 (기본: SOFT_TAG_RULE_MAP)
+ * @returns 태그에 대응하는 AttributePredicate 배열.
+ *          알 수 없는 태그(규칙표에 없는 값)이면 빈 배열([])을 반환한다.
+ */
+export function expandSoftTag(
+  tag: string,
+  ruleMap: Readonly<Record<string, AttributePredicate[]>> = SOFT_TAG_RULE_MAP,
+): AttributePredicate[] {
+  if (Object.prototype.hasOwnProperty.call(ruleMap, tag)) {
+    return ruleMap[tag];
+  }
+  return [];
+}
+
+// ---------------------------------------------------------------------------
 // 완전성 검사
 // ---------------------------------------------------------------------------
 
