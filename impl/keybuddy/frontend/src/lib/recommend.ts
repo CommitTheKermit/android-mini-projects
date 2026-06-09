@@ -1,119 +1,111 @@
-import Anthropic from '@anthropic-ai/sdk';
+/**
+ * recommend: 태그 파이프라인 추천 진입점
+ *
+ * 기존 'LLM이 결과를 직접 선택'하던 방식을 '태그 파이프라인'으로 교체한다.
+ *
+ *   자유형 자연어 -> extractAndValidateTags (LLM 태그 추출) ─┐
+ *                                                            ├─> searchKeyboards (결정론 검색) -> 결과
+ *   단계선택      -> selectionOptionConverter (결정론 변환) ─┘
+ *
+ * - LLM 호출은 자유형 입력의 '태그 추출' 단계에서만 발생한다.
+ * - 검색/스코어링/결과/매칭 근거 생성에는 LLM 호출이 없다 (결정론).
+ * - 단계선택 경로는 LLM 호출 없이 완전히 결정론적으로 동작한다 (오프라인 가능).
+ *
+ * 공개 시그니처 recommend(input): Promise<RecommendResult> 는 유지하여
+ * App.tsx / ResultView 의 렌더링을 그대로 재사용한다.
+ */
+
 import rawCatalog from '../data/keyboards.json';
-import type { Keyboard, RecommendInput, RecommendResult } from '../types';
+import type { Keyboard, Recommendation, RecommendInput, RecommendResult } from '../types';
+import { extractAndValidateTags, type ExtractedTags } from './extractRawTags';
+import { selectionOptionConverter } from './guidedInputMapper';
+import { searchKeyboards, type SearchOutput, type SearchResultItem } from './searchEngine';
 
 const catalog = rawCatalog as Keyboard[];
 
-const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-// 모델은 환경변수로 바꿀 수 있음(기본: Sonnet 4.6). 더 높은 품질이 필요하면 claude-opus-4-8 등으로 지정.
-const model = import.meta.env.VITE_ANTHROPIC_MODEL ?? 'claude-sonnet-4-6';
+/** 결과로 노출할 최대 추천 개수 */
+const MAX_RESULTS = 12;
 
-// 브라우저에서 직접 호출(개인/로컬 용도). 공개 배포 시에는 프록시로 전환 필요.
-const client = apiKey ? new Anthropic({ apiKey, dangerouslyAllowBrowser: true }) : null;
+/** 완화된 하드 제약 키 -> 사용자 표시용 한글 라벨 */
+const RELAX_LABELS: Record<string, string> = {
+  price_min: '최소 가격',
+  price_max: '최대 가격',
+  weight_max_g: '무게',
+  connection: '연결방식',
+  layout: '배열',
+  switch_type: '스위치',
+  wireless_type: '무선 방식',
+  engraving: '각인',
+  backlight: '백라이트',
+};
 
-// 카탈로그를 인덱스가 붙은 텍스트로 직렬화(LLM은 인덱스만 반환 -> 가격 등 환각 방지)
-function catalogToText(): string {
-  return catalog
-    .map((k, i) => {
-      const force = k.key_force === '0g' ? '키압 미제공' : `키압 ${k.key_force}`;
-      return `[${i}] ${k.product_name} | 브랜드:${k.brand} | 가격:${k.price}원 | 스위치:${k.switch_type} | 연결:${k.connection}(${k.wireless_type}) | 배열:${k.layout} | ${force} | 무게:${k.weight_g}g | 각인:${k.engraving} | 백라이트:${k.backlight}`;
-    })
-    .join('\n');
+function relaxLabel(key: string): string {
+  return RELAX_LABELS[key] ?? key;
 }
 
-const SYSTEM_INSTRUCTIONS = `당신은 한국어 키보드 추천 도우미 "keybuddy"입니다.
-아래 <catalog>에 있는 키보드 목록만을 후보로 사용해 사용자에게 가장 잘 맞는 제품을 추천합니다.
-
-규칙:
-- 반드시 <catalog>의 인덱스 번호로만 제품을 지목합니다. 목록에 없는 제품은 만들지 않습니다.
-- 사용자의 조건에 가까운 순서대로 점수를 매겨 상위 제품을 추천합니다(부분 일치 허용). 완벽히 맞는 제품이 없어도 가장 가까운 제품을 제시합니다.
-- 최대 12개까지, 적합도 높은 순으로 추천합니다. 조건이 까다로우면 적게 추천해도 됩니다.
-- 데이터에 직접 없는 항목(예: 타건 "소리")은 스위치 종류로 합리적으로 추론합니다. (예: 무접점/펜타그래프=조용, 청축 계열 기계식=시끄러움)
-- 각 추천의 reason은 "이 사용자에게 왜 맞는지"를 한 문장(존댓말)으로 적습니다.
-- tags는 제품의 핵심 특징을 2~4개의 짧은 한국어 단어로 적습니다(예: "무선", "조용함", "텐키리스").
-- summary는 추천 결과 전체를 1~2문장으로 요약합니다.`;
-
-// 구조화 출력 스키마: 인덱스 + 사유 + 태그
-const OUTPUT_SCHEMA = {
-  type: 'object',
-  properties: {
-    summary: { type: 'string' },
-    recommendations: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          index: { type: 'integer' },
-          reason: { type: 'string' },
-          tags: { type: 'array', items: { type: 'string' } },
-        },
-        required: ['index', 'reason', 'tags'],
-        additionalProperties: false,
-      },
-    },
-  },
-  required: ['summary', 'recommendations'],
-  additionalProperties: false,
-} as const;
-
-function buildUserMessage(input: RecommendInput): string {
+/**
+ * 입력을 ExtractedTags로 정규화한다.
+ * - 자유형: LLM으로 태그 추출 (extractAndValidateTags)
+ * - 단계선택: 규칙 기반 결정론 변환 (selectionOptionConverter), LLM 미호출
+ */
+async function inputToTags(input: RecommendInput): Promise<ExtractedTags> {
   if (input.mode === 'freeform') {
-    return `사용자가 자유롭게 작성한 요청입니다. 의도를 해석해 추천하세요.\n\n"${input.query}"`;
+    return extractAndValidateTags(input.query);
   }
-  const lines = Object.entries(input.answers)
-    .filter(([, v]) => v && v !== '상관없음' && v !== '잘 모르겠어요')
-    .map(([k, v]) => `- ${k}: ${v}`);
-  const budgetMax =
-    input.budget.max >= 1000000 ? '상한 없음' : `${input.budget.max.toLocaleString()}원`;
-  lines.push(`- 예산: ${input.budget.min.toLocaleString()}원 ~ ${budgetMax}`);
-  return `사용자가 단계별 질문에 답한 결과입니다. 이 조건에 맞춰 추천하세요.\n\n${lines.join('\n')}`;
+  return selectionOptionConverter(input.answers, input.budget);
 }
 
-interface RawLLMResult {
-  summary: string;
-  recommendations: { index: number; reason: string; tags: string[] }[];
+/** 결과 1건의 매칭 근거 문장을 결정론적으로 생성한다 (LLM 미사용). */
+export function buildReason(item: SearchResultItem, isFallback: boolean): string {
+  const matched = item.matchedTags;
+  if (isFallback) {
+    return matched.length > 0
+      ? `조건을 일부 완화해 찾았어요. ${matched.join('·')} 의도와 맞습니다.`
+      : '조건에 딱 맞는 제품이 없어 조건을 완화해 찾은 결과예요.';
+  }
+  return matched.length > 0
+    ? `${matched.join('·')} 의도에 맞는 제품이에요.`
+    : '입력하신 조건을 모두 충족하는 제품이에요.';
 }
 
+/** SearchOutput -> 화면이 기대하는 Recommendation[] 로 변환한다. */
+export function toRecommendations(output: SearchOutput): Recommendation[] {
+  return output.results.slice(0, MAX_RESULTS).map((item) => ({
+    ...item.keyboard,
+    reason: buildReason(item, output.isFallback),
+    // 매칭 근거 = 결정론적으로 일치한 소프트 의도 태그 (결과 필터 칩으로도 사용)
+    tags: [...item.matchedTags],
+  }));
+}
+
+/** 전체 추천 요약 문장을 결정론적으로 생성한다. */
+export function buildSummary(output: SearchOutput): string {
+  if (output.results.length === 0) {
+    return '입력하신 조건에 맞는 제품을 찾지 못했어요. 조건을 바꿔 다시 시도해 주세요.';
+  }
+  const n = Math.min(output.results.length, MAX_RESULTS);
+  if (output.isFallback) {
+    const relaxed = output.relaxedConstraints.map(relaxLabel).join(', ');
+    return `조건에 딱 맞는 제품이 없어 ${relaxed} 조건을 완화해 ${n}개를 찾았어요.`;
+  }
+  return `입력하신 조건에 맞는 제품 ${n}개를 찾았어요.`;
+}
+
+/**
+ * 태그 파이프라인 추천.
+ *
+ * 1. 입력 -> ExtractedTags (자유형은 LLM 추출, 단계선택은 결정론 변환)
+ * 2. searchKeyboards: 하드 제약 필터(위반 제외) + 소프트 의도 점수 랭킹
+ *    - 결과 0건 시 하드 제약을 우선순위 역순으로 1개씩 완화해 재검색
+ * 3. 결과 + 매칭 근거를 RecommendResult 로 변환
+ *
+ * 2~3 단계에는 LLM 호출이 없다.
+ */
 export async function recommend(input: RecommendInput): Promise<RecommendResult> {
-  if (!client) {
-    throw new Error(
-      'ANTHROPIC API 키가 설정되지 않았습니다. keybuddy/frontend/.env.local 에 VITE_ANTHROPIC_API_KEY 를 추가한 뒤 dev 서버를 다시 시작하세요.',
-    );
-  }
-
-  const response = await client.messages.create({
-    model,
-    max_tokens: 4096,
-    thinking: { type: 'disabled' },
-    system: [
-      { type: 'text', text: SYSTEM_INSTRUCTIONS },
-      // 카탈로그는 매 호출 동일 -> 프롬프트 캐싱으로 비용 절감
-      {
-        type: 'text',
-        text: `<catalog>\n${catalogToText()}\n</catalog>`,
-        cache_control: { type: 'ephemeral' },
-      },
-    ],
-    messages: [{ role: 'user', content: buildUserMessage(input) }],
-    // output_config는 이 SDK 버전 타입에 아직 없어 캐스팅으로 전달(런타임에선 body로 그대로 전송됨)
-    output_config: { format: { type: 'json_schema', schema: OUTPUT_SCHEMA } },
-  } as Anthropic.MessageCreateParamsNonStreaming);
-
-  const textBlock = response.content.find((b) => b.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('추천 결과를 받지 못했습니다.');
-  }
-
-  const parsed = JSON.parse(textBlock.text) as RawLLMResult;
-
-  // 인덱스를 실제 카탈로그 레코드로 매핑(유효 인덱스만)
-  const recommendations = parsed.recommendations
-    .filter((r) => catalog[r.index] !== undefined)
-    .map((r) => ({
-      ...catalog[r.index],
-      reason: r.reason,
-      tags: r.tags,
-    }));
-
-  return { summary: parsed.summary, recommendations };
+  const tags = await inputToTags(input);
+  const output = searchKeyboards(tags, catalog);
+  return {
+    summary: buildSummary(output),
+    recommendations: toRecommendations(output),
+  };
 }
