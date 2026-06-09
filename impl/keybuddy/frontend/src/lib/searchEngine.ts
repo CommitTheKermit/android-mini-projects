@@ -75,6 +75,35 @@ export const HARD_CONSTRAINT_RELAXATION_ORDER: ReadonlyArray<keyof HardConstrain
 ];
 
 // ---------------------------------------------------------------------------
+// getRelaxationOrder (Sub-AC 6-2)
+// ---------------------------------------------------------------------------
+
+/**
+ * priority 속성을 가진 하드 제약 객체.
+ * priority 숫자가 낮을수록 낮은 우선순위 - 먼저 완화된다.
+ */
+export interface PrioritizedHardConstraint {
+  priority: number;
+  [key: string]: unknown;
+}
+
+/**
+ * priority 속성을 가진 하드 제약 배열을 받아
+ * priority 오름차순(낮은 우선순위 항목이 먼저)으로 정렬된 새 배열을 반환한다.
+ *
+ * - 원본 배열을 변경하지 않는다 (순수 함수).
+ * - 동일 priority 항목 간 상대 순서는 입력 순서를 유지한다 (안정 정렬).
+ *
+ * @param hardConstraints - priority 속성을 포함하는 하드 제약 배열
+ * @returns priority 오름차순으로 정렬된 새 배열 (낮은 우선순위가 먼저)
+ */
+export function getRelaxationOrder<T extends PrioritizedHardConstraint>(
+  hardConstraints: T[],
+): T[] {
+  return [...hardConstraints].sort((a, b) => a.priority - b.priority);
+}
+
+// ---------------------------------------------------------------------------
 // 내부 유틸
 // ---------------------------------------------------------------------------
 
