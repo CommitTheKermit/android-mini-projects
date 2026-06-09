@@ -125,6 +125,18 @@ const TAG_DIMENSION: Partial<Record<SoftIntentTag, Dimension>> = {
   // 사무용/게이밍: 의도 자체이며 제약 차원이 아니므로 매핑하지 않음
 };
 
+/**
+ * 같은 차원 안에서 상반된 방향을 구분하는 극성 라벨.
+ * 같은 라벨이면 같은 방향(강화 가능), 다른 라벨이면 충돌(양보).
+ * 현재는 소음 축만 정의한다(정숙 vs 소란).
+ */
+const TAG_POLARITY: Partial<Record<SoftIntentTag, string>> = {
+  조용함: '소음:정숙',
+  저소음: '소음:정숙',
+  고소음: '소음:소란',
+  경쾌함: '소음:소란',
+};
+
 /** 하드 제약 키 -> 차원 */
 const HARD_KEY_DIMENSION: Partial<Record<keyof HardConstraints, Dimension>> = {
   switch_type: '스위치',
@@ -196,14 +208,36 @@ export interface ExpandedTags {
 /**
  * 의도 집합 + 명시 제약을 ExpandedTags로 결정론적으로 확장한다. (LLM 미호출)
  *
- * - 명시 차원은 의도 프로파일보다 우선(해당 차원의 의도 요구는 건너뜀)
+ * - 명시 하드 차원은 항상 의도보다 우선(해당 차원의 의도 요구는 건너뜀)
+ * - 명시 소프트가 의도 필수와 같은 차원이면 방향으로 판단(소음 등 극성 정의된 축):
+ *     같은 방향이면 의도 필수를 하드로 강화, 충돌(반대 방향)이면 의도 필수를 양보(소프트만)
+ *   예) "조용한 사무실" -> 조용함 명시 + 사무용 저소음 필수 = 같은 방향 -> 저소음을 하드로 승격
  * - 필수 -> requiredTags(하드), 선호 -> softIntentTags(소프트), 상관없음 -> 미생성
  * - 다중 의도는 합치고 중복 제거
  * - 필수로 승격된 태그는 소프트 목록에서 제거(하드 우선)
  * - 어휘 밖 의도(프로파일 없음)는 무시
  */
 export function expandIntents(input: IntentInput): ExpandedTags {
-  const explicitDims = dimensionsOfExplicit(input.explicit);
+  // 명시 차원을 하드/소프트로 구분하고, 소프트는 차원별 극성까지 모은다.
+  const explicitHardDims = new Set<Dimension>();
+  for (const key of Object.keys(input.explicit.hardConstraints) as Array<keyof HardConstraints>) {
+    const d = HARD_KEY_DIMENSION[key];
+    if (d) explicitHardDims.add(d);
+  }
+  const explicitSoftDims = new Set<Dimension>();
+  const explicitSoftPolaritiesByDim = new Map<Dimension, Set<string>>();
+  for (const tag of input.explicit.softIntentTags) {
+    const d = TAG_DIMENSION[tag];
+    if (!d) continue;
+    explicitSoftDims.add(d);
+    const pol = TAG_POLARITY[tag];
+    if (pol) {
+      const set = explicitSoftPolaritiesByDim.get(d) ?? new Set<string>();
+      set.add(pol);
+      explicitSoftPolaritiesByDim.set(d, set);
+    }
+  }
+
   const hardConstraints: HardConstraints = { ...input.explicit.hardConstraints };
   const requiredTags: SoftIntentTag[] = [];
   const softIntentTags: SoftIntentTag[] = [...input.explicit.softIntentTags];
@@ -212,10 +246,19 @@ export function expandIntents(input: IntentInput): ExpandedTags {
     const profile = INTENT_PROFILE_TABLE.find((p) => p.intent === intent);
     if (!profile) continue; // 어휘 밖 의도 폐기
     for (const req of profile.requirements) {
-      if (explicitDims.has(req.dimension)) continue; // 명시 우선
+      const dim = req.dimension;
       if (req.strength === '필수' && req.tag) {
-        requiredTags.push(req.tag);
+        if (explicitHardDims.has(dim)) continue; // 명시 하드 우선
+        if (explicitSoftDims.has(dim)) {
+          // 명시 소프트가 같은 차원: 방향 일치 시 하드로 강화, 충돌/극성미정 시 양보(소프트만)
+          const reqPol = TAG_POLARITY[req.tag];
+          const sameDirection = reqPol !== undefined && explicitSoftPolaritiesByDim.get(dim)?.has(reqPol);
+          if (sameDirection) requiredTags.push(req.tag);
+          continue;
+        }
+        requiredTags.push(req.tag); // 차원 미명시 -> 정상 하드 승격
       } else if (req.strength === '선호' && req.tag) {
+        if (explicitHardDims.has(dim) || explicitSoftDims.has(dim)) continue; // 명시 우선
         softIntentTags.push(req.tag);
       }
       // 상관없음: 아무것도 생성하지 않음

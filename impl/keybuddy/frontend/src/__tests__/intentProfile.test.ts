@@ -124,6 +124,20 @@ describe('AC4 - 명시 표현 우선', () => {
     expect(out.requiredTags).not.toContain('기계식'); // 스위치 차원 명시 -> 의도 필수 차단
   });
 
+  it('명시 소프트가 의도 필수와 같은 방향이면 하드로 강화한다 (조용한 사무용)', () => {
+    // "조용한 사무실" -> 조용함 명시 + 사무용 저소음 필수 = 같은 정숙 방향
+    const out = expandIntents({ intents: ['사무용'], explicit: explicit({}, ['조용함']) });
+    expect(out.requiredTags).toContain('저소음'); // 양보가 아니라 하드 승격
+    expect(out.softIntentTags).not.toContain('저소음'); // 하드로 옮겨졌으므로 소프트에서 제거
+  });
+
+  it('명시 소프트가 의도 필수와 반대 방향이면 의도 필수를 양보한다 (시끄러운 사무용)', () => {
+    // "경쾌한 사무용" -> 경쾌함(소란) 명시가 사무용 저소음(정숙) 필수와 충돌 -> 양보
+    const out = expandIntents({ intents: ['사무용'], explicit: explicit({}, ['경쾌함']) });
+    expect(out.requiredTags).not.toContain('저소음');
+    expect(out.softIntentTags).toContain('경쾌함');
+  });
+
   it('dimensionsOfExplicit가 하드 키와 소프트 태그의 차원을 모은다', () => {
     const dims = dimensionsOfExplicit(explicit({ price_max: 50000, connection: '무선' }, ['RGB']));
     expect(dims.has('가격')).toBe(true);
