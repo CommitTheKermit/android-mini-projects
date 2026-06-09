@@ -15,6 +15,7 @@ import {
   isSoftIntentTag,
   isHardConstraintKey,
   isValidHardEnumValue,
+  validateTagSchema,
   type HardEnumKey,
   type HardConstraintKey,
   type SoftIntentTag,
@@ -220,6 +221,26 @@ export function sanitizeTags(raw: unknown): ExtractedTags {
     : [];
 
   return { hardConstraints, softIntentTags };
+}
+
+/**
+ * extractRawTags -> sanitizeTags -> validateTagSchema 파이프라인을 순서대로 실행한다.
+ *
+ * 1. extractRawTags(input): LLM으로 자연어에서 원시 태그 추출
+ * 2. sanitizeTags(raw): 스키마 밖 키/값 폐기 후 정제
+ * 3. validateTagSchema(sanitized): 스키마 준수 여부 검증 - 실패 시 오류 throw
+ *
+ * 검색/스코어링/결과 생성 경로에서는 이 함수를 사용하지 않는다.
+ * 입력 정규화(태그 추출) 단계에서만 호출한다.
+ */
+export async function extractAndValidateTags(input: string): Promise<ExtractedTags> {
+  const raw = await extractRawTags(input);
+  const sanitized = sanitizeTags(raw);
+  const validationResult = validateTagSchema(sanitized);
+  if (!validationResult.valid) {
+    throw new Error(`태그 스키마 검증 실패: ${validationResult.errors.join(', ')}`);
+  }
+  return sanitized;
 }
 
 // 내부 유틸 (테스트 접근용)
