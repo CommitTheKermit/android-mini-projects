@@ -204,10 +204,10 @@ describe('getRelaxationOrder - 실제 하드 제약 시나리오', () => {
 
     // 낮은 우선순위(price_min=1, weight_max_g=2)가 먼저 오고
     // 높은 우선순위(layout=8, price_max=9)가 나중에 와야 한다
-    expect((result[0] as { type: string }).type).toBe('price_min');
-    expect((result[1] as { type: string }).type).toBe('weight_max_g');
-    expect((result[2] as { type: string }).type).toBe('layout');
-    expect((result[3] as { type: string }).type).toBe('price_max');
+    expect((result[0] as unknown as { type: string }).type).toBe('price_min');
+    expect((result[1] as unknown as { type: string }).type).toBe('weight_max_g');
+    expect((result[2] as unknown as { type: string }).type).toBe('layout');
+    expect((result[3] as unknown as { type: string }).type).toBe('price_max');
   });
 
   it('완화 시 낮은 priority 항목이 먼저 제거되어야 함을 시뮬레이션', () => {
@@ -220,9 +220,9 @@ describe('getRelaxationOrder - 실제 하드 제약 시나리오', () => {
     const relaxOrder = getRelaxationOrder(constraints);
 
     // 첫 번째로 완화되는 항목은 가장 낮은 우선순위 (price_min, priority=1)
-    expect((relaxOrder[0] as { type: string }).type).toBe('price_min');
+    expect((relaxOrder[0] as unknown as { type: string }).type).toBe('price_min');
     // 마지막으로 완화되는 항목은 가장 높은 우선순위 (price_max, priority=5)
-    expect((relaxOrder[relaxOrder.length - 1] as { type: string }).type).toBe('price_max');
+    expect((relaxOrder[relaxOrder.length - 1] as unknown as { type: string }).type).toBe('price_max');
   });
 
   it('단일 하드 제약 - 그대로 반환', () => {

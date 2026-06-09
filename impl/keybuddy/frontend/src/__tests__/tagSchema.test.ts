@@ -102,13 +102,13 @@ describe('HARD_CONSTRAINT_ENUMS', () => {
   it('each enum array should have no duplicates', () => {
     (Object.entries(HARD_CONSTRAINT_ENUMS) as [string, readonly string[]][]).forEach(
       ([key, values]) => {
-        expect(new Set(values).size).toBe(values.length, `${key} has duplicate values`);
+        expect(new Set(values).size, `${key} has duplicate values`).toBe(values.length);
       },
     );
   });
 
   it('each enum array should be non-empty', () => {
-    (Object.values(HARD_CONSTRAINT_ENUMS) as readonly string[][]).forEach((values) => {
+    (Object.values(HARD_CONSTRAINT_ENUMS) as readonly (readonly string[])[]).forEach((values) => {
       expect(values.length).toBeGreaterThan(0);
     });
   });

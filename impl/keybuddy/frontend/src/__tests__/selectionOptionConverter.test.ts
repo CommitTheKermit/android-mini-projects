@@ -512,7 +512,7 @@ describe('selectionOptionConverter - ExtractedTags 인터페이스 만족', () =
     ];
 
     for (const answers of cases) {
-      const result = selectionOptionConverter(answers, DEFAULT_BUDGET);
+      const result = selectionOptionConverter(answers as unknown as Record<string, string>, DEFAULT_BUDGET);
       const validation = validateTagSchema(result);
       expect(
         validation.valid,
