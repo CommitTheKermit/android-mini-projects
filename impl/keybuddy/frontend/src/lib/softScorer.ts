@@ -87,6 +87,25 @@ function matchesSoftTag(keyboard: Keyboard, tag: SoftIntentTag): boolean {
 // ---------------------------------------------------------------------------
 
 /**
+ * 단일 키보드에 대해 소프트 의도 태그 중 매칭되는 태그 배열을 반환한다.
+ *
+ * 결과 객체의 matchedTags 필드 계산에 쓰이며, 동일 입력에 항상 동일 출력을 보장한다.
+ * 입력 softTags 순서를 보존하여 반환하므로 정렬이 결정론적이다.
+ *
+ * @param keyboard - 평가 대상 단일 키보드
+ * @param softTags - 쿼리 소프트 의도 태그 집합 (SOFT_INTENT_VOCAB 내 값)
+ * @returns softTags 중 keyboard 속성에 매칭되는 태그 배열 (입력 순서 보존)
+ *
+ * 특성:
+ * - 동일 입력 -> 동일 출력 (결정론)
+ * - LLM 호출 없이 순수 함수로 동작
+ * - softTags 순서를 보존하므로 결과 순서도 결정론적
+ */
+export function getMatchedSoftTags(keyboard: Keyboard, softTags: SoftIntentTag[]): SoftIntentTag[] {
+  return softTags.filter((tag) => matchesSoftTag(keyboard, tag));
+}
+
+/**
  * 키보드 목록을 소프트 의도 태그 집합으로 스코어링한다.
  *
  * @param keyboards - 스코어링 대상 키보드 목록
