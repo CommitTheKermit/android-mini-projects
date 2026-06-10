@@ -34,7 +34,11 @@ export interface SearchResultItem {
   score: number;
   /** 매칭된 소프트 태그 목록 (매칭 근거) */
   matchedTags: SoftIntentTag[];
-  /** 하드 제약을 모두 만족하는지 여부 */
+  /**
+   * 완화 없이(비폴백) 모든 원래 하드 제약을 만족하는 경로에서 나온 결과인지 여부.
+   * 주의: 폴백 결과여도 완화되지 않은 제약은 여전히 만족한다. 이 플래그는 개별
+   * 키보드의 제약 위반 여부가 아니라 "결과가 완화 단계를 거쳤는가"를 나타낸다(= !isFallback).
+   */
   satisfiesHardConstraints: boolean;
   /** 폴백(제약 완화) 경로로 반환된 결과인지 여부 */
   isFallback: boolean;
@@ -145,13 +149,15 @@ function buildResults(
   const scoreVector = scoreBySoftTags(filtered, softTags);
   const rankOrder = deriveRankOrder(scoreVector);
   const stepCount = relaxedConstraints.length;
+  // 카탈로그 인덱스를 결과마다 indexOf(O(n))로 찾지 않도록 Map으로 1회 사전 구축(O(1) 조회)
+  const catalogIndex = new Map<Keyboard, number>(catalog.map((kb, i) => [kb, i]));
 
   return rankOrder.map((filteredIdx) => {
     const { score, matchedTags } = scoreVector[filteredIdx];
     const keyboard = filtered[filteredIdx];
     return {
       keyboard,
-      keyboardIndex: catalog.indexOf(keyboard),
+      keyboardIndex: catalogIndex.get(keyboard) ?? -1,
       score,
       matchedTags,
       satisfiesHardConstraints: !isFallback,
@@ -239,6 +245,12 @@ export function relaxAndSearch<T>(
 /**
  * 태그 파이프라인 검색 엔진 진입점.
  *
+ * [LEGACY] 현재 메인 추천 흐름(recommend.ts)은 의도 하네싱 경로인
+ * intentSearch.searchWithProfile 을 사용한다. 이 함수는 ExtractedTags 기반
+ * 직접 검색용으로 남아 있으며(테스트/하위호환), 신규 경로의 1차 진입점이 아니다.
+ * 완화 로직이 searchWithProfile 과 거의 동일하므로, 장기적으로는 한쪽으로
+ * 통합(또는 위임)해 유지보수 표면을 줄이는 것이 바람직하다.
+ *
  * ExtractedTags(hardConstraints + softIntentTags)를 받아
  * 결정론 검색 결과(SearchOutput)를 반환한다.
  *
@@ -247,10 +259,6 @@ export function relaxAndSearch<T>(
  * - 결과에 매칭 태그(matchedTags), 폴백 여부(isFallback), 완화 정보가 포함된다
  *
  * LLM 호출 없이 순수 함수로 동작한다. 동일 입력 -> 동일 출력.
- *
- * 자유형 입력과 단계선택 입력 모두 이 함수 하나를 진입점으로 사용한다:
- *   - 자유형: extractRawTags -> sanitizeTags -> searchKeyboards
- *   - 단계선택: selectionOptionConverter -> searchKeyboards
  *
  * @param tags    - ExtractedTags { hardConstraints, softIntentTags }
  * @param catalog - 키보드 카탈로그 목록

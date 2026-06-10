@@ -17,7 +17,6 @@ import {
   checkLayoutViolation,
   checkSwitchViolation,
   checkBudgetViolation,
-  checkFormFactorViolation,
   detectNoResult,
 } from '../lib/hardFilter';
 import { _setClientForTest } from '../lib/extractRawTags';
@@ -202,15 +201,6 @@ describe('Sub-AC 7.3.1: 하드 제약 필터 LLM 호출 횟수 === 0', () => {
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
 
-    it('type:form_factor 라우팅 - LLM 미호출', () => {
-      const kb = makeKeyboard({ layout: '텐키리스' });
-
-      checkHardConstraintViolation(kb, { type: 'form_factor', value: '텐키리스' });
-      checkHardConstraintViolation(kb, { type: 'form_factor', value: '미니' });
-
-      expect(createSpy).toHaveBeenCalledTimes(0);
-    });
-
     it('알 수 없는 type 폴백 - LLM 미호출', () => {
       const kb = makeKeyboard();
 
@@ -251,16 +241,6 @@ describe('Sub-AC 7.3.1: 하드 제약 필터 LLM 호출 횟수 === 0', () => {
       checkBudgetViolation(kb, 150000);
       checkBudgetViolation(kb, 80000);
       checkBudgetViolation(kb, 0);
-
-      expect(createSpy).toHaveBeenCalledTimes(0);
-    });
-
-    it('checkFormFactorViolation - LLM 미호출', () => {
-      const kb = makeKeyboard({ layout: '텐키리스' });
-
-      checkFormFactorViolation(kb, '텐키리스');
-      checkFormFactorViolation(kb, '미니');
-      checkFormFactorViolation(kb, '');
 
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
@@ -323,7 +303,6 @@ describe('Sub-AC 7.3.1: 하드 제약 필터 LLM 호출 횟수 === 0', () => {
       checkLayoutViolation(kb, '텐키리스');
       checkSwitchViolation(kb, '기계식');
       checkBudgetViolation(kb, 200000);
-      checkFormFactorViolation(kb, '텐키리스');
       checkHardConstraintViolation(kb, { type: 'layout', value: '텐키리스' });
       filterByHardConstraints(keyboards, [{ type: 'layout', value: '텐키리스' }]);
       detectNoResult(keyboards);

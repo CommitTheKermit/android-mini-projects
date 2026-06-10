@@ -29,7 +29,7 @@ import type { Keyboard } from '../types';
 // ExtractedTags.hardConstraints(객체 형태)를 filterByHardConstraints에 사용하려면
 // 이 변환이 필요하다.
 //
-// 구현된 dispatcher 타입: 'layout', 'switch_type', 'form_factor', 'price_max'
+// 구현된 dispatcher 타입: 'layout', 'switch_type', 'price_max'
 // 미구현 타입(connection, wireless_type, engraving, backlight)은
 // dispatcher의 default 분기로 false(위반 없음)를 반환하므로
 // 필터링에 영향을 주지 않는다.

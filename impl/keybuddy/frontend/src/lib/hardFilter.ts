@@ -19,11 +19,10 @@ import type { Keyboard } from '../types';
  * 하드 제약 태그의 판별 유니온 타입.
  * - 'layout'      : checkLayoutViolation 으로 라우팅 (Sub-AC 4-1-1)
  * - 'switch_type' : checkSwitchViolation 으로 라우팅 (Sub-AC 4-1-2)
- * - 'form_factor' : checkFormFactorViolation 으로 라우팅 (Sub-AC 4-1-3)
  * - 'price_max'   : checkBudgetViolation 으로 라우팅 (Sub-AC 4-1-4)
  * - 기타 string   : 알 수 없는 유형, false 반환
  */
-export type HardTagType = 'layout' | 'switch_type' | 'form_factor' | 'price_max' | string;
+export type HardTagType = 'layout' | 'switch_type' | 'price_max' | string;
 
 export interface HardTag {
   type: HardTagType;
@@ -52,21 +51,6 @@ export function checkLayoutViolation(keyboard: Keyboard, layoutTag: string): boo
 export function checkSwitchViolation(keyboard: Keyboard, switchTag: string): boolean {
   if (!switchTag) return false;
   return keyboard.switch_type !== switchTag;
-}
-
-/**
- * 키보드의 폼팩터(layout 속성)와 formFactorTag가 불일치하면 true(위반),
- * 일치하거나 formFactorTag가 없으면 false(통과)를 반환한다.
- *
- * 폼팩터는 키보드의 물리적 크기/형태를 나타내며 layout 필드에 저장된다.
- * (풀배열, 텐키리스, 미니, 98키, 99키, 96키 등)
- *
- * @param keyboard - 카탈로그 레코드
- * @param formFactorTag - 요청된 폼팩터 태그 값 (없으면 빈 문자열)
- */
-export function checkFormFactorViolation(keyboard: Keyboard, formFactorTag: string): boolean {
-  if (!formFactorTag) return false;
-  return keyboard.layout !== formFactorTag;
 }
 
 /**
@@ -157,7 +141,6 @@ export function checkBacklightViolation(keyboard: Keyboard, backlightTag: string
  * 라우팅 규칙:
  * - 'layout'        -> checkLayoutViolation
  * - 'switch_type'   -> checkSwitchViolation
- * - 'form_factor'   -> checkFormFactorViolation
  * - 'price_max'     -> checkBudgetViolation
  * - 'price_min'     -> checkPriceMinViolation
  * - 'weight_max_g'  -> checkWeightMaxViolation
@@ -177,8 +160,6 @@ export function checkHardConstraintViolation(keyboard: Keyboard, hardTag: HardTa
       return checkLayoutViolation(keyboard, hardTag.value as string);
     case 'switch_type':
       return checkSwitchViolation(keyboard, hardTag.value as string);
-    case 'form_factor':
-      return checkFormFactorViolation(keyboard, hardTag.value as string);
     case 'price_max':
       return checkBudgetViolation(keyboard, hardTag.value as number);
     case 'price_min':

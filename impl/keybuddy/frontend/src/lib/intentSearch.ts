@@ -96,14 +96,18 @@ function buildOutput(
 ): SearchOutput {
   const scoreVector = scoreBySoftTags(filtered, softTags);
   const rankOrder = deriveRankOrder(scoreVector);
+  // 카탈로그 인덱스를 결과마다 indexOf(O(n))로 찾지 않도록 Map으로 1회 사전 구축(O(1) 조회)
+  const catalogIndex = new Map<Keyboard, number>(catalog.map((kb, i) => [kb, i]));
   const results: SearchResultItem[] = rankOrder.map((filteredIdx) => {
     const { score, matchedTags } = scoreVector[filteredIdx];
     const keyboard = filtered[filteredIdx];
     return {
       keyboard,
-      keyboardIndex: catalog.indexOf(keyboard),
+      keyboardIndex: catalogIndex.get(keyboard) ?? -1,
       score,
       matchedTags,
+      // 폴백(완화) 경로가 아니면 모든 원래 하드 제약을 만족. 폴백 결과여도 완화되지 않은
+      // 제약은 여전히 만족하므로, 이 플래그는 "완화 단계를 거쳤는가"의 의미로 해석한다.
       satisfiesHardConstraints: !isFallback,
       isFallback,
       relaxedConstraints: relaxed,
@@ -127,7 +131,8 @@ function buildOutput(
  *
  * - 하드 제약 + 필수 태그를 모두 만족하는 키보드만 결과에 포함(위반 0건 보장)
  * - 선호(소프트) 태그로 점수 랭킹
- * - 결과 0건이면 [필수 태그..., 명시 하드 키...] 순서로 1개씩 완화하며 재검색
+ * - 결과 0건이면 완화 우선순위가 낮은 유닛부터 누적으로 1개씩 더 풀며 재검색
+ *   ([필수 태그..., 명시 하드 키...] 순서. 가장 약한 유닛이 가장 먼저 완화된다)
  *
  * @returns SearchOutput (searchEngine과 동일 형태)
  */
@@ -144,6 +149,9 @@ export function searchWithProfile(expanded: ExpandedTags, catalog: Keyboard[]): 
     ...hardKeys.map((key): RelaxUnit => ({ kind: 'hard', key })),
   ];
 
+  // drop = 이번 시도에서 선행 유닛 몇 개를 동시에 풀 것인가(누적 완화).
+  // drop=0은 완화 없음, drop=1은 units[0]만, drop=2는 units[0..1]을 함께 푼다.
+  // 우선순위가 낮은 유닛이 앞쪽에 있어 가장 먼저 완화되며, 첫 비공 결과를 채택한다.
   for (let drop = 0; drop <= units.length; drop++) {
     const active = units.slice(drop);
     const activeRequired = active.flatMap((u) => (u.kind === 'required' ? [u.tag] : []));

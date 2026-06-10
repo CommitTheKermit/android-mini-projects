@@ -73,7 +73,7 @@ const SYSTEM_PROMPT = `당신은 키보드 추천 시스템의 태그 추출기�
     // "사무용", "게이밍", "휴대성", "가벼움", "무거움",
     // "타건감", "RGB", "백라이트", "백라이트없음",
     // "무선", "멀티페어링", "가성비", "기계식", "무접점",
-    // "펜타그래프", "한영각인", "영문각인", "풀배열", "텍키리스", "미니"
+    // "펜타그래프", "한영각인", "영문각인", "풀배열", "텐키리스", "미니"
   ]
 }
 
@@ -193,24 +193,33 @@ const MODEL = 'claude-sonnet-4-6';
  * 검색/스코어링 경로에는 사용하지 않는다 - 입력 정규화 단계에서만 호출.
  */
 export async function extractRawTags(naturalLanguageInput: string): Promise<ExtractedTags> {
-  const client = getClient();
+  try {
+    const client = getClient();
 
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: 1024,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: buildUserMessage(naturalLanguageInput) }],
-  });
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 1024,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildUserMessage(naturalLanguageInput) }],
+    });
 
-  const textBlock = response.content.find((b) => b.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') {
+    const textBlock = response.content.find((b) => b.type === 'text');
+    if (!textBlock || textBlock.type !== 'text') {
+      return { hardConstraints: {}, softIntentTags: [] };
+    }
+
+    if (import.meta.env?.DEV) {
+      console.debug('[keybuddy] LLM 추출 원문:', textBlock.text);
+    }
+    return parseAndSanitize(textBlock.text);
+  } catch (err) {
+    // 네트워크/레이트리밋/API 키 오류 등 LLM 호출 실패 시 빈 추출로 graceful degrade.
+    // 호출부(recommend)는 빈 제약으로 검색을 이어가 UI 크래시를 피한다.
+    if (import.meta.env?.DEV) {
+      console.warn('[keybuddy] LLM 태그 추출 실패, 빈 추출로 대체:', err);
+    }
     return { hardConstraints: {}, softIntentTags: [] };
   }
-
-  if (import.meta.env?.DEV) {
-    console.debug('[keybuddy] LLM 추출 원문:', textBlock.text);
-  }
-  return parseAndSanitize(textBlock.text);
 }
 
 /**
@@ -342,24 +351,33 @@ export function parseIntentInput(text: string): IntentExtraction {
  * 어휘/스키마 밖 값은 폐기된다. 입력 정규화 단계에서만 호출(검색 경로 미사용).
  */
 export async function extractIntentInput(naturalLanguageInput: string): Promise<IntentExtraction> {
-  const client = getClient();
+  try {
+    const client = getClient();
 
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: 1024,
-    system: INTENT_SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: buildUserMessage(naturalLanguageInput) }],
-  });
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 1024,
+      system: INTENT_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildUserMessage(naturalLanguageInput) }],
+    });
 
-  const textBlock = response.content.find((b) => b.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') {
+    const textBlock = response.content.find((b) => b.type === 'text');
+    if (!textBlock || textBlock.type !== 'text') {
+      return { intents: [], hardConstraints: {}, softIntentTags: [] };
+    }
+
+    if (import.meta.env?.DEV) {
+      console.debug('[keybuddy] 의도/제약 추출 원문:', textBlock.text);
+    }
+    return parseIntentInput(textBlock.text);
+  } catch (err) {
+    // 네트워크/레이트리밋/API 키 오류 등 LLM 호출 실패 시 빈 추출로 graceful degrade.
+    // 의도/제약이 비면 recommend는 결과 0건 흐름으로 진행하고 UI 크래시를 피한다.
+    if (import.meta.env?.DEV) {
+      console.warn('[keybuddy] LLM 의도/제약 추출 실패, 빈 추출로 대체:', err);
+    }
     return { intents: [], hardConstraints: {}, softIntentTags: [] };
   }
-
-  if (import.meta.env?.DEV) {
-    console.debug('[keybuddy] 의도/제약 추출 원문:', textBlock.text);
-  }
-  return parseIntentInput(textBlock.text);
 }
 
 // 내부 유틸 (테스트 접근용)
