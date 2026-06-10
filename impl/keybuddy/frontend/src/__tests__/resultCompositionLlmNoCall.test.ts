@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { buildReason, toRecommendations, buildSummary } from '../lib/recommend';
+import { buildReason, toRecommendations, buildSummary } from '../lib/searchResultComposition';
 import { _setClientForTest } from '../lib/extractRawTags';
 import type { AnthropicClient } from '../lib/extractRawTags';
 import type { Keyboard } from '../types';

@@ -1,72 +1,182 @@
 # keybuddy
 
-다나와 크롤러(`output/keyboards.json`)를 입력으로, 자연어 / 단계별 질문에 맞춰
-키보드를 추천해 주는 웹 서비스.
+다나와 크롤러(`output/keyboards.json`)를 입력으로, 자연어/단계별 질문에 맞춰 키보드를
+추천해 주는 웹 서비스입니다.
 
-추천은 **태그 파이프라인 + 의도 하네싱** 구조입니다. LLM은 자연어를 "의도 + 명시 제약"으로
-번역만 하고, 태그로 펼쳐 검색하는 단계는 전부 결정론(LLM 호출 0회)입니다.
-
-## 추천 동작 방식 (요약)
-
-```
-자연어 → ① extractIntentInput [LLM]  → {의도, 명시 제약}
-       → ② expandIntents [결정론]    → 의도를 차원별 프로파일로 펼침
-                                        (필수=하드 / 선호=소프트, 명시 우선)
-       → ③ searchWithProfile [결정론] → 하드 필터 + 소프트 점수 + 무결과 완화
-```
-
-- 예: `"게임용 RGB 텐키리스"` → 의도 `게이밍`이 `기계식`을 **필수(하드)로 승격** → 멤브레인 게이밍은 배제.
-- 단계별 질문 경로는 LLM 호출 없이 완전히 결정론적으로 동작합니다(오프라인 가능).
-
-📖 자세한 플로우: [`docs/tag-extraction-flow.md`](docs/tag-extraction-flow.md)
-전/후 정성 비교: [`intent-harness-before-after.md`](intent-harness-before-after.md)
+브라우저에서 OpenAI API를 직접 호출하지 않고, Supabase Edge Function이 서버사이드에서
+OpenAI를 호출합니다. Edge Function에서 먼저 후보를 25개 이하로 압축한 뒤 추천 품질을
+위해 `gpt-5.4` 모델에 넘깁니다.
 
 ## 구조
 
-```
+```text
 keybuddy/
-  frontend/          Vite + React + TS + Tailwind (단일 프론트, 서버 없음)
+  frontend/                         Vite + React + TS + Tailwind
     src/
-      App.tsx                 화면(홈 / 단계별 질문 / 결과)
-      lib/
-        extractRawTags.ts     ① LLM 추출 (의도 + 명시 제약 분리)
-        intentProfile.ts      ② 의도 어휘·정적 프로파일 문서·확장
-        intentSearch.ts       ③ 의도 확장 검색(필수 하드 승격 + 완화)
-        softTagRules.ts       태그 → 속성 술어 정적 규칙표
-        softScorer.ts         소프트 점수·랭킹
-        searchEngine.ts       하드 필터·완화 순서 코어
-        guidedInputMapper.ts  단계선택 → 태그/의도 변환
-        recommend.ts          전체 오케스트레이션
-      data/keyboards.json     크롤링 데이터 사본(추천 후보)
+      App.tsx                       화면(홈 / 단계별 질문 / 결과)
+      lib/recommend.ts              Supabase Edge Function 호출
+      data/keyboards.json           크롤링 데이터 사본(프론트 표시용)
       types.ts
-  docs/tag-extraction-flow.md 자연어 → 태그 추출 상세 문서
+
+  supabase/
+    .gitignore                      로컬 secret 파일 제외
+    config.toml                     recommend 함수 JWT 검증 설정
+    functions/
+      recommend/
+        index.ts                    OpenAI 호출 + 후보 압축 + 결과 매핑
+        keyboards.json              추천 후보 카탈로그
 ```
 
-별도 백엔드 없이 프론트에서 Claude를 직접 호출합니다(`dangerouslyAllowBrowser`).
-검색/스코어링/결과 생성에는 LLM을 쓰지 않으므로 같은 입력 → 같은 결과가 보장됩니다.
+## 요청 흐름
 
-## 실행
+```text
+React 브라우저
+  -> Supabase Edge Function /recommend
+  -> OPENAI_API_KEY secret 읽기
+  -> 후보 25개 이하로 압축
+  -> OpenAI gpt-5.4 모델 호출
+  -> catalog index 기반 추천 JSON 반환
+  -> 프론트가 결과 렌더링
+```
+
+브라우저에는 `OPENAI_API_KEY`가 내려가지 않습니다.
+Supabase publishable key(`sb_publishable_...`)는 JWT가 아니므로 `Authorization` 헤더가
+아니라 `apikey` 헤더로 보냅니다. `recommend` 함수는 공개 추천 엔드포인트라
+`supabase/config.toml`에서 `verify_jwt = false`로 설정합니다.
+
+## 로컬 준비
+
+### 1. 프론트 설정
 
 ```bash
 cd impl/keybuddy/frontend
-cp .env.local.example .env.local   # VITE_ANTHROPIC_API_KEY 채우기
+cp .env.local.example .env.local
 npm install
-npm run dev      # 개발 서버 (브라우저 콘솔에 의도/태그 추출 로그 출력)
-npm test         # 단위 테스트
-npm run build    # 타입체크 + 프로덕션 빌드
+npm run dev
 ```
 
-## 키 보호 주의
+`.env.local`에는 Supabase 프로젝트의 공개 설정값을 채웁니다.
 
-`.env.local`은 git 커밋만 막아줄 뿐, `VITE_` 변수는 빌드 번들에 인라인되어
-브라우저에서 노출됩니다. **내 컴퓨터에서 나만 쓰는 로컬 용도로만** 사용하세요.
-공개 배포가 필요하면 키를 쥐는 작은 프록시(서버)로 전환해야 합니다.
+```env
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+로컬 Edge Function을 직접 붙일 때만 아래 값을 추가합니다.
+
+```env
+VITE_SUPABASE_RECOMMEND_URL=http://127.0.0.1:54321/functions/v1/recommend
+```
+
+### 2. Supabase CLI 설정
+
+```bash
+npm install -g supabase
+supabase login
+```
+
+프로젝트 연결:
+
+```bash
+cd impl/keybuddy
+supabase link --project-ref your-project-ref
+```
+
+`project-ref`는 Supabase 프로젝트 URL의 앞부분입니다.
+
+```text
+https://abcdefghijk.supabase.co
+        ^^^^^^^^^^^
+```
+
+### 3. OpenAI secret 등록
+
+OpenAI API 키는 프론트 `.env.local`에 쓰지 않습니다.
+
+```bash
+cd impl/keybuddy
+supabase secrets set OPENAI_API_KEY=sk-...
+supabase secrets set OPENAI_MODEL=gpt-5.4
+```
+
+## 로컬 실행
+
+프론트:
+
+```bash
+cd impl/keybuddy/frontend
+npm run dev
+```
+
+Edge Function 로컬 실행:
+
+```bash
+cd impl/keybuddy
+supabase functions serve recommend --env-file supabase/functions/.env.local
+```
+
+로컬 테스트용 `supabase/functions/.env.local` 예시:
+
+```env
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-5.4
+```
+
+이 파일은 `supabase/.gitignore`로 제외됩니다.
+
+## 배포
+
+프론트 빌드:
+
+```bash
+cd impl/keybuddy/frontend
+npm run build
+```
+
+Edge Function 배포:
+
+```bash
+cd impl/keybuddy
+supabase functions deploy recommend
+```
+
+새 publishable key(`sb_publishable_...`)를 쓰는 경우 JWT 검증 설정이 반영되어야 하므로,
+문제가 있으면 아래처럼 project ref와 API 배포 옵션을 한 줄로 명시합니다.
+
+```bash
+supabase functions deploy recommend --project-ref your-project-ref --use-api
+```
+
+현재 프로젝트라면 아래처럼 실행합니다.
+
+```bash
+supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api
+```
+
+프론트 정적 배포는 Supabase Hosting이 아니라 Vercel, Netlify, GitHub Pages 같은 정적
+호스팅을 사용하면 됩니다. Supabase는 추천 API 역할만 담당합니다.
 
 ## 데이터 갱신
 
-상위 크롤러(`impl/crawl.py`)를 다시 돌린 뒤 결과를 복사합니다. (아래는 `impl/` 기준)
+상위 크롤러를 다시 돌린 뒤 결과를 프론트와 Supabase 함수 양쪽에 복사합니다. 두
+`keyboards.json`이 달라지면 프론트에 보이는 카탈로그와 Edge Function 추천 후보가
+엇갈릴 수 있으므로 항상 함께 갱신합니다.
 
 ```bash
+cd impl
 python3 crawl.py
-cp output/keyboards.json keybuddy/frontend/src/data/keyboards.json
+cd keybuddy/frontend
+npm run sync:data
 ```
+
+## 보안/비용 메모
+
+- 프론트에 `VITE_OPENAI_API_KEY` 같은 값을 두지 않습니다.
+- `VITE_` 환경변수는 브라우저 번들에 포함됩니다.
+- `OPENAI_API_KEY`는 Supabase secret으로만 저장합니다.
+- 기본 모델은 추천 품질을 고려해 `gpt-5.4`로 설정합니다.
+- Edge Function은 LLM 호출 전에 후보를 25개 이하로 줄여 입력 토큰을 줄입니다.
+- `recommend` 함수에는 IP 기준 1분 10회 best-effort rate limit을 둡니다.
+- `recommend` 함수는 공개 엔드포인트이므로 운영 시 Supabase Dashboard의 Edge
+  Functions rate limit 또는 별도 인증/사용량 제한을 반드시 설정합니다.
+- 공개 서비스로 운영할 때는 로그인, 캐싱, 사용자별 사용량 로깅을 추가하는 것이 좋습니다.
