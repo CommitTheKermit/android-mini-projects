@@ -12,6 +12,7 @@ import {
   ArrowUpDown,
 } from 'lucide-react';
 import { recommend } from './lib/recommend';
+import type { GraphLevel } from './lib/switchDisplay';
 import type { Recommendation, RecommendInput, RecommendResult } from './types';
 
 // --- [질문 데이터] 단계별 선택지 ---
@@ -105,6 +106,76 @@ function KeyboardImage({ src, alt }: { src: string; alt: string }) {
       onError={() => setFailed(true)}
       className="w-full h-full object-contain bg-white"
     />
+  );
+}
+
+interface LevelMeterProps {
+  label: string;
+  level: GraphLevel | null;
+  lowLabel?: string;
+  highLabel?: string;
+}
+
+const LEVEL_WIDTHS: Record<GraphLevel, string> = {
+  1: '33.3333%',
+  2: '66.6667%',
+  3: '100%',
+};
+
+const LEVEL_LABELS: Record<GraphLevel, string> = {
+  1: '약함',
+  2: '중간',
+  3: '강함',
+};
+
+function LevelMeter({
+  label,
+  level,
+  lowLabel = '약함',
+  highLabel = '강함',
+}: LevelMeterProps) {
+  return (
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)] sm:items-end sm:gap-4">
+      <p className="m-0 text-base font-medium text-slate-900 sm:pb-0.5">
+        {label}
+      </p>
+
+      <div className="min-w-0">
+        <div
+          aria-hidden="true"
+          className="mb-1 flex justify-between text-sm text-slate-700"
+        >
+          <span>{lowLabel}</span>
+          <span>{highLabel}</span>
+        </div>
+
+        {level === null ? (
+          <div
+            role="status"
+            aria-label={`${label} 정보 확인 중`}
+            className="flex h-4 items-center justify-center bg-slate-700 text-[11px] font-medium leading-none text-white"
+          >
+            정보 확인 중
+          </div>
+        ) : (
+          <div
+            role="meter"
+            aria-label={label}
+            aria-valuemin={1}
+            aria-valuemax={3}
+            aria-valuenow={level}
+            aria-valuetext={LEVEL_LABELS[level]}
+            className="h-4 overflow-hidden bg-slate-700"
+          >
+            <div
+              aria-hidden="true"
+              className="h-full bg-emerald-500"
+              style={{ width: LEVEL_WIDTHS[level] }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
