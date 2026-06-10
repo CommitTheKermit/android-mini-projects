@@ -1,11 +1,11 @@
 # keybuddy
 
-다나와 크롤러(`output/keyboards.json`, 100개)를 입력으로, 자연어/단계별 질문에 맞춰
-키보드를 추천해 주는 웹 서비스입니다.
+다나와 크롤러(`output/keyboards.json`)를 입력으로, 자연어/단계별 질문에 맞춰 키보드를
+추천해 주는 웹 서비스입니다.
 
 브라우저에서 OpenAI API를 직접 호출하지 않고, Supabase Edge Function이 서버사이드에서
-OpenAI를 호출합니다. 비용을 줄이기 위해 Edge Function에서 먼저 후보를 25개 이하로
-압축한 뒤 추천 품질을 위해 `gpt-5.4` 모델에 넘깁니다.
+OpenAI를 호출합니다. Edge Function에서 먼저 후보를 25개 이하로 압축한 뒤 추천 품질을
+위해 `gpt-5.4` 모델에 넘깁니다.
 
 ## 구조
 
@@ -20,6 +20,7 @@ keybuddy/
 
   supabase/
     .gitignore                      로컬 secret 파일 제외
+    config.toml                     recommend 함수 JWT 검증 설정
     functions/
       recommend/
         index.ts                    OpenAI 호출 + 후보 압축 + 결과 매핑
@@ -48,9 +49,10 @@ Supabase publishable key(`sb_publishable_...`)는 JWT가 아니므로 `Authoriza
 ### 1. 프론트 설정
 
 ```bash
-cd keybuddy/frontend
+cd impl/keybuddy/frontend
 cp .env.local.example .env.local
 npm install
+npm run dev
 ```
 
 `.env.local`에는 Supabase 프로젝트의 공개 설정값을 채웁니다.
@@ -76,7 +78,7 @@ supabase login
 프로젝트 연결:
 
 ```bash
-cd keybuddy
+cd impl/keybuddy
 supabase link --project-ref your-project-ref
 ```
 
@@ -92,13 +94,8 @@ https://abcdefghijk.supabase.co
 OpenAI API 키는 프론트 `.env.local`에 쓰지 않습니다.
 
 ```bash
-cd keybuddy
+cd impl/keybuddy
 supabase secrets set OPENAI_API_KEY=sk-...
-```
-
-선택적으로 모델을 바꿀 수 있습니다. 기본값은 추천 품질을 위해 `gpt-5.4`입니다.
-
-```bash
 supabase secrets set OPENAI_MODEL=gpt-5.4
 ```
 
@@ -107,14 +104,14 @@ supabase secrets set OPENAI_MODEL=gpt-5.4
 프론트:
 
 ```bash
-cd keybuddy/frontend
+cd impl/keybuddy/frontend
 npm run dev
 ```
 
 Edge Function 로컬 실행:
 
 ```bash
-cd keybuddy
+cd impl/keybuddy
 supabase functions serve recommend --env-file supabase/functions/.env.local
 ```
 
@@ -125,21 +122,21 @@ OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-5.4
 ```
 
-이 파일은 `keybuddy/supabase/.gitignore`로 제외됩니다.
+이 파일은 `supabase/.gitignore`로 제외됩니다.
 
 ## 배포
 
 프론트 빌드:
 
 ```bash
-cd keybuddy/frontend
+cd impl/keybuddy/frontend
 npm run build
 ```
 
 Edge Function 배포:
 
 ```bash
-cd keybuddy
+cd impl/keybuddy
 supabase functions deploy recommend
 ```
 
@@ -164,6 +161,7 @@ supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api
 상위 크롤러를 다시 돌린 뒤 결과를 프론트와 Supabase 함수 양쪽에 복사합니다.
 
 ```bash
+cd impl
 python3 crawl.py
 cp output/keyboards.json keybuddy/frontend/src/data/keyboards.json
 cp output/keyboards.json keybuddy/supabase/functions/recommend/keyboards.json

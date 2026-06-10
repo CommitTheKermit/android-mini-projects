@@ -1,0 +1,119 @@
+goal: >
+  keybuddy 태그 파이프라인에 '의도->다차원 속성 프로파일' 하네싱 층을 추가한다.
+  LLM은 자연어를 통제된 의도 어휘(사무용/게이밍/휴대용 등)와 명시 제약으로 매핑하고,
+  LLM 초안 + 사람 검수로 고정한 정적 의도-프로파일(차원별 강도: 필수=하드필터 /
+  선호=소프트점수 / 상관없음=무시)로 결정론 확장한다. 사용자 명시 표현이 의도
+  프로파일을 덮어쓰며(의도는 사용자가 명시하지 않은 차원만 채움), 다중 의도는
+  프로파일을 합치고, 필수 하드끼리 모순돼 결과가 0건이면 기존 완화 순서로 단계
+  완화한다. 효과는 기존 평면 추출 대비 전/후 정성 비교로 판단한다.
+
+constraints:
+  - 기존 impl/keybuddy/frontend (Vite + React 18.3 + TypeScript + Tailwind 4) 내부에서 구현하며 백엔드를 추가하지 않는다
+  - 의도->프로파일 문서는 LLM 초안 + 사람 검수로 고정한 정적 산출물(저장소 체크인)이며, 런타임/쿼리 시 LLM으로 프로파일을 생성하지 않는다
+  - 쿼리 시 LLM은 (1) 자연어->통제된 의도 어휘 매핑과 (2) 명시 제약 추출에만 사용하고, 의도->프로파일 확장/검색/스코어링은 LLM 호출 없이 결정론적으로 수행한다
+  - 의도->프로파일 확장은 기존 SOFT_TAG_RULE_TABLE(태그->속성 술어)을 차원 술어로 재사용한다
+  - 차원별 강도는 3단계로 표현한다: 필수(하드 필터, 위반 제외) / 선호(소프트 점수) / 상관없음(제약 없음)
+  - 사용자 명시 표현이 의도 프로파일을 덮어쓴다 - 충돌 차원에서는 명시값이 채택되고 의도값은 폐기되며, 의도는 사용자가 명시하지 않은 차원만 채운다
+  - 다중 의도는 프로파일을 합치고(union), 필수 하드끼리 모순돼 하드 결과가 0건이면 기존 HARD_CONSTRAINT_RELAXATION_ORDER 순서로 단계 완화한다
+  - 통제된 의도 어휘는 코드에 정적으로 정의하고, 추출 결과 중 어휘 밖 의도는 폐기한다
+
+acceptance_criteria:
+  - 통제된 의도 어휘와 각 의도의 차원별 프로파일(차원->강도 필수/선호/상관없음)이 정적 산출물로 저장되고, 모든 의도가 최소 1개 차원 요구를 가진다 (완전성 단위테스트)
+  - LLM 추출이 자연어를 {의도 태그(어휘 내), 명시 제약} 으로 분리 산출하고 어휘 밖 의도 값은 폐기된다 (LLM 모킹 단위테스트 + 대표 쿼리 골드셋)
+  - 의도 집합을 입력하면 확장 함수가 {하드 제약, 소프트 태그}를 결정론적으로 생성한다 - 필수 차원은 하드 제약으로, 선호 차원은 소프트 태그로, 상관없음은 미생성 (단위테스트)
+  - 사용자가 명시한 차원은 의도 프로파일보다 우선한다 - 충돌 차원에서 명시값이 채택되고 의도값이 폐기됨을 검증 (단위테스트)
+  - 다중 의도 입력 시 프로파일이 합쳐지고, 필수 하드끼리 모순으로 하드 결과가 0건이면 기존 완화 순서로 단계 완화해 근접 결과를 반환한다 (단위테스트)
+  - 확장된 하드 제약이 기존 searchKeyboards 하드 필터를 통과해 결과에 위반 제품이 0건이고, 선호(소프트) 태그는 점수 랭킹에 반영된다
+  - 의도 확장/검색/스코어링/결과 생성 경로에서 LLM 호출이 0회다 (호출 카운트 검증)
+  - 대표 자연어 쿼리 10개 세트에 대해 기존 평면 추출 결과와 신규 하네싱 결과를 항목별로 비교한 전/후 정성 리포트(마크다운 산출물)를 생성한다
+
+ontology_schema:
+  name: IntentProfileHarness
+  description: 통제된 의도를 차원별 강도 프로파일로 결정론 확장해 기존 하드필터+소프트점수 검색에 주입하는 하네싱 층
+  fields:
+    - name: intentVocabulary
+      type: array
+      description: 통제된 고수준 의도 어휘 목록 (사무용/게이밍/휴대용 등)
+    - name: dimension
+      type: string
+      description: 속성 차원 (소음, 백라이트, 연결, 배열, 스위치, 가격, 무게 등)
+    - name: intentProfile
+      type: object
+      description: 의도 1개의 차원별 요구 맵 (dimension -> {strength 필수|선호|상관없음, 속성값/술어})
+    - name: profileDocument
+      type: object
+      description: 의도->프로파일 정적 문서 (LLM 초안 + 사람 검수, 저장소 체크인)
+    - name: extractedInput
+      type: object
+      description: LLM 추출 결과 (intents 의도 태그 배열 + explicitConstraints 명시 제약)
+    - name: expandedConstraints
+      type: object
+      description: 확장 결과 (hardConstraints 필수 차원 + softIntentTags 선호 차원)
+
+evaluation_principles:
+  - name: intent_precision
+    description: 의도가 함의한 필수 차원을 어기는 제품이 결과에서 제외된다
+    weight: 0.3
+  - name: explicit_override
+    description: 사용자 명시 표현이 의도 프로파일을 정확히 덮어쓴다
+    weight: 0.25
+  - name: determinism
+    description: 의도->프로파일 확장과 검색/스코어링이 LLM 없이 재현 가능하다
+    weight: 0.2
+  - name: recall_safety
+    description: 모순/과필터로 인한 무결과를 기존 완화 순서로 구제한다
+    weight: 0.15
+  - name: curated_correctness
+    description: 정적 프로파일 문서가 도메인 지식을 정확히 반영한다(사람 검수)
+    weight: 0.1
+
+exit_conditions:
+  - name: expansion_tests_pass
+    description: 의도->프로파일 확장 단위테스트 통과
+    criteria: 필수->하드/선호->소프트 생성, 명시 우선, 다중 합집합, 모순 완화가 모두 단위테스트로 통과
+  - name: no_llm_in_search
+    description: 확장/검색 경로 LLM 미호출
+    criteria: 확장/검색/스코어링/결과 생성 함수가 LLM/네트워크 호출 없이 동작
+  - name: vocabulary_discarded
+    description: 어휘 밖 의도 폐기
+    criteria: 통제 어휘 밖 의도 값이 추출 결과에서 제거됨을 검증
+  - name: before_after_report
+    description: 전/후 정성 비교 리포트 산출
+    criteria: 대표 쿼리 10개에 대해 평면 추출 대비 전/후 결과를 비교한 마크다운 리포트가 생성됨
+
+metadata:
+  version: "1"
+  ambiguity_score: 0.13
+  interview_id: interview_20260609_101204
+  project_type: brownfield
+  context_references:
+    - path: impl/keybuddy/frontend/src/lib/extractRawTags.ts
+      role: primary
+      summary: NL->태그 추출 (의도 어휘 매핑 + 명시 제약 추출로 확장 대상)
+    - path: impl/keybuddy/frontend/src/lib/softTagRules.ts
+      role: primary
+      summary: 태그->속성 술어 규칙표 (차원 술어로 재사용)
+    - path: impl/keybuddy/frontend/src/lib/searchEngine.ts
+      role: primary
+      summary: 하드필터 + 소프트점수 + 우선순위 역순 완화 (확장된 제약 소비)
+    - path: impl/keybuddy/frontend/src/lib/guidedInputMapper.ts
+      role: reference
+      summary: 단계선택->태그 변환 (의도 어휘와 정합 필요)
+    - path: impl/keybuddy/frontend/src/lib/tagSchema.ts
+      role: reference
+      summary: 어휘/스키마/검증 정의
+    - path: impl/keybuddy/frontend/src/lib/recommend.ts
+      role: reference
+      summary: 입력->태그->검색 오케스트레이터 (확장 층 삽입 지점)
+  existing_patterns:
+    - 정적 규칙표(빌드 산출물) + 쿼리 시 결정론 확장
+    - 하드 필터(위반 제외) + 소프트 점수 + 우선순위 역순 완화
+    - LLM은 입력 정규화에만 사용, 검색 경로 LLM 0회
+    - 클라이언트 사이드 단독 실행(백엔드 없음)
+  existing_dependencies:
+    - "@anthropic-ai/sdk"
+    - React 18.3
+    - Vite
+    - TypeScript
+    - Tailwind CSS 4
+    - vitest
