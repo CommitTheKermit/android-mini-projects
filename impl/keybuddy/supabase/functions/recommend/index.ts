@@ -32,7 +32,7 @@ interface RawLLMResult {
 const keyboards = catalog as Keyboard[];
 const maxCandidates = 60;
 const maxRecommendations = 30;
-const openaiTimeoutMs = 15000;
+const openaiTimeoutMs = 30000;
 const rateLimitWindowMs = 60000;
 const rateLimitMaxRequests = 10;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
