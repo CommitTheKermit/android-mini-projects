@@ -30,13 +30,18 @@ interface RawLLMResult {
 }
 
 const keyboards = catalog as Keyboard[];
-const maxCandidates = 60;
+const maxCandidates = 40;
 const maxRecommendations = 30;
-const openaiTimeoutMs = 30000;
+const maxOutputTokens = maxRecommendations * 120 + 500;
+const openaiTimeoutMs = 40000;
 const rateLimitWindowMs = 60000;
 const rateLimitMaxRequests = 10;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
+
+if (maxCandidates < maxRecommendations) {
+  throw new Error('maxCandidates must be greater than or equal to maxRecommendations.');
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -247,9 +252,7 @@ function buildPrompt(input: RecommendInput, candidates: Array<{ keyboard: Keyboa
 규칙:
 - catalog에 없는 상품을 만들지 마세요.
 - 반드시 catalog index로만 상품을 선택하세요.
-- 적합한 후보가 충분하면 ${maxRecommendations}개에 가깝게 추천하세요.
-- 단, 사용자 조건과 명확히 맞지 않는 상품을 억지로 채우지는 마세요.
-- 최대 ${maxRecommendations}개를 넘기지 마세요.
+- 사용자 조건에 맞는 상품만 추천하되, 관련 후보가 충분하면 ${maxRecommendations}개에 가깝게 추천하고 최대 ${maxRecommendations}개를 넘기지 마세요.
 - reason은 사용자 조건과 제품 특성이 왜 맞는지 한 문장 존댓말로 적으세요.
 - 최종 응답은 JSON 객체 하나만 반환하세요.
 
@@ -316,9 +319,26 @@ function parseResult(text: string): RawLLMResult {
   };
 }
 
-async function openaiErrorMessage(response: Response): Promise<string> {
-  const fallback = `OpenAI 요청에 실패했습니다. (HTTP ${response.status})`;
-  const body = await response.json().catch(() => null);
+function parseOpenAIResponse(text: string): Record<string, unknown> {
+  try {
+    const body = JSON.parse(text) as unknown;
+    if (isRecord(body)) {
+      return body;
+    }
+  } catch {
+    // Fall through to a clearer domain error.
+  }
+  throw new Error('OpenAI 응답 JSON 형식이 올바르지 않습니다.');
+}
+
+function openaiErrorMessage(status: number, text: string): string {
+  const fallback = `OpenAI 요청에 실패했습니다. (HTTP ${status})`;
+  let body: unknown;
+  try {
+    body = JSON.parse(text) as unknown;
+  } catch {
+    return fallback;
+  }
   if (isRecord(body) && isRecord(body.error) && typeof body.error.message === 'string') {
     return body.error.message;
   }
@@ -356,10 +376,12 @@ Deno.serve(async (request) => {
 
     const input = parseInput(await request.json());
     const candidates = selectCandidates(input);
+    const candidateIndexSet = new Set(candidates.map(({ index }) => index));
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), openaiTimeoutMs);
     let openaiResponse: Response;
+    let openaiBodyText = '';
     try {
       openaiResponse = await fetch('https://api.openai.com/v1/responses', {
         method: 'POST',
@@ -370,10 +392,11 @@ Deno.serve(async (request) => {
         signal: controller.signal,
         body: JSON.stringify({
           model,
-          max_output_tokens: 2500,
+          max_output_tokens: maxOutputTokens,
           input: buildPrompt(input, candidates),
         }),
       });
+      openaiBodyText = await openaiResponse.text();
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
         throw new Error('OpenAI 응답 시간이 길어 요청을 중단했습니다. 잠시 후 다시 시도해 주세요.');
@@ -384,12 +407,12 @@ Deno.serve(async (request) => {
     }
 
     if (!openaiResponse.ok) {
-      throw new Error(await openaiErrorMessage(openaiResponse));
+      throw new Error(openaiErrorMessage(openaiResponse.status, openaiBodyText));
     }
 
-    const raw = parseResult(outputText(await openaiResponse.json()));
+    const raw = parseResult(outputText(parseOpenAIResponse(openaiBodyText)));
     const recommendations = raw.recommendations
-      .filter((item) => keyboards[item.index] !== undefined)
+      .filter((item) => candidateIndexSet.has(item.index))
       .map((item) => ({
         ...keyboards[item.index],
         reason: item.reason,
