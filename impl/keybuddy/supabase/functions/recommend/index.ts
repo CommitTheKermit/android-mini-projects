@@ -30,7 +30,7 @@ interface RawLLMResult {
 }
 
 const keyboards = catalog as Keyboard[];
-const maxCandidates = 25;
+const maxCandidates = 60;
 const maxRecommendations = 30;
 const openaiTimeoutMs = 15000;
 const rateLimitWindowMs = 60000;
@@ -247,7 +247,9 @@ function buildPrompt(input: RecommendInput, candidates: Array<{ keyboard: Keyboa
 규칙:
 - catalog에 없는 상품을 만들지 마세요.
 - 반드시 catalog index로만 상품을 선택하세요.
-- 최대 ${maxRecommendations}개까지만 추천하세요.
+- 적합한 후보가 충분하면 ${maxRecommendations}개에 가깝게 추천하세요.
+- 단, 사용자 조건과 명확히 맞지 않는 상품을 억지로 채우지는 마세요.
+- 최대 ${maxRecommendations}개를 넘기지 마세요.
 - reason은 사용자 조건과 제품 특성이 왜 맞는지 한 문장 존댓말로 적으세요.
 - 최종 응답은 JSON 객체 하나만 반환하세요.
 
@@ -368,7 +370,7 @@ Deno.serve(async (request) => {
         signal: controller.signal,
         body: JSON.stringify({
           model,
-          max_output_tokens: 900,
+          max_output_tokens: 2500,
           input: buildPrompt(input, candidates),
         }),
       });
