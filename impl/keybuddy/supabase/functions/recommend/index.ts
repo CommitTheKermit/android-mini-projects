@@ -31,7 +31,7 @@ interface RawLLMResult {
 
 const keyboards = catalog as Keyboard[];
 const maxCandidates = 25;
-const maxRecommendations = 5;
+const maxRecommendations = 30;
 const openaiTimeoutMs = 15000;
 const rateLimitWindowMs = 60000;
 const rateLimitMaxRequests = 10;
