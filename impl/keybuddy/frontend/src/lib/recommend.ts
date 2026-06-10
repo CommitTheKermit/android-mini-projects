@@ -3,7 +3,7 @@ import type { RecommendInput, RecommendResult } from '../types';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const localFunctionUrl = import.meta.env.VITE_SUPABASE_RECOMMEND_URL;
-const recommendTimeoutMs = 20000;
+const recommendTimeoutMs = 55000;
 
 function getRecommendTarget(): { url: string; headers: Record<string, string> } {
   if (localFunctionUrl) {
