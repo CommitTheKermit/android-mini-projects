@@ -13,6 +13,13 @@ interface Keyboard {
   wireless_type: string;
   engraving: string;
   backlight: string;
+  raw_switch_name?: string | null;
+  switch_name?: string | null;
+  switch_manufacturer?: string | null;
+  product_code?: string | null;
+  media_url?: string;
+  price_compare_url?: string | null;
+  media_url_is_placeholder?: boolean;
 }
 
 type RecommendInput =
