@@ -19,8 +19,11 @@
 
 import type { Keyboard } from '../types';
 
-/** 각 속성의 허용 값 집합. 문자열/숫자 필드를 모두 포함한다 */
-export type FieldValueSet = Set<string | number>;
+/** 데이터셋 속성으로 저장할 수 있는 원시 값 */
+export type FieldValue = string | number | boolean;
+
+/** 각 속성의 허용 값 집합 */
+export type FieldValueSet = Set<FieldValue>;
 
 /** 속성명 -> 허용 값 집합 맵 */
 export type DatasetSchema = Record<string, FieldValueSet>;
@@ -43,11 +46,13 @@ export function extractDatasetSchema(keyboards: Keyboard[]): DatasetSchema {
   const schema: DatasetSchema = {};
 
   for (const keyboard of keyboards) {
-    const entries = Object.entries(keyboard) as Array<[string, string | number]>;
+    const entries = Object.entries(keyboard) as Array<
+      [string, FieldValue | null | undefined]
+    >;
     for (const [field, value] of entries) {
       if (value === undefined || value === null) continue;
       if (!(field in schema)) {
-        schema[field] = new Set<string | number>();
+        schema[field] = new Set<FieldValue>();
       }
       schema[field].add(value);
     }
@@ -64,7 +69,7 @@ export function extractDatasetSchema(keyboards: Keyboard[]): DatasetSchema {
  * @param field - 조회할 속성명
  */
 export function getFieldValues(schema: DatasetSchema, field: string): FieldValueSet {
-  return schema[field] ?? new Set<string | number>();
+  return schema[field] ?? new Set<FieldValue>();
 }
 
 /**
@@ -87,7 +92,7 @@ export function hasField(schema: DatasetSchema, field: string): boolean {
 export function hasValue(
   schema: DatasetSchema,
   field: string,
-  value: string | number,
+  value: FieldValue,
 ): boolean {
   const valueSet = schema[field];
   return valueSet !== undefined && valueSet.has(value);

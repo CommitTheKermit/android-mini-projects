@@ -253,6 +253,37 @@ describe('extractDatasetSchema - 숫자 속성 값 추출', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 4-1. boolean 및 nullable 속성
+// ---------------------------------------------------------------------------
+
+describe('extractDatasetSchema - boolean 및 nullable 속성', () => {
+  it('boolean 필드 값을 스키마에 포함한다', () => {
+    const keyboard: Keyboard = {
+      ...makeKeyboard(),
+      media_url_is_placeholder: true,
+    };
+
+    const schema = extractDatasetSchema([keyboard]);
+
+    expect(schema['media_url_is_placeholder']).toContain(true);
+    expect(hasValue(schema, 'media_url_is_placeholder', true)).toBe(true);
+  });
+
+  it('null인 선택 필드는 스키마에서 제외한다', () => {
+    const keyboard: Keyboard = {
+      ...makeKeyboard(),
+      switch_name: null,
+      price_compare_url: null,
+    };
+
+    const schema = extractDatasetSchema([keyboard]);
+
+    expect(hasField(schema, 'switch_name')).toBe(false);
+    expect(hasField(schema, 'price_compare_url')).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 5. 중복 제거 (deduplication)
 // ---------------------------------------------------------------------------
 
