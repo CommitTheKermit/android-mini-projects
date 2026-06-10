@@ -33,7 +33,10 @@ const keyboards = catalog as Keyboard[];
 const maxCandidates = 25;
 const maxRecommendations = 5;
 const openaiTimeoutMs = 15000;
+const rateLimitWindowMs = 60000;
+const rateLimitMaxRequests = 10;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
+const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -80,6 +83,32 @@ function parseInput(value: unknown): RecommendInput {
   }
 
   throw new Error('지원하지 않는 추천 모드입니다.');
+}
+
+function clientIp(request: Request): string {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim() || 'unknown';
+  }
+  return request.headers.get('cf-connecting-ip') ?? request.headers.get('x-real-ip') ?? 'unknown';
+}
+
+function checkRateLimit(request: Request): { ok: true } | { ok: false; retryAfterSeconds: number } {
+  const now = Date.now();
+  const ip = clientIp(request);
+  const current = rateLimitBuckets.get(ip);
+
+  if (!current || current.resetAt <= now) {
+    rateLimitBuckets.set(ip, { count: 1, resetAt: now + rateLimitWindowMs });
+    return { ok: true };
+  }
+
+  if (current.count >= rateLimitMaxRequests) {
+    return { ok: false, retryAfterSeconds: Math.ceil((current.resetAt - now) / 1000) };
+  }
+
+  current.count += 1;
+  return { ok: true };
 }
 
 function normalizedInputText(input: RecommendInput): string {
@@ -304,6 +333,20 @@ Deno.serve(async (request) => {
   }
 
   try {
+    const rateLimit = checkRateLimit(request);
+    if (!rateLimit.ok) {
+      return Response.json(
+        { error: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.' },
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            'Retry-After': String(rateLimit.retryAfterSeconds),
+          },
+        },
+      );
+    }
+
     const apiKey = Deno.env.get('OPENAI_API_KEY');
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY secret이 설정되지 않았습니다.');

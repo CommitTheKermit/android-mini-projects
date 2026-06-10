@@ -165,8 +165,8 @@ supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api
 ```bash
 cd impl
 python3 crawl.py
-cp output/keyboards.json keybuddy/frontend/src/data/keyboards.json
-cp output/keyboards.json keybuddy/supabase/functions/recommend/keyboards.json
+cd keybuddy/frontend
+npm run sync:data
 ```
 
 ## 보안/비용 메모
@@ -176,6 +176,7 @@ cp output/keyboards.json keybuddy/supabase/functions/recommend/keyboards.json
 - `OPENAI_API_KEY`는 Supabase secret으로만 저장합니다.
 - 기본 모델은 추천 품질을 고려해 `gpt-5.4`로 설정합니다.
 - Edge Function은 LLM 호출 전에 후보를 25개 이하로 줄여 입력 토큰을 줄입니다.
+- `recommend` 함수에는 IP 기준 1분 10회 best-effort rate limit을 둡니다.
 - `recommend` 함수는 공개 엔드포인트이므로 운영 시 Supabase Dashboard의 Edge
   Functions rate limit 또는 별도 인증/사용량 제한을 반드시 설정합니다.
 - 공개 서비스로 운영할 때는 로그인, 캐싱, 사용자별 사용량 로깅을 추가하는 것이 좋습니다.
