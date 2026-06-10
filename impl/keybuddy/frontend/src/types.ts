@@ -14,10 +14,10 @@ export interface Keyboard {
   backlight: string; // RGB 백라이트 / 레인보우 백라이트 / 단색 백라이트 / 없음
 }
 
-// LLM이 골라준 추천 1건: 원본 키보드 + 추천 사유/태그
+// 추천 1건: 원본 키보드 + LLM 추천 사유 + DB 속성 기반 태그
 export interface Recommendation extends Keyboard {
   reason: string; // 이 사용자에게 추천하는 한 줄 이유
-  tags: string[]; // 핵심 특징 태그
+  tags: string[]; // switch_type, layout, connection 등 DB 속성에서 생성한 태그
 }
 
 export interface RecommendResult {

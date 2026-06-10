@@ -22,7 +22,6 @@ type RecommendInput =
 interface RawRecommendation {
   index: number;
   reason: string;
-  tags: string[];
 }
 
 interface RawLLMResult {
@@ -175,6 +174,41 @@ function catalogToText(candidates: Array<{ keyboard: Keyboard; index: number }>)
     .join('\n');
 }
 
+function addTag(tags: string[], value: string | undefined) {
+  const tag = value?.trim();
+  if (tag && tag !== '정보없음' && tag !== '0g' && !tags.includes(tag)) {
+    tags.push(tag);
+  }
+}
+
+function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
+  const tags: string[] = [];
+
+  addTag(tags, keyboard.switch_type);
+  addTag(tags, keyboard.layout);
+  addTag(tags, keyboard.connection);
+
+  if (keyboard.wireless_type && !/유선|정보없음/.test(keyboard.wireless_type)) {
+    for (const wireless of keyboard.wireless_type.split(/[,+/·]/)) {
+      addTag(tags, wireless);
+    }
+  }
+
+  if (keyboard.key_force && keyboard.key_force !== '0g') {
+    addTag(tags, `${keyboard.key_force} 키압`);
+  }
+
+  if (keyboard.backlight && !/없음|정보없음/.test(keyboard.backlight)) {
+    addTag(tags, keyboard.backlight);
+  }
+
+  if (keyboard.engraving && !/정보없음/.test(keyboard.engraving)) {
+    addTag(tags, keyboard.engraving);
+  }
+
+  return tags.slice(0, 6);
+}
+
 function buildPrompt(input: RecommendInput, candidates: Array<{ keyboard: Keyboard; index: number }>) {
   return `당신은 한국어 키보드 추천 도우미 "keybuddy"입니다.
 
@@ -185,14 +219,13 @@ function buildPrompt(input: RecommendInput, candidates: Array<{ keyboard: Keyboa
 - 반드시 catalog index로만 상품을 선택하세요.
 - 최대 ${maxRecommendations}개까지만 추천하세요.
 - reason은 사용자 조건과 제품 특성이 왜 맞는지 한 문장 존댓말로 적으세요.
-- tags는 2~4개의 짧은 한국어 단어로 적으세요.
 - 최종 응답은 JSON 객체 하나만 반환하세요.
 
 반환 형식:
 {
   "summary": "string",
   "recommendations": [
-    { "index": 0, "reason": "string", "tags": ["string"] }
+    { "index": 0, "reason": "string" }
   ]
 }
 
@@ -240,15 +273,13 @@ function parseResult(text: string): RawLLMResult {
         return (
           isRecord(item) &&
           Number.isInteger(item.index) &&
-          typeof item.reason === 'string' &&
-          Array.isArray(item.tags)
+          typeof item.reason === 'string'
         );
       })
       .slice(0, maxRecommendations)
       .map((item) => ({
         index: item.index,
         reason: item.reason,
-        tags: item.tags.filter((tag): tag is string => typeof tag === 'string').slice(0, 4),
       })),
   };
 }
@@ -294,7 +325,7 @@ Deno.serve(async (request) => {
       .map((item) => ({
         ...keyboards[item.index],
         reason: item.reason,
-        tags: item.tags,
+        tags: buildTagsFromKeyboard(keyboards[item.index]),
       }));
 
     return Response.json(

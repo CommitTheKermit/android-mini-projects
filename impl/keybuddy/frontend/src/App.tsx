@@ -359,7 +359,7 @@ export default function App() {
 
     const all: Recommendation[] = result?.recommendations ?? [];
 
-    // 동적 필터 옵션: 브랜드 + LLM 태그
+    // 동적 필터 옵션: 브랜드 + DB 속성 기반 태그
     const filterSet = new Set<string>();
     all.forEach((k) => {
       filterSet.add(k.brand);
