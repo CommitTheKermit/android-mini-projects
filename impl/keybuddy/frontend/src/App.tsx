@@ -539,24 +539,36 @@ export default function App() {
             <h3 className="text-base font-bold text-slate-800">이번 추천, 얼마나 마음에 드세요?</h3>
             <p className="text-[13px] text-slate-500 mt-1">별점으로 매칭 결과를 평가해 주세요.</p>
 
-            <div className="flex justify-center gap-2 mt-4">
+            <div className="flex justify-center gap-2 mt-4" onMouseLeave={() => setHoverRating(0)}>
               {[1, 2, 3, 4, 5].map((n) => {
-                const active = (hoverRating || rating) >= n;
+                // 표시값 기준 이 별의 채움 비율: 0(빈 별) / 0.5(반 개) / 1(꽉 참)
+                const displayed = hoverRating || rating;
+                const fillRatio = Math.max(0, Math.min(1, displayed - (n - 1)));
                 return (
-                  <button
-                    key={n}
-                    onClick={() => setRating(n)}
-                    onMouseEnter={() => setHoverRating(n)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    className="p-0.5 transition-transform hover:scale-110"
-                    aria-label={`${n}점`}
-                  >
-                    <Star
-                      size={34}
-                      className={active ? 'text-blue-600' : 'text-slate-300'}
-                      fill={active ? '#2563EB' : 'none'}
+                  <div key={n} className="relative w-[34px] h-[34px]">
+                    <Star size={34} className="text-slate-300" fill="none" />
+                    <div
+                      className="absolute inset-0 overflow-hidden"
+                      style={{ width: `${fillRatio * 100}%` }}
+                    >
+                      <Star size={34} className="text-blue-600" fill="#2563EB" />
+                    </div>
+                    {/* 좌측 절반 = 0.5점, 우측 절반 = 1점 */}
+                    <button
+                      type="button"
+                      onClick={() => setRating(n - 0.5)}
+                      onMouseEnter={() => setHoverRating(n - 0.5)}
+                      className="absolute inset-y-0 left-0 w-1/2"
+                      aria-label={`${n - 0.5}점`}
                     />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setRating(n)}
+                      onMouseEnter={() => setHoverRating(n)}
+                      className="absolute inset-y-0 right-0 w-1/2"
+                      aria-label={`${n}점`}
+                    />
+                  </div>
                 );
               })}
             </div>
