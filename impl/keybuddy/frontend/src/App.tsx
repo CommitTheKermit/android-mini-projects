@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Search,
   Keyboard,
@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   Filter,
   ArrowUpDown,
+  ShoppingCart,
+  Star,
 } from 'lucide-react';
 import { recommend } from './lib/recommend';
 import type { Recommendation, RecommendInput, RecommendResult } from './types';
@@ -356,6 +358,17 @@ export default function App() {
     const [activeFilter, setActiveFilter] = useState('전체');
     const [sortOrder, setSortOrder] = useState<'default' | 'priceAsc' | 'priceDesc'>('default');
     const [copiedName, setCopiedName] = useState<string | null>(null);
+    const [toast, setToast] = useState<string | null>(null);
+    const [rating, setRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
+    const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // 공유 toast: 어느 카드의 구매하기를 눌러도 화면 하단 중앙에 1개만 표시, 2초 후 자동 사라짐
+    const showToast = (msg: string) => {
+      setToast(msg);
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+      toastTimer.current = setTimeout(() => setToast(null), 2000);
+    };
 
     const all: Recommendation[] = result?.recommendations ?? [];
 
@@ -506,10 +519,62 @@ export default function App() {
                         {item.price.toLocaleString()}원
                       </span>
                     </div>
+
+                    <div className="pt-3 flex justify-end">
+                      <button
+                        onClick={() => showToast('준비 중인 기능입니다')}
+                        className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
+                      >
+                        <ShoppingCart size={16} /> 구매하기
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
             )}
+          </div>
+
+          {/* 별점 피드백 카드: 전체 추천 결과에 대한 단일 평가 */}
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-base font-bold text-slate-800">이번 추천, 얼마나 마음에 드세요?</h3>
+            <p className="text-[13px] text-slate-500 mt-1">별점으로 매칭 결과를 평가해 주세요.</p>
+
+            <div className="flex justify-center gap-2 mt-4">
+              {[1, 2, 3, 4, 5].map((n) => {
+                const active = (hoverRating || rating) >= n;
+                return (
+                  <button
+                    key={n}
+                    onClick={() => setRating(n)}
+                    onMouseEnter={() => setHoverRating(n)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    className="p-0.5 transition-transform hover:scale-110"
+                    aria-label={`${n}점`}
+                  >
+                    <Star
+                      size={34}
+                      className={active ? 'text-blue-600' : 'text-slate-300'}
+                      fill={active ? '#2563EB' : 'none'}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-center mt-3">
+              <div className="w-[280px] flex justify-between text-xs text-slate-400">
+                {rating > 0 ? (
+                  <span className="w-full text-center font-medium text-blue-600">
+                    감사합니다 ({rating}점)
+                  </span>
+                ) : (
+                  <>
+                    <span>아쉬워요</span>
+                    <span>완벽해요</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="mt-10 flex justify-center">
@@ -521,6 +586,13 @@ export default function App() {
             </button>
           </div>
         </div>
+
+        {/* 공유 toast: 하단 중앙 고정 */}
+        {toast && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-full bg-slate-900 text-white text-sm font-medium shadow-lg">
+            {toast}
+          </div>
+        )}
       </div>
     );
   };
