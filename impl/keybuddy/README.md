@@ -158,7 +158,9 @@ supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api
 
 ## 데이터 갱신
 
-상위 크롤러를 다시 돌린 뒤 결과를 프론트와 Supabase 함수 양쪽에 복사합니다.
+상위 크롤러를 다시 돌린 뒤 결과를 프론트와 Supabase 함수 양쪽에 복사합니다. 두
+`keyboards.json`이 달라지면 프론트에 보이는 카탈로그와 Edge Function 추천 후보가
+엇갈릴 수 있으므로 항상 함께 갱신합니다.
 
 ```bash
 cd impl
@@ -174,4 +176,6 @@ cp output/keyboards.json keybuddy/supabase/functions/recommend/keyboards.json
 - `OPENAI_API_KEY`는 Supabase secret으로만 저장합니다.
 - 기본 모델은 추천 품질을 고려해 `gpt-5.4`로 설정합니다.
 - Edge Function은 LLM 호출 전에 후보를 25개 이하로 줄여 입력 토큰을 줄입니다.
-- 공개 서비스로 운영할 때는 로그인, rate limit, 캐싱을 추가하는 것이 좋습니다.
+- `recommend` 함수는 공개 엔드포인트이므로 운영 시 Supabase Dashboard의 Edge
+  Functions rate limit 또는 별도 인증/사용량 제한을 반드시 설정합니다.
+- 공개 서비스로 운영할 때는 로그인, 캐싱, 사용자별 사용량 로깅을 추가하는 것이 좋습니다.

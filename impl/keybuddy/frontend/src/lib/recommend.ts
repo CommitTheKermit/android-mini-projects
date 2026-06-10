@@ -79,7 +79,11 @@ export async function recommend(input: RecommendInput): Promise<RecommendResult>
   });
 
   if (!response.ok) {
-    const message = await response.text();
+    const body = await response.json().catch(() => null);
+    const message =
+      body && typeof body === 'object' && 'error' in body && typeof body.error === 'string'
+        ? body.error
+        : '추천 요청에 실패했습니다.';
     throw new Error(message || '추천 요청에 실패했습니다.');
   }
 

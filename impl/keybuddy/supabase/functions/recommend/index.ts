@@ -32,6 +32,7 @@ interface RawLLMResult {
 const keyboards = catalog as Keyboard[];
 const maxCandidates = 25;
 const maxRecommendations = 5;
+const openaiTimeoutMs = 15000;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 
 const corsHeaders = {
@@ -284,6 +285,15 @@ function parseResult(text: string): RawLLMResult {
   };
 }
 
+async function openaiErrorMessage(response: Response): Promise<string> {
+  const fallback = `OpenAI 요청에 실패했습니다. (HTTP ${response.status})`;
+  const body = await response.json().catch(() => null);
+  if (isRecord(body) && isRecord(body.error) && typeof body.error.message === 'string') {
+    return body.error.message;
+  }
+  return fallback;
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -302,21 +312,34 @@ Deno.serve(async (request) => {
     const input = parseInput(await request.json());
     const candidates = selectCandidates(input);
 
-    const openaiResponse = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        max_output_tokens: 900,
-        input: buildPrompt(input, candidates),
-      }),
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), openaiTimeoutMs);
+    let openaiResponse: Response;
+    try {
+      openaiResponse = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model,
+          max_output_tokens: 900,
+          input: buildPrompt(input, candidates),
+        }),
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new Error('OpenAI 응답 시간이 길어 요청을 중단했습니다. 잠시 후 다시 시도해 주세요.');
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (!openaiResponse.ok) {
-      throw new Error(await openaiResponse.text());
+      throw new Error(await openaiErrorMessage(openaiResponse));
     }
 
     const raw = parseResult(outputText(await openaiResponse.json()));
