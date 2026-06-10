@@ -32,7 +32,7 @@ interface RawLLMResult {
 const keyboards = catalog as Keyboard[];
 const maxCandidates = 25;
 const maxRecommendations = 5;
-const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-4.1-nano';
+const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

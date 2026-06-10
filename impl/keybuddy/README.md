@@ -5,7 +5,7 @@
 
 브라우저에서 OpenAI API를 직접 호출하지 않고, Supabase Edge Function이 서버사이드에서
 OpenAI를 호출합니다. 비용을 줄이기 위해 Edge Function에서 먼저 후보를 25개 이하로
-압축한 뒤 저가 모델에 넘깁니다.
+압축한 뒤 추천 품질을 위해 `gpt-5.4` 모델에 넘깁니다.
 
 ## 구조
 
@@ -33,7 +33,7 @@ React 브라우저
   -> Supabase Edge Function /recommend
   -> OPENAI_API_KEY secret 읽기
   -> 후보 25개 이하로 압축
-  -> OpenAI 저가 모델 호출
+  -> OpenAI gpt-5.4 모델 호출
   -> catalog index 기반 추천 JSON 반환
   -> 프론트가 결과 렌더링
 ```
@@ -96,10 +96,10 @@ cd keybuddy
 supabase secrets set OPENAI_API_KEY=sk-...
 ```
 
-선택적으로 모델을 바꿀 수 있습니다. 기본값은 비용을 낮추기 위해 `gpt-4.1-nano`입니다.
+선택적으로 모델을 바꿀 수 있습니다. 기본값은 추천 품질을 위해 `gpt-5.4`입니다.
 
 ```bash
-supabase secrets set OPENAI_MODEL=gpt-4.1-nano
+supabase secrets set OPENAI_MODEL=gpt-5.4
 ```
 
 ## 로컬 실행
@@ -122,7 +122,7 @@ supabase functions serve recommend --env-file supabase/functions/.env.local
 
 ```env
 OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4.1-nano
+OPENAI_MODEL=gpt-5.4
 ```
 
 이 파일은 `keybuddy/supabase/.gitignore`로 제외됩니다.
@@ -174,6 +174,6 @@ cp output/keyboards.json keybuddy/supabase/functions/recommend/keyboards.json
 - 프론트에 `VITE_OPENAI_API_KEY` 같은 값을 두지 않습니다.
 - `VITE_` 환경변수는 브라우저 번들에 포함됩니다.
 - `OPENAI_API_KEY`는 Supabase secret으로만 저장합니다.
-- 기본 모델은 저비용 목적의 `gpt-4.1-nano`입니다.
+- 기본 모델은 추천 품질을 고려해 `gpt-5.4`로 설정합니다.
 - Edge Function은 LLM 호출 전에 후보를 25개 이하로 줄여 입력 토큰을 줄입니다.
 - 공개 서비스로 운영할 때는 로그인, rate limit, 캐싱을 추가하는 것이 좋습니다.
