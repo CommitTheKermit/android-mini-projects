@@ -291,10 +291,6 @@ function addTag(tags: string[], value: string | undefined) {
   }
 }
 
-function isVisibleTrait(value: string): boolean {
-  return visibleTrait(value) !== null;
-}
-
 function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
   const tags: string[] = [];
 
@@ -333,8 +329,10 @@ function fallbackReason(
   }
 
   const traits = [keyboard.switch_type, keyboard.layout, keyboard.connection]
-    .map((value) => value?.trim() ?? '')
-    .filter(isVisibleTrait)
+    .flatMap((value) => {
+      const trait = visibleTrait(value);
+      return trait ? [trait] : [];
+    })
     .join('·');
 
   if (traits) {
@@ -471,6 +469,7 @@ function parseResult(text: string): RawLLMResult {
   return {
     summary: parsed.summary,
     recommendations: parsed.recommendations
+      .slice(0, maxRecommendations)
       .filter((item): item is RawRecommendation => {
         return (
           isRecord(item) &&
