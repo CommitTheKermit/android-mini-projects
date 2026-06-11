@@ -394,7 +394,10 @@ function ResultView({
   // 별점 표시값: hover 중이면 hover값, 아니면 확정 rating (모든 별에서 동일)
   const displayed = hoverRating || rating;
 
-  const all: Recommendation[] = result?.recommendations ?? [];
+  const all: Recommendation[] = useMemo(
+    () => result?.recommendations ?? [],
+    [result],
+  );
 
   // 동적 필터 옵션: 브랜드 + DB 속성 기반 태그 (all이 바뀔 때만 재계산)
   const filterOptions = useMemo(() => {
