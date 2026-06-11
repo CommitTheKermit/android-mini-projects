@@ -8,7 +8,7 @@ export interface Keyboard {
   connection: string; // 유선 / 무선 / 유선+무선
   layout: string; // 풀배열 / 텐키리스 / 미니 ...
   key_force: string; // "43g" 형태, 미제공은 "0g"
-  weight_g: number; // 그램
+  weight_g: number | null; // 그램, 미제공은 null
   wireless_type: string; // 전용동글(리시버), 블루투스 / 유선 ...
   engraving: string; // 한/영 정각 / 영문 정각 / 레이저각인 키캡 / 정보없음
   backlight: string; // RGB 백라이트 / 레인보우 백라이트 / 단색 백라이트 / 없음

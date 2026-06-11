@@ -272,6 +272,7 @@ describe('extractDatasetSchema - boolean 및 nullable 속성', () => {
   it('null인 선택 필드는 스키마에서 제외한다', () => {
     const keyboard: Keyboard = {
       ...makeKeyboard(),
+      weight_g: null,
       switch_name: null,
       media_url: null,
       price_compare_url: null,
@@ -279,6 +280,7 @@ describe('extractDatasetSchema - boolean 및 nullable 속성', () => {
 
     const schema = extractDatasetSchema([keyboard]);
 
+    expect(hasField(schema, 'weight_g')).toBe(false);
     expect(hasField(schema, 'switch_name')).toBe(false);
     expect(hasField(schema, 'media_url')).toBe(false);
     expect(hasField(schema, 'price_compare_url')).toBe(false);

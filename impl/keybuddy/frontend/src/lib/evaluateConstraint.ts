@@ -67,7 +67,7 @@ export type ConstraintStatusMap = Record<string, boolean>;
  * 키보드 속성 맵.
  * Keyboard 레코드의 string | number 필드 및 추가 파생 필드를 포함할 수 있다.
  */
-export type KeyboardAttributes = Record<string, string | number | boolean | undefined>;
+export type KeyboardAttributes = Record<string, string | number | boolean | null | undefined>;
 
 // ---------------------------------------------------------------------------
 // 핵심 함수: evaluateConstraint

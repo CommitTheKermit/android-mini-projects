@@ -59,7 +59,8 @@ function evaluatePredicate(keyboard: Keyboard, pred: AttributePredicate): boolea
     }
     case 'price':
     case 'weight_g': {
-      const numVal: number = keyboard[pred.field];
+      const numVal = keyboard[pred.field];
+      if (typeof numVal !== 'number') return false;
       if (pred.op === 'lte') return numVal <= (pred.value as number);
       if (pred.op === 'gte') return numVal >= (pred.value as number);
       return false;

@@ -1,4 +1,5 @@
 import catalog from './keyboards.json' with { type: 'json' };
+import { formatCatalogEntry } from './catalogText.ts';
 
 interface Keyboard {
   product_name: string;
@@ -9,7 +10,7 @@ interface Keyboard {
   connection: string;
   layout: string;
   key_force: string;
-  weight_g: number;
+  weight_g: number | null;
   wireless_type: string;
   engraving: string;
   backlight: string;
@@ -209,13 +210,7 @@ function selectCandidates(input: RecommendInput): Array<{ keyboard: Keyboard; in
 
 function catalogToText(candidates: Array<{ keyboard: Keyboard; index: number }>): string {
   return candidates
-    .map(({ keyboard, index }) => {
-      const force =
-        !keyboard.key_force.trim() || keyboard.key_force === '0g'
-          ? '키압 미제공'
-          : `키압 ${keyboard.key_force.trim()}`;
-      return `[${index}] ${keyboard.product_name} | 브랜드:${keyboard.brand} | 가격:${keyboard.price}원 | 스위치:${keyboard.switch_type} | 연결:${keyboard.connection}(${keyboard.wireless_type}) | 배열:${keyboard.layout} | ${force} | 무게:${keyboard.weight_g}g | 각인:${keyboard.engraving} | 백라이트:${keyboard.backlight}`;
-    })
+    .map(({ keyboard, index }) => formatCatalogEntry(keyboard, index))
     .join('\n');
 }
 
