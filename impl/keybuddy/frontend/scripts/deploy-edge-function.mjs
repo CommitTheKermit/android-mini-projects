@@ -15,9 +15,9 @@ function executable(name) {
   return process.platform === 'win32' ? `${name}.cmd` : name;
 }
 
-function run(command, args) {
+function run(command, args, cwd = frontendDir) {
   const result = spawnSync(command, args, {
-    cwd: frontendDir,
+    cwd,
     stdio: 'inherit',
     shell: false,
   });
@@ -36,14 +36,12 @@ function run(command, args) {
   }
 }
 
-run(executable('npm'), ['run', 'build']);
+run(executable('npm'), ['run', 'sync:function-version']);
 run(executable('supabase'), [
   'functions',
   'deploy',
   'recommend',
-  '--workdir',
-  projectDir,
   '--project-ref',
   projectRef,
   '--use-api',
-]);
+], projectDir);

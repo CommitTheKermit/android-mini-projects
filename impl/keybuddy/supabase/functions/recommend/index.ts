@@ -51,10 +51,10 @@ const openaiTimeoutMs = 40000;
 const rateLimitWindowMs = 60000;
 const postRateLimitMaxRequests = 10;
 const getRateLimitMaxRequests = 60;
-const rateLimitSweepThreshold = 5000;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
 let lastRateLimitSweepAt = 0;
+const rateLimitScope = 'single-isolate';
 const invisibleTraitValues = new Set(['정보없음', '0g']);
 
 if (maxCandidates < maxRecommendations) {
@@ -76,7 +76,7 @@ const versionHeaders = {
 function retryAfterHeaders(retryAfterSeconds: number) {
   return {
     ...versionHeaders,
-    'Access-Control-Expose-Headers': 'Retry-After, X-Keybuddy-Version',
+    'Access-Control-Expose-Headers': `Retry-After, ${versionHeaders['Access-Control-Expose-Headers']}`,
     'Retry-After': String(retryAfterSeconds),
   };
 }
@@ -135,10 +135,7 @@ function sweepExpiredRateLimitBuckets(now: number) {
     return;
   }
 
-  if (
-    rateLimitBuckets.size <= rateLimitSweepThreshold &&
-    now - lastRateLimitSweepAt < rateLimitWindowMs
-  ) {
+  if (now - lastRateLimitSweepAt < rateLimitWindowMs) {
     return;
   }
 
@@ -157,6 +154,7 @@ function checkRateLimit(
   const now = Date.now();
   sweepExpiredRateLimitBuckets(now);
 
+  // Best-effort per-isolate guard. Distributed rate limiting needs shared storage.
   // GET is a cheap version/health endpoint, so it has a separate relaxed bucket.
   // POST still has its own lower limit because it can trigger an OpenAI request.
   const bucketKey = `${kind}:${clientIp(request)}`;
@@ -268,15 +266,20 @@ function catalogToText(candidates: Candidate[]): string {
     .join('\n');
 }
 
-function addTag(tags: string[], value: string | undefined) {
+function visibleTrait(value: string | undefined): string | null {
   const tag = value?.trim();
-  if (tag && !invisibleTraitValues.has(tag) && !tags.includes(tag)) {
+  return tag && !invisibleTraitValues.has(tag) ? tag : null;
+}
+
+function addTag(tags: string[], value: string | undefined) {
+  const tag = visibleTrait(value);
+  if (tag && !tags.includes(tag)) {
     tags.push(tag);
   }
 }
 
 function isVisibleTrait(value: string): boolean {
-  return value.length > 0 && !invisibleTraitValues.has(value);
+  return visibleTrait(value) !== null;
 }
 
 function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
@@ -502,7 +505,7 @@ Deno.serve(async (request) => {
     }
 
     return Response.json(
-      { name: 'recommend', version: appVersion },
+      { name: 'recommend', version: appVersion, rate_limit_scope: rateLimitScope },
       { headers: versionHeaders },
     );
   }
@@ -567,13 +570,20 @@ Deno.serve(async (request) => {
     const recommendations = composeRecommendations(raw, candidates);
 
     return Response.json(
-      { summary: raw.summary, recommendations, meta: { version: appVersion } },
+      {
+        summary: raw.summary,
+        recommendations,
+        meta: { version: appVersion, rate_limit_scope: rateLimitScope },
+      },
       { headers: versionHeaders },
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : '추천 생성에 실패했습니다.';
     return Response.json(
-      { error: message, meta: { version: appVersion } },
+      {
+        error: message,
+        meta: { version: appVersion, rate_limit_scope: rateLimitScope },
+      },
       { status: 500, headers: versionHeaders },
     );
   }
