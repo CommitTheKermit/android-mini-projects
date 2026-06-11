@@ -23,6 +23,9 @@ export interface Recommendation extends Keyboard {
 export interface RecommendResult {
   summary: string; // 전체 추천 요약 한두 문장
   recommendations: Recommendation[];
+  meta?: {
+    version: string; // Edge Function이 frontend/package.json에서 가져온 앱 버전
+  };
 }
 
 // 자유 입력 / 단계별 선택 두 가지 입력 형태

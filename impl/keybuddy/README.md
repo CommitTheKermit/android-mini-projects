@@ -194,6 +194,19 @@ VITE_SUPABASE_RECOMMEND_URL=http://127.0.0.1:54321/functions/v1/recommend
 
 ## 배포
 
+앱 버전은 `frontend/package.json`의 `version`을 단일 소스로 사용합니다. Edge Function은
+이 값을 정적 import 해서 `GET /functions/v1/recommend`, 추천 응답의 `meta.version`,
+그리고 `X-Keybuddy-Version` 헤더에 노출합니다.
+
+배포 전 변경 성격에 맞춰 SemVer 기준으로 버전을 올립니다.
+
+```bash
+cd impl/keybuddy/frontend
+npm version patch --no-git-tag-version
+```
+
+호환되는 기능 추가는 `minor`, 호환 깨짐은 `major`를 사용합니다.
+
 프론트 빌드:
 
 ```bash
@@ -219,6 +232,12 @@ supabase functions deploy recommend --project-ref your-project-ref --use-api
 
 ```bash
 supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api
+```
+
+배포 후 Edge Function 버전 확인:
+
+```bash
+curl https://kzgrduvwwoflybrqayyk.supabase.co/functions/v1/recommend
 ```
 
 프론트 정적 배포는 Supabase Hosting이 아니라 Vercel, Netlify, GitHub Pages 같은 정적

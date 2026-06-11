@@ -1,4 +1,5 @@
 import catalog from './keyboards.json' with { type: 'json' };
+import { appVersion } from './version.ts';
 
 interface Keyboard {
   product_name: string;
@@ -57,7 +58,9 @@ if (maxCandidates < maxRecommendations) {
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Expose-Headers': 'X-Keybuddy-Version',
+  'X-Keybuddy-Version': appVersion,
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -419,6 +422,13 @@ Deno.serve(async (request) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  if (request.method === 'GET') {
+    return Response.json(
+      { name: 'recommend', version: appVersion },
+      { headers: corsHeaders },
+    );
+  }
+
   if (request.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
   }
@@ -482,11 +492,14 @@ Deno.serve(async (request) => {
     const recommendations = composeRecommendations(raw, candidates);
 
     return Response.json(
-      { summary: raw.summary, recommendations },
+      { summary: raw.summary, recommendations, meta: { version: appVersion } },
       { headers: corsHeaders },
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : '추천 생성에 실패했습니다.';
-    return Response.json({ error: message }, { status: 500, headers: corsHeaders });
+    return Response.json(
+      { error: message, meta: { version: appVersion } },
+      { status: 500, headers: corsHeaders },
+    );
   }
 });
