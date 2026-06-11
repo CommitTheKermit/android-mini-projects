@@ -96,13 +96,43 @@ describe('getSwitchDisplayData', () => {
     });
   });
 
-  it('raw_switch_name은 매칭에 사용하지 않는다', () => {
-    const keyboard: Pick<Keyboard, 'switch_name' | 'raw_switch_name'> = {
-      switch_name: null,
-      raw_switch_name: 'Linear',
-    };
+  it.each([
+    ['적축', 1],
+    ['갈축', 2],
+    ['청축', 3],
+  ] as const)('%s은 MVP 범용 스위치 규칙으로 계산한다', (rawSwitchName, tactility) => {
+    expect(
+      getSwitchDisplayData(
+        { switch_name: null, raw_switch_name: rawSwitchName },
+        switches,
+      ),
+    ).toEqual({
+      switchName: rawSwitchName,
+      tactility,
+      noise: 3,
+    });
+  });
 
-    expect(getSwitchDisplayData(keyboard, switches)).toEqual({
+  it('사전에 매칭된 switch_name을 범용 스위치 규칙보다 우선한다', () => {
+    expect(
+      getSwitchDisplayData(
+        { switch_name: 'Tactile', raw_switch_name: '적축' },
+        switches,
+      ),
+    ).toEqual({
+      switchName: 'Tactile',
+      tactility: 2,
+      noise: 1,
+    });
+  });
+
+  it('범용 이름의 변형명은 임의로 추론하지 않는다', () => {
+    expect(
+      getSwitchDisplayData(
+        { switch_name: null, raw_switch_name: '저소음 갈축' },
+        switches,
+      ),
+    ).toEqual({
       switchName: null,
       tactility: null,
       noise: null,

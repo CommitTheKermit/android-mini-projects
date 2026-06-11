@@ -18,6 +18,12 @@ const TACTILITY_LEVELS: Record<SwitchBehavior, GraphLevel> = {
   clicky: 3,
 };
 
+const GENERIC_SWITCH_PROFILES: SwitchDictionary = {
+  '적축': { switch_type: 'linear', is_silent: false },
+  '갈축': { switch_type: 'tactile', is_silent: false },
+  '청축': { switch_type: 'clicky', is_silent: false },
+};
+
 export function getTactilityLevel(
   switchType: SwitchBehavior | null,
 ): GraphLevel | null {
@@ -31,22 +37,32 @@ export function getNoiseLevel(isSilent: boolean | null): GraphLevel | null {
 }
 
 export function getSwitchDisplayData(
-  keyboard: Pick<Keyboard, 'switch_name'>,
+  keyboard: Pick<Keyboard, 'switch_name' | 'raw_switch_name'>,
   switches: SwitchDictionary,
 ): SwitchDisplayData {
   const switchName = keyboard.switch_name ?? null;
-  if (!switchName) {
-    return { switchName: null, tactility: null, noise: null };
+  const matchedSwitchInfo = switchName ? switches[switchName] : null;
+
+  if (matchedSwitchInfo) {
+    return {
+      switchName,
+      tactility: getTactilityLevel(matchedSwitchInfo.switch_type),
+      noise: getNoiseLevel(matchedSwitchInfo.is_silent),
+    };
   }
 
-  const switchInfo = switches[switchName];
-  if (!switchInfo) {
+  const rawSwitchName = keyboard.raw_switch_name?.trim() ?? null;
+  const genericSwitchInfo = rawSwitchName
+    ? GENERIC_SWITCH_PROFILES[rawSwitchName]
+    : null;
+
+  if (!genericSwitchInfo) {
     return { switchName, tactility: null, noise: null };
   }
 
   return {
-    switchName,
-    tactility: getTactilityLevel(switchInfo.switch_type),
-    noise: getNoiseLevel(switchInfo.is_silent),
+    switchName: rawSwitchName,
+    tactility: getTactilityLevel(genericSwitchInfo.switch_type),
+    noise: getNoiseLevel(genericSwitchInfo.is_silent),
   };
 }
