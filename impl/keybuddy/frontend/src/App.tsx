@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Search,
   Keyboard,
@@ -10,6 +10,8 @@ import {
   ArrowUpDown,
   ExternalLink,
   Play,
+  ShoppingCart,
+  Star,
 } from 'lucide-react';
 import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
@@ -23,6 +25,28 @@ import type {
 } from './types';
 
 const switches = switchesData as SwitchDictionary;
+
+function useAutoDismiss<T>(duration: number) {
+  const [value, setValue] = useState<T | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const durationRef = useRef(duration);
+  durationRef.current = duration;
+
+  const show = useCallback((next: T) => {
+    setValue(next);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setValue(null), durationRef.current);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  return [value, show] as const;
+}
 
 // --- [질문 데이터] 단계별 선택지 ---
 const questions = [
@@ -195,6 +219,9 @@ export default function App() {
   const [maxBudget, setMaxBudget] = useState(1000000);
   const [activeFilter, setActiveFilter] = useState('전체');
   const [sortOrder, setSortOrder] = useState<'default' | 'priceAsc' | 'priceDesc'>('default');
+  const [toast, showToast] = useAutoDismiss<string>(2000);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
 
   const runRecommend = async (input: RecommendInput) => {
     setLoading(true);
@@ -624,11 +651,87 @@ export default function App() {
                           가격 비교 정보 확인 중
                         </div>
                       )}
+
+                      <button
+                        type="button"
+                        onClick={() => showToast('준비 중인 기능입니다')}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-blue-700"
+                      >
+                        <ShoppingCart size={16} aria-hidden="true" />
+                        구매하기
+                      </button>
                     </div>
                   </article>
                 );
               })
             )}
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-base font-bold text-slate-800">이번 추천, 얼마나 마음에 드세요?</h3>
+            <p className="mt-1 text-[13px] text-slate-500">별점으로 매칭 결과를 평가해 주세요.</p>
+
+            <div
+              className="mt-4 flex justify-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              role="slider"
+              tabIndex={0}
+              aria-label="추천 결과 별점"
+              aria-valuemin={0}
+              aria-valuemax={5}
+              aria-valuenow={rating}
+              aria-valuetext={`${rating}점`}
+              onMouseLeave={() => setHoverRating(0)}
+              onKeyDown={(event) => {
+                if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+                  event.preventDefault();
+                  setRating((current) => Math.min(5, current + 0.5));
+                } else if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
+                  event.preventDefault();
+                  setRating((current) => Math.max(0, current - 0.5));
+                }
+              }}
+            >
+              {[1, 2, 3, 4, 5].map((value) => {
+                const displayedRating = hoverRating || rating;
+                const fillRatio = Math.max(0, Math.min(1, displayedRating - (value - 1)));
+
+                return (
+                  <div
+                    key={value}
+                    className="relative h-[34px] w-[34px] cursor-pointer"
+                    onMouseMove={(event) =>
+                      setHoverRating(event.nativeEvent.offsetX < 17 ? value - 0.5 : value)
+                    }
+                    onClick={(event) =>
+                      setRating(event.nativeEvent.offsetX < 17 ? value - 0.5 : value)
+                    }
+                  >
+                    <Star size={34} className="pointer-events-none text-slate-300" fill="none" />
+                    <div
+                      className="pointer-events-none absolute inset-0 overflow-hidden"
+                      style={{ width: `${fillRatio * 100}%` }}
+                    >
+                      <Star size={34} className="text-blue-600" fill="#2563EB" />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-3 flex justify-center">
+              <div className="flex w-[280px] justify-between text-xs text-slate-400">
+                {rating > 0 ? (
+                  <span className="w-full text-center font-medium text-blue-600">
+                    감사합니다 ({rating}점)
+                  </span>
+                ) : (
+                  <>
+                    <span>아쉬워요</span>
+                    <span>완벽해요</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="mt-10 flex justify-center">
@@ -643,6 +746,12 @@ export default function App() {
             </button>
           </div>
         </div>
+
+        {toast && (
+          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-lg">
+            {toast}
+          </div>
+        )}
       </div>
     );
   };

@@ -34,8 +34,10 @@ export function buildReason(item: SearchResultItem, isFallback: boolean): string
 export function toRecommendations(output: SearchOutput): Recommendation[] {
   return output.results.slice(0, maxResults).map((item) => ({
     ...item.keyboard,
-    reason: buildReason(item, output.isFallback),
+    reason: buildReason(item, item.isFallback),
     tags: [...item.matchedTags],
+    is_fallback: item.isFallback,
+    source: item.isFallback ? 'fallback' : 'local',
   }));
 }
 

@@ -19,6 +19,8 @@ function makeRecommendation(overrides: Partial<Recommendation> = {}): Recommenda
     raw_switch_name: '적축',
     reason: '테스트 추천 사유',
     tags: [],
+    is_fallback: false,
+    source: 'local',
     ...overrides,
   };
 }
