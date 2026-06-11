@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "npm run sync:function-version && tsc --noEmit && vite build",
     "preview": "vite preview",
+    "deploy:function": "npm run build && cd .. && supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api",
     "sync:function-version": "node scripts/sync-edge-function-version.mjs",
     "sync:data": "cp ../../output/keyboards.json src/data/keyboards.json && cp ../../output/keyboards.json ../supabase/functions/recommend/keyboards.json",
     "test": "vitest run"

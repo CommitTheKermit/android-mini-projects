@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -12,6 +12,14 @@ const version = packageJson.version;
 
 if (typeof version !== 'string' || version.trim().length === 0) {
   throw new Error('frontend/package.json version must be a non-empty string.');
+}
+
+const targetDir = dirname(targetPath);
+if (!existsSync(targetDir)) {
+  throw new Error(
+    `Target directory does not exist: ${targetDir}\n` +
+      `Run 'supabase functions new recommend' or check the repo layout.`,
+  );
 }
 
 writeFileSync(

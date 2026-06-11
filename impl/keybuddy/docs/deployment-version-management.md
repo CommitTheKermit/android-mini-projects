@@ -102,4 +102,14 @@ npm version patch --no-git-tag-version
 npm run build
 ```
 
+Edge Function을 배포할 때는 빌드를 먼저 강제하는 래퍼를 사용합니다.
+
+```bash
+npm run deploy:function
+```
+
+이 래퍼는 `npm run build`를 먼저 실행한 뒤 `supabase functions deploy recommend`를
+호출하므로, `package.json`의 버전과 `supabase/functions/recommend/version.ts`의 버전이
+어긋난 상태로 배포될 가능성을 줄입니다.
+
 Supabase Edge Function 배포는 사용자가 명시적으로 요청할 때만 수행합니다.

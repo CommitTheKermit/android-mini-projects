@@ -59,6 +59,10 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+};
+
+const versionHeaders = {
+  ...corsHeaders,
   'Access-Control-Expose-Headers': 'X-Keybuddy-Version',
   'X-Keybuddy-Version': appVersion,
 };
@@ -229,6 +233,10 @@ function addTag(tags: string[], value: string | undefined) {
   }
 }
 
+function isVisibleTrait(value: string): boolean {
+  return value.length > 0 && value !== '정보없음' && value !== '0g';
+}
+
 function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
   const tags: string[] = [];
 
@@ -260,7 +268,7 @@ function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
 function fallbackReason(keyboard: Keyboard): string {
   const traits = [keyboard.switch_type, keyboard.layout, keyboard.connection]
     .map((value) => value?.trim() ?? '')
-    .filter((value) => value && value !== '정보없음')
+    .filter(isVisibleTrait)
     .join('·');
 
   if (traits) {
@@ -283,16 +291,15 @@ function composeRecommendations(
   candidates: Candidate[],
 ): RecommendationResult[] {
   const candidateByIndex = new Map(candidates.map((candidate) => [candidate.index, candidate]));
-  const selected = new Set<number>();
   const recommendations: RecommendationResult[] = [];
 
   for (const item of raw.recommendations) {
     const candidate = candidateByIndex.get(item.index);
-    if (!candidate || selected.has(item.index)) {
+    if (!candidate) {
       continue;
     }
 
-    selected.add(item.index);
+    candidateByIndex.delete(item.index);
     recommendations.push(
       toRecommendation(candidate.keyboard, item.reason.trim() || fallbackReason(candidate.keyboard)),
     );
@@ -301,12 +308,16 @@ function composeRecommendations(
     }
   }
 
-  for (const candidate of candidates) {
-    if (candidate.score <= 0 || selected.has(candidate.index)) {
+  const remainingCandidates = candidates.filter((candidate) => candidateByIndex.has(candidate.index));
+  const hasPositiveFallbackCandidate = remainingCandidates.some((candidate) => candidate.score > 0);
+  const minimumFallbackScore = hasPositiveFallbackCandidate ? 1 : 0;
+
+  for (const candidate of remainingCandidates) {
+    if (candidate.score < minimumFallbackScore) {
       continue;
     }
 
-    selected.add(candidate.index);
+    candidateByIndex.delete(candidate.index);
     recommendations.push(toRecommendation(candidate.keyboard, fallbackReason(candidate.keyboard)));
     if (recommendations.length >= maxRecommendations) {
       break;
@@ -383,7 +394,6 @@ function parseResult(text: string): RawLLMResult {
           typeof item.reason === 'string'
         );
       })
-      .slice(0, maxRecommendations)
       .map((item) => ({
         index: item.index,
         reason: item.reason,
@@ -423,9 +433,23 @@ Deno.serve(async (request) => {
   }
 
   if (request.method === 'GET') {
+    const rateLimit = checkRateLimit(request);
+    if (!rateLimit.ok) {
+      return Response.json(
+        { error: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.' },
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            'Retry-After': String(rateLimit.retryAfterSeconds),
+          },
+        },
+      );
+    }
+
     return Response.json(
       { name: 'recommend', version: appVersion },
-      { headers: corsHeaders },
+      { headers: versionHeaders },
     );
   }
 
@@ -493,13 +517,13 @@ Deno.serve(async (request) => {
 
     return Response.json(
       { summary: raw.summary, recommendations, meta: { version: appVersion } },
-      { headers: corsHeaders },
+      { headers: versionHeaders },
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : '추천 생성에 실패했습니다.';
     return Response.json(
       { error: message, meta: { version: appVersion } },
-      { status: 500, headers: corsHeaders },
+      { status: 500, headers: versionHeaders },
     );
   }
 });
