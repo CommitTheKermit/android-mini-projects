@@ -421,7 +421,7 @@ function ResultView({
   }, [all, activeFilter, sortOrder]);
 
   const handleCopy = (text: string) => {
-    if (!navigator.clipboard) {
+    if (!navigator.clipboard?.writeText) {
       showToast('클립보드를 사용할 수 없습니다');
       return;
     }
