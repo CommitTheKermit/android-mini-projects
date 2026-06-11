@@ -54,6 +54,7 @@ const getRateLimitMaxRequests = 60;
 const rateLimitSweepThreshold = 5000;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
+let lastRateLimitSweepAt = 0;
 const invisibleTraitValues = new Set(['정보없음', '0g']);
 
 if (maxCandidates < maxRecommendations) {
@@ -74,8 +75,8 @@ const versionHeaders = {
 
 function retryAfterHeaders(retryAfterSeconds: number) {
   return {
-    ...corsHeaders,
-    'Access-Control-Expose-Headers': 'Retry-After',
+    ...versionHeaders,
+    'Access-Control-Expose-Headers': 'Retry-After, X-Keybuddy-Version',
     'Retry-After': String(retryAfterSeconds),
   };
 }
@@ -130,10 +131,18 @@ function clientIp(request: Request): string {
 }
 
 function sweepExpiredRateLimitBuckets(now: number) {
-  if (rateLimitBuckets.size <= rateLimitSweepThreshold) {
+  if (rateLimitBuckets.size === 0) {
     return;
   }
 
+  if (
+    rateLimitBuckets.size <= rateLimitSweepThreshold &&
+    now - lastRateLimitSweepAt < rateLimitWindowMs
+  ) {
+    return;
+  }
+
+  lastRateLimitSweepAt = now;
   for (const [key, bucket] of rateLimitBuckets) {
     if (bucket.resetAt <= now) {
       rateLimitBuckets.delete(key);
@@ -356,11 +365,11 @@ function composeRecommendations(
     }
   }
 
-  const remainingCandidates = candidates.filter((candidate) => candidateByIndex.has(candidate.index));
-  const minimumFallbackScore = 0;
-
-  for (const candidate of remainingCandidates) {
-    if (candidate.score < minimumFallbackScore) {
+  const minimumFallbackScoreInclusive = 0;
+  for (const candidate of candidateByIndex.values()) {
+    // Zero-score candidates are still useful as broad comparison fillers;
+    // fallbackReason labels them separately from matched candidates.
+    if (candidate.score < minimumFallbackScoreInclusive) {
       continue;
     }
 

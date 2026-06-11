@@ -18,8 +18,8 @@ export interface Keyboard {
 export interface Recommendation extends Keyboard {
   reason: string; // 이 사용자에게 추천하는 한 줄 이유
   tags: string[]; // switch_type, layout, connection 등 DB 속성에서 생성한 태그
-  is_fallback: boolean; // LLM 선택이 아니라 서버 보강으로 추가된 추천인지 여부
-  source: 'llm' | 'fallback'; // 추천 출처
+  is_fallback: boolean; // 폴백 경로로 추가된 추천인지 여부
+  source: 'llm' | 'fallback' | 'local'; // 추천 출처
 }
 
 export interface RecommendResult {
