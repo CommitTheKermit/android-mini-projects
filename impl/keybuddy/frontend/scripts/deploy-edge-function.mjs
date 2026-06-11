@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const frontendDir = resolve(scriptDir, '..');
-const supabaseDir = resolve(frontendDir, '../supabase');
+const projectDir = resolve(frontendDir, '..');
 const projectRef = process.env.SUPABASE_PROJECT_REF || 'kzgrduvwwoflybrqayyk';
 
 function executable(name) {
@@ -33,7 +33,7 @@ run(executable('supabase'), [
   'deploy',
   'recommend',
   '--workdir',
-  supabaseDir,
+  projectDir,
   '--project-ref',
   projectRef,
   '--use-api',

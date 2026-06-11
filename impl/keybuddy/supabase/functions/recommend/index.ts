@@ -33,6 +33,8 @@ interface RawLLMResult {
 interface RecommendationResult extends Keyboard {
   reason: string;
   tags: string[];
+  is_fallback: boolean;
+  source: 'llm' | 'fallback';
 }
 
 interface Candidate {
@@ -49,8 +51,10 @@ const openaiTimeoutMs = 40000;
 const rateLimitWindowMs = 60000;
 const postRateLimitMaxRequests = 10;
 const getRateLimitMaxRequests = 60;
+const rateLimitSweepThreshold = 5000;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
+const invisibleTraitValues = new Set(['정보없음', '0g']);
 
 if (maxCandidates < maxRecommendations) {
   throw new Error('maxCandidates must be greater than or equal to maxRecommendations.');
@@ -125,11 +129,25 @@ function clientIp(request: Request): string {
   return request.headers.get('cf-connecting-ip') ?? request.headers.get('x-real-ip') ?? 'unknown';
 }
 
+function sweepExpiredRateLimitBuckets(now: number) {
+  if (rateLimitBuckets.size <= rateLimitSweepThreshold) {
+    return;
+  }
+
+  for (const [key, bucket] of rateLimitBuckets) {
+    if (bucket.resetAt <= now) {
+      rateLimitBuckets.delete(key);
+    }
+  }
+}
+
 function checkRateLimit(
   request: Request,
   kind: 'get' | 'post',
 ): { ok: true } | { ok: false; retryAfterSeconds: number } {
   const now = Date.now();
+  sweepExpiredRateLimitBuckets(now);
+
   const bucketKey = `${kind}:${clientIp(request)}`;
   const maxRequests = kind === 'get' ? getRateLimitMaxRequests : postRateLimitMaxRequests;
   const current = rateLimitBuckets.get(bucketKey);
@@ -241,13 +259,13 @@ function catalogToText(candidates: Candidate[]): string {
 
 function addTag(tags: string[], value: string | undefined) {
   const tag = value?.trim();
-  if (tag && tag !== '정보없음' && tag !== '0g' && !tags.includes(tag)) {
+  if (tag && !invisibleTraitValues.has(tag) && !tags.includes(tag)) {
     tags.push(tag);
   }
 }
 
 function isVisibleTrait(value: string): boolean {
-  return value.length > 0 && value !== '정보없음' && value !== '0g';
+  return value.length > 0 && !invisibleTraitValues.has(value);
 }
 
 function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
@@ -278,7 +296,11 @@ function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
   return tags.slice(0, 6);
 }
 
-function fallbackReason(keyboard: Keyboard): string {
+function fallbackReason(keyboard: Keyboard, score?: number): string {
+  if (typeof score === 'number' && score <= 0) {
+    return '조건이 넓어 함께 비교할 후보로 보여드려요.';
+  }
+
   const traits = [keyboard.switch_type, keyboard.layout, keyboard.connection]
     .map((value) => value?.trim() ?? '')
     .filter(isVisibleTrait)
@@ -291,11 +313,17 @@ function fallbackReason(keyboard: Keyboard): string {
   return '조건에 가까운 후보라 함께 비교해볼 만해요.';
 }
 
-function toRecommendation(keyboard: Keyboard, reason: string): RecommendationResult {
+function toRecommendation(
+  keyboard: Keyboard,
+  reason: string,
+  source: RecommendationResult['source'],
+): RecommendationResult {
   return {
     ...keyboard,
     reason,
     tags: buildTagsFromKeyboard(keyboard),
+    is_fallback: source === 'fallback',
+    source,
   };
 }
 
@@ -318,7 +346,7 @@ function composeRecommendations(
       console.warn('recommend: empty LLM reason replaced with fallback.', { index: item.index });
     }
     recommendations.push(
-      toRecommendation(candidate.keyboard, reason || fallbackReason(candidate.keyboard)),
+      toRecommendation(candidate.keyboard, reason || fallbackReason(candidate.keyboard, candidate.score), 'llm'),
     );
     if (recommendations.length >= maxRecommendations) {
       return recommendations;
@@ -334,7 +362,9 @@ function composeRecommendations(
       continue;
     }
 
-    recommendations.push(toRecommendation(candidate.keyboard, fallbackReason(candidate.keyboard)));
+    recommendations.push(
+      toRecommendation(candidate.keyboard, fallbackReason(candidate.keyboard, candidate.score), 'fallback'),
+    );
     if (recommendations.length >= maxRecommendations) {
       break;
     }
