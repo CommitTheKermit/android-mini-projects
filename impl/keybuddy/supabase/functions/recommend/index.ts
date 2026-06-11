@@ -148,6 +148,8 @@ function checkRateLimit(
   const now = Date.now();
   sweepExpiredRateLimitBuckets(now);
 
+  // GET is a cheap version/health endpoint, so it has a separate relaxed bucket.
+  // POST still has its own lower limit because it can trigger an OpenAI request.
   const bucketKey = `${kind}:${clientIp(request)}`;
   const maxRequests = kind === 'get' ? getRateLimitMaxRequests : postRateLimitMaxRequests;
   const current = rateLimitBuckets.get(bucketKey);
@@ -297,7 +299,7 @@ function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
 }
 
 function fallbackReason(keyboard: Keyboard, score?: number): string {
-  if (typeof score === 'number' && score <= 0) {
+  if (typeof score === 'number' && score === 0) {
     return '조건이 넓어 함께 비교할 후보로 보여드려요.';
   }
 
@@ -342,11 +344,12 @@ function composeRecommendations(
 
     candidateByIndex.delete(item.index);
     const reason = item.reason.trim();
+    const source: RecommendationResult['source'] = reason ? 'llm' : 'fallback';
     if (!reason) {
       console.warn('recommend: empty LLM reason replaced with fallback.', { index: item.index });
     }
     recommendations.push(
-      toRecommendation(candidate.keyboard, reason || fallbackReason(candidate.keyboard, candidate.score), 'llm'),
+      toRecommendation(candidate.keyboard, reason || fallbackReason(candidate.keyboard, candidate.score), source),
     );
     if (recommendations.length >= maxRecommendations) {
       return recommendations;
@@ -354,8 +357,7 @@ function composeRecommendations(
   }
 
   const remainingCandidates = candidates.filter((candidate) => candidateByIndex.has(candidate.index));
-  const hasPositiveFallbackCandidate = remainingCandidates.some((candidate) => candidate.score > 0);
-  const minimumFallbackScore = hasPositiveFallbackCandidate ? 1 : 0;
+  const minimumFallbackScore = 0;
 
   for (const candidate of remainingCandidates) {
     if (candidate.score < minimumFallbackScore) {

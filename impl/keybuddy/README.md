@@ -218,14 +218,14 @@ Edge Function 배포:
 
 ```bash
 cd impl/keybuddy/frontend
-npm run deploy:function
+SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
 ```
 
-다른 Supabase 프로젝트에 배포해야 하면 `SUPABASE_PROJECT_REF`를 지정합니다.
+현재 프로젝트라면 아래처럼 실행합니다.
 
 ```bash
 cd impl/keybuddy/frontend
-SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
+SUPABASE_PROJECT_REF=kzgrduvwwoflybrqayyk npm run deploy:function
 ```
 
 새 publishable key(`sb_publishable_...`)를 쓰는 경우 JWT 검증 설정이 반영되어야 하므로,
@@ -243,7 +243,7 @@ supabase functions deploy recommend --project-ref your-project-ref --use-api
 
 ```bash
 cd impl/keybuddy/frontend
-npm run deploy:function
+SUPABASE_PROJECT_REF=kzgrduvwwoflybrqayyk npm run deploy:function
 ```
 
 배포 후 Edge Function 버전 확인:

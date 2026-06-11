@@ -105,18 +105,18 @@ npm run build
 Edge Function을 배포할 때는 빌드를 먼저 강제하는 래퍼를 사용합니다.
 
 ```bash
-npm run deploy:function
+SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
 ```
 
 이 래퍼는 `npm run build`를 먼저 실행한 뒤 `supabase functions deploy recommend`를
 호출하므로, `package.json`의 버전과 `supabase/functions/recommend/version.ts`의 버전이
 어긋난 상태로 배포될 가능성을 줄입니다.
 
-기본 Supabase 프로젝트 ref는 `kzgrduvwwoflybrqayyk`이며, 다른 프로젝트에 배포해야 할 때는
-환경 변수로 override합니다.
+프로덕션 오배포를 피하기 위해 `SUPABASE_PROJECT_REF`는 필수입니다. 현재 프로젝트에
+배포할 때는 아래처럼 명시합니다.
 
 ```bash
-SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
+SUPABASE_PROJECT_REF=kzgrduvwwoflybrqayyk npm run deploy:function
 ```
 
 Supabase Edge Function 배포는 사용자가 명시적으로 요청할 때만 수행합니다.

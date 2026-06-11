@@ -36,6 +36,8 @@ export function toRecommendations(output: SearchOutput): Recommendation[] {
     ...item.keyboard,
     reason: buildReason(item, output.isFallback),
     tags: [...item.matchedTags],
+    is_fallback: output.isFallback,
+    source: output.isFallback ? 'fallback' : 'llm',
   }));
 }
 

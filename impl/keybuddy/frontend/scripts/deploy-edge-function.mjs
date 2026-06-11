@@ -5,7 +5,11 @@ import { fileURLToPath } from 'node:url';
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const frontendDir = resolve(scriptDir, '..');
 const projectDir = resolve(frontendDir, '..');
-const projectRef = process.env.SUPABASE_PROJECT_REF || 'kzgrduvwwoflybrqayyk';
+const projectRef = process.env.SUPABASE_PROJECT_REF;
+
+if (!projectRef) {
+  throw new Error('SUPABASE_PROJECT_REF environment variable is required.');
+}
 
 function executable(name) {
   return process.platform === 'win32' ? `${name}.cmd` : name;
