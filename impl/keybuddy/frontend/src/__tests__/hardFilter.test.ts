@@ -12,6 +12,7 @@ import {
   checkLayoutViolation,
   checkSwitchViolation,
   checkBudgetViolation,
+  checkWeightMaxViolation,
   checkHardConstraintViolation,
   filterByHardConstraints,
   detectNoResult,
@@ -323,6 +324,22 @@ describe('checkBudgetViolation - budgetTag가 0 이하 시 false 반환 (제약 
 
   it('budgetTag가 매우 큰 음수이면 제약 없음 -> false', () => {
     expect(checkBudgetViolation(makeKeyboardWithPrice(1000000), -999999)).toBe(false);
+  });
+});
+
+describe('checkWeightMaxViolation - 무게 미제공 처리', () => {
+  it('무게 상한 조건이 있는데 무게가 null이면 위반으로 처리한다', () => {
+    const keyboard = makeKeyboard('텐키리스');
+    keyboard.weight_g = null;
+
+    expect(checkWeightMaxViolation(keyboard, 800)).toBe(true);
+  });
+
+  it('무게 상한 조건이 없으면 무게가 null이어도 위반으로 처리하지 않는다', () => {
+    const keyboard = makeKeyboard('텐키리스');
+    keyboard.weight_g = null;
+
+    expect(checkWeightMaxViolation(keyboard, 0)).toBe(false);
   });
 });
 

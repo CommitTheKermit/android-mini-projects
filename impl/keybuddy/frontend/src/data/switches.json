@@ -1,0 +1,1430 @@
+{
+  "MX Black (삼신흑)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MX Red": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MX Brown (체갈)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MX Blue (삼신청)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MX Ergo Clear (에르고 클리어)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MX Black Clear Top 닉시 - 복각": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "MX2A Black (사신흑)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "MX Purple 체보?": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Hirose MX Orange 히로세 오렌지 - 복각": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Peanut Latte (피넛라떼)": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "HG Yellow": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "HG Red": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "Silent Brown V2 (티저갈)": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "Silent Bluish White (저월백)": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "Rabbit (토끼축)": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "Boba U4": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "Boba Gum": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "Silent Tactile": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "ice frozen V2 아이스 프로즌": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "RAPTOR MX SILENT": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "RAW 저소음": {
+    "switch_type": null,
+    "is_silent": true
+  },
+  "Lime V3 라임": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "Peach V3 피치": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "Silent Cream 저소음 크림": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "Box Pro Hush 박스 프로 허쉬": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "Box Pro Hush Tactile 박스 프로 허쉬 택타일": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "Deep Sea silent Pro linear 딥씨 사일런트 프로 리니어 *이명: Islet(작은섬)": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "Deep Sea silent Pro Tactile 딥씨 사일런트 프로 택타일 *이명: Whale(고래)": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "Shrimp 새우": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "저소음 사쿠라": {
+    "switch_type": null,
+    "is_silent": true
+  },
+  "V3 Cream Yellow Pro": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "V3 Cream Blue Pro": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "CS Piano 피아노": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "V3 Piano Pro": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Ice Cream Pink": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Ice Cream Purple": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "V3 Lavender Purple Pro": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "V3 Cream Black Pro": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "로즈우드": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Strawberry Wine V2 (딸기와인 V2)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "F4": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "London Fog (런던포그)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Sunset Yellow": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Aniya (아냐)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Holy Panda (홀판, 홀리판다)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "HiFi Pink": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Beary 새끼곰": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Roselle": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Sakura": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Flower Shadow": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "赫本軸 햅번축": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Bunny 키스유버니": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Akashi 아카시": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Guyu 구유": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "X 엑스": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Ice Mint Choco 아이스민트초코": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Ice Cookie n Cream 아이스쿠키앤크림": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Candy Vanilla 캔디바닐라": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "BumbleBee 범블비": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "TomCat 톰캣": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Olive 올리브": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "537 우사기": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "HUTT": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Popcorn 팝콘": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "YETI": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "커피": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "레드와인": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "The Green": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "블루 레드": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "PANDA": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "CLIFF": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "MILKTEA SIAM V2": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "TUZI": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "RAGDOLL": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "SNOW DIANE": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "SEA FOG": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "JADE ROSALES": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "UDON": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Kiwi 키위": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Tangerine V2s 텐저린": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Banana Split 바나나스플릿": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Fruit Smoothie Blue (Blueberry Milk Candy)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Fruit Smoothie Red (Grapefruit Soft Sweets)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "DRAGON FRUIT": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Oil King (오일킹)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Yellow (게황, 우뚜게황)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ink V2 (게잉흑)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Box Ink V2 (방진게잉흑)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Zealios V2 (질리오스)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Tealios V2 (틸리오스)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "North Pole New 2.0 (노스폴)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Baby Kangaroo (베이비 캥거루)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Baby Racoon (베이비 라쿤)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Quinn (퀸)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Melodic (멜로딕)": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Silent Brown (게저갈, 사탄)": {
+    "switch_type": null,
+    "is_silent": true
+  },
+  "Beer": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Clickiez (클리키즈)": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Lunar Probe (루나, 문랜딩)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Smoothie 스무디": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Everfree Curry": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Everfree Graish": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Azure Dragon V3 청룡축": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Type S": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Type L": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Type A": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Green Apple": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Luciola": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ultra Glory Yellow 글로리 황축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ultra Glory Red 글로리 적축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MARS 화성": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "EF체다": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "CM": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "UHMknown": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MINI i": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "CJ": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Weightlessness 무중력": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Mountain-Top": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Holy Panda V3 홀리판다, 짭홀판": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "White Marble 한백옥축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Matcha Pro 말차프로": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "아쿠아황축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "민트 모노 포닉 그린": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Gateron RAW (게롸)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "BSUN RAW (비선롸)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "BSUN RAW Non-Click Clear": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Pine 파인": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "KEYGEEK RAW Flat-Pole": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "KEYGEEK RAW Round-Pole": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "HUANO RAW": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "TECSEE RAW": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "HAIMU RAW": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "RAPTOR MX (랩터)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "RAPTOR MX EXTREME": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Sarokeys x Geon BCP (블랙체리파이)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Sarokeys Strawberry Wine (딸기와인, 딸와)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "HG White": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "HG Black": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "HG Clear": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Haimu Jade (그레이, 네이비, 블루 동일)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Geon Yellow": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Geon Black": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Geon Clear": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "OUTVA Yang (양축)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "OUTVA Yin (음축)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "HMX RAW": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "RAW ZERO": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "QK01": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MATCHA v4": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "BITTER TEA V2": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Middle-night 미드나잇": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Sea Salt 바다소금": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ice Lemonade 아이스 레모네이드": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ice Mint 아이스 민트": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Sea Salt Tactile 바다소금 택타일": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Joker 조커": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Tropical Lime 트로피컬 라임": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "스모키 핑크": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "ROCK": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Hyacinth V2 (히아신스)": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Hyacinth V2U": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Cheese (치즈)": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Machiato (마키아또)": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "DUCK DUCK (덕덕)": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Violet": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Pado V2 (구: 창란/ 현: 파도)": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Swift (풍경, 윈드라이트)": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Xinhai (신하이, 심해)": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "PORO Light": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "PORO Medium": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "HIBISCUS 히비스커스": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "EMO 이모": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "LUCKY 럭키": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "JAMMY 잼미, 자미": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "DEEP NAVY 딥네이비": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "BLUE TOPAZ 블루토파즈": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "CLOUD 천운": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "LOTUS 연꽃": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "PURPLE DAWN": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "MACARON 마카롱": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "CARAMEL PUDDING 카라멜푸딩": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Candy Red 캔디레드": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "EVA 에바": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Glaze Jade 글레이즈 제이드": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "SNOW CRASH": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "FJ400": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "KD200": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "GAME1989 CLASSIC": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "JOKER": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "PERKY": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "BUTTER 버터": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "CENDOL": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "구아바": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "MONOCHROME": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "TWILIGHT": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "MIST": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Iced coffee 아이스 커피": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "패션 후르츠": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "카라멜 라떼": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "아카시아": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "아이스 블루": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "사쿠라 리니어": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "말차라떼v2": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Aqua King V3 (물왕)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Jade Black (제블)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Wild Pansy V2 와팬, 와일드 팬시": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Vertex V1": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Alpaca 알파카": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Ice King 아이스킹": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Marshmallow R5 마쉬멜로우": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "WOB Linear Snow Ink 설묵축": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Hades 하데스": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Epsilon 앱실론": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Twilight 트와일라잇": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "블랙블루": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Blacklotus 검은 연꽃": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Ginger Milk 생강유": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Taro 타로": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "SemiSilent 반묵축": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "Cream 크림": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Box White V2 카박백": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Jade 박스 제이드": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Navy 박스 네이비": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Ice Mint 박스 아이스민트": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Polia 듀로": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Jelly Fish 'Y' 해파리, 젤리피쉬": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Jelly Fish 'X' 해파리, 젤리피쉬": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Arctic Fox 극지여우": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Owl White 흰올빼미": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Midnight Jade 미드나잇 제이드": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Spring 봄": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Summer 여름": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Autumn 가을": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Winter 겨울": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "KT Red 적축": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "KT Black 흑축": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Box Marshmallow 마쉬멜로우": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Crystal Box Royal 박스 로얄": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Halo Tue 헤일로 트루": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Halo Clear 헤일로 클리어": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "BCP 블랙체리파이": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "BCP": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Y1X": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "LILA": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "KEYLIN": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "BLUE CHEESE": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Y3": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "STRAWBERRY BUNNY": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Grey Wood V4 회목축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ice Soul 빙백축": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Yellow V3 황축": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Nimbus V3": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "SEIYA 세이야": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Reaper 리퍼": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Black 블록": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Sea Salt Lemon 바다소금레몬": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Cabbage Tofu 배추두부": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Kang White V3 강백축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Purple Star": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Hyacinth 히아신스": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Matcha 말차": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Darling 달링": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "StrawBerry V2 딸기": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Bear": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Coconut Latte 코코넛라떼": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "GAME1989 레트로": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Princess V2 Linear (공주축 리니어)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Princess V2 Tactile (공주축 택타일)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Vivian (비비안)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Cream V4 (크림)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Holy Panda V3 홀리판다": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Nipple 니플": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Matcha V3": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "POM HT": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "아쿠아킹": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "잉크 퍼플": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "잉크 옐로우": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "잉크 오렌지": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "잉크 그린": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "잉크 화이트": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Boba U4T (유포티)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "U4Tx (유포티엑스)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Blue (청축)": {
+    "switch_type": "clicky",
+    "is_silent": false
+  },
+  "Boba LT": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Polaris Grey 극성회축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Polaris Purple 극성보축": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Meteor White 유성백축": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Sacramento 새크라멘토, 세크라멘토": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "덕 Duck": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "아야라 Ayara": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "레드블루 Red Blue": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "루미너스 Luminous": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "SSS Tactile": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Modern Gray": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "PureSky": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Maestro": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Pureberry (퓨어베리)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Deepping": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Deep Ruby": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MP Tactile": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "MP Linear": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Milky White": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Pearl": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Garnet": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "CW": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Catmint": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Mocha V2": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "빈티지": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "White V3": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "타로": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Flow Black": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "창해": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Oat": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "Azure": {
+    "switch_type": null,
+    "is_silent": false
+  },
+  "바다파도": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "바다살구": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Toucan": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Tori": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "NEON (네온)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ripple (약수)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "JIEUM V2 (지음)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Latte": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Blue Whale 경해축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Dragon Ghost": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Zaku 자쿠": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Diamond/Jadeite 제이다이트": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Blue Baloon 블루벌룬": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ice Mint 아이스민트": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ice Mango 아이스망고": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Purple Panda 퍼플 판다": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "oreo": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Lake Blue": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Holy Panda (티홀판)": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Old School (OS)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Gold Pink V2 (골드핑크)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Flame Purple V2 (플레임/플레이밍퍼플)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Flame Snow V2 (플레임/플레이밍 스노우)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Flame Red V2 (플레임/플레이밍레드)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Tiger (타이거)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Titan Heart (거인의 심장. 거심)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Bluish White (월백)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "ACE V2 (에이스)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Xizi (서자)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Ice (아이스/빙축)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Venus (금성)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Neptune (해왕성)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Speed Silver V2": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Moon / Crescent (신월축)": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "OG Dragon Linear": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "OG Dragon Tactile": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Heavy Tactile 헤비택타일": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "Quartz 쿼츠": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Morandi 모란디": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Aurora 오로라": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Jade": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Light Tactile": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "POM+": {
+    "switch_type": "linear",
+    "is_silent": false
+  }
+}

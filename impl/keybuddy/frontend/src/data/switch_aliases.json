@@ -1,0 +1,18 @@
+{
+  "exact": {
+    "경해축": "Blue Whale 경해축",
+    "세이야축": "SEIYA 세이야",
+    "저소음 라임축 V3": "Lime V3 라임",
+    "저소음 크림축": "Silent Cream 저소음 크림",
+    "카라멜라떼축": "카라멜 라떼",
+    "황축 V3": "Yellow V3 황축",
+    "회목축 V4": "Grey Wood V4 회목축",
+    "회목축V4": "Grey Wood V4 회목축"
+  },
+  "by_manufacturer": {
+    "체리": {
+      "적축": "MX Red",
+      "흑축": "MX Black (삼신흑)"
+    }
+  }
+}

@@ -122,6 +122,17 @@ describe('Sub-AC 7.3.2: 소프트 태그 스코어링 LLM 호출 횟수 === 0', 
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
 
+    it('무게가 null이면 가벼움이나 무거움으로 추론하지 않는다', () => {
+      const [score] = scoreBySoftTags(
+        [makeKeyboard({ weight_g: null })],
+        ['가벼움', '무거움'],
+      );
+
+      expect(score.score).toBe(0);
+      expect(score.matchedTags).toEqual([]);
+      expect(createSpy).toHaveBeenCalledTimes(0);
+    });
+
     it('게이밍 의도 스코어링(기계식+RGB) - LLM 미호출', () => {
       const keyboards = [
         makeKeyboard({ switch_type: '기계식', backlight: 'RGB 백라이트' }),
