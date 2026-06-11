@@ -194,6 +194,19 @@ VITE_SUPABASE_RECOMMEND_URL=http://127.0.0.1:54321/functions/v1/recommend
 
 ## 배포
 
+앱 버전은 `frontend/package.json`의 `version`을 단일 소스로 사용합니다. Edge Function은
+이 값을 정적 import 해서 `GET /functions/v1/recommend`, 추천 응답의 `meta.version`,
+그리고 `X-Keybuddy-Version` 헤더에 노출합니다.
+
+배포 전 변경 성격에 맞춰 SemVer 기준으로 버전을 올립니다.
+
+```bash
+cd impl/keybuddy/frontend
+npm version patch --no-git-tag-version
+```
+
+호환되는 기능 추가는 `minor`, 호환 깨짐은 `major`를 사용합니다.
+
 프론트 빌드:
 
 ```bash
@@ -204,21 +217,27 @@ npm run build
 Edge Function 배포:
 
 ```bash
-cd impl/keybuddy
-supabase functions deploy recommend
+cd impl/keybuddy/frontend
+SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
 ```
 
+실제 project ref는 공개 문서에 적지 말고 로컬 환경 변수나 비공개 설정에서 주입합니다.
+
 새 publishable key(`sb_publishable_...`)를 쓰는 경우 JWT 검증 설정이 반영되어야 하므로,
-문제가 있으면 아래처럼 project ref와 API 배포 옵션을 한 줄로 명시합니다.
+문제가 있으면 아래처럼 project ref와 API 배포 옵션을 한 줄로 명시합니다. 단,
+`version.ts`가 오래된 상태로 배포되지 않도록 먼저 버전 동기화를 실행합니다.
 
 ```bash
+cd impl/keybuddy/frontend
+npm run sync:function-version
+cd ..
 supabase functions deploy recommend --project-ref your-project-ref --use-api
 ```
 
-현재 프로젝트라면 아래처럼 실행합니다.
+배포 후 Edge Function 버전 확인:
 
 ```bash
-supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api
+curl https://your-project-ref.supabase.co/functions/v1/recommend
 ```
 
 프론트 정적 배포는 Supabase Hosting이 아니라 Vercel, Netlify, GitHub Pages 같은 정적

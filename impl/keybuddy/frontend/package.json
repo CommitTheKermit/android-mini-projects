@@ -5,10 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run sync:function-version && npm run typecheck && vite build",
     "preview": "vite preview",
+    "deploy:function": "npm run typecheck && npm run typecheck:function && node scripts/deploy-edge-function.mjs",
+    "sync:function-version": "node scripts/sync-edge-function-version.mjs",
     "sync:data": "cp ../../output/keyboards.json src/data/keyboards.json && cp ../../output/keyboards.json ../supabase/functions/recommend/keyboards.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "typecheck:function": "tsc -p ../supabase/functions/tsconfig.json"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.69.0",

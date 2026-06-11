@@ -287,8 +287,10 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
         ],
       });
 
-      toRecommendations(output);
+      const recs = toRecommendations(output);
 
+      expect(recs[0].source).toBe('local');
+      expect(recs[0].is_fallback).toBe(false);
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
 
@@ -310,16 +312,19 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
         ],
       });
 
-      toRecommendations(output);
+      const recs = toRecommendations(output);
 
+      expect(recs[0].source).toBe('local');
+      expect(recs[0].is_fallback).toBe(false);
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
 
     it('빈 results 변환 - LLM 미호출', () => {
       const output = makeSearchOutput({ results: [] });
 
-      toRecommendations(output);
+      const recs = toRecommendations(output);
 
+      expect(recs).toHaveLength(0);
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
 
@@ -340,8 +345,10 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
         relaxationStepCount: 1,
       });
 
-      toRecommendations(output);
+      const recs = toRecommendations(output);
 
+      expect(recs[0].source).toBe('fallback');
+      expect(recs[0].is_fallback).toBe(true);
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
 
