@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   Search,
   Keyboard,
@@ -93,15 +93,18 @@ const questions = [
 
 // 값을 설정한 뒤 duration(ms) 후 자동으로 null로 되돌린다.
 // 연속 호출 시 직전 타이머를 정리하고, 언마운트 시에도 cleanup으로 타이머를 해제한다.
+// show는 useCallback으로 참조를 고정하되, duration은 ref로 읽어 최신값을 반영한다.
 function useAutoDismiss<T>(duration: number) {
   const [value, setValue] = useState<T | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const durationRef = useRef(duration);
+  durationRef.current = duration;
 
-  const show = (next: T) => {
+  const show = useCallback((next: T) => {
     setValue(next);
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setValue(null), duration);
-  };
+    timer.current = setTimeout(() => setValue(null), durationRef.current);
+  }, []);
 
   useEffect(
     () => () => {
@@ -388,31 +391,40 @@ function ResultView({
   const [copiedName, showCopied] = useAutoDismiss<string>(2000);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  // 별점 표시값: hover 중이면 hover값, 아니면 확정 rating (모든 별에서 동일)
+  const displayed = hoverRating || rating;
 
   const all: Recommendation[] = result?.recommendations ?? [];
 
-  // 동적 필터 옵션: 브랜드 + DB 속성 기반 태그
-  const filterSet = new Set<string>();
-  all.forEach((k) => {
-    filterSet.add(k.brand);
-    k.tags.forEach((t) => filterSet.add(t));
-  });
-  const filterOptions = ['전체', ...Array.from(filterSet)];
+  // 동적 필터 옵션: 브랜드 + DB 속성 기반 태그 (all이 바뀔 때만 재계산)
+  const filterOptions = useMemo(() => {
+    const filterSet = new Set<string>();
+    all.forEach((k) => {
+      filterSet.add(k.brand);
+      k.tags.forEach((t) => filterSet.add(t));
+    });
+    return ['전체', ...Array.from(filterSet)];
+  }, [all]);
 
-  // 1. 필터링
-  let processed =
-    activeFilter === '전체'
-      ? [...all]
-      : all.filter((k) => k.tags.includes(activeFilter) || k.brand === activeFilter);
-
-  // 2. 정렬
-  if (sortOrder === 'priceAsc') processed.sort((a, b) => a.price - b.price);
-  else if (sortOrder === 'priceDesc') processed.sort((a, b) => b.price - a.price);
+  // 필터링 + 정렬: 입력(all/activeFilter/sortOrder)이 바뀔 때만 재계산
+  const processed = useMemo(() => {
+    const filtered =
+      activeFilter === '전체'
+        ? [...all]
+        : all.filter((k) => k.tags.includes(activeFilter) || k.brand === activeFilter);
+    if (sortOrder === 'priceAsc') filtered.sort((a, b) => a.price - b.price);
+    else if (sortOrder === 'priceDesc') filtered.sort((a, b) => b.price - a.price);
+    return filtered;
+  }, [all, activeFilter, sortOrder]);
 
   const handleCopy = (text: string) => {
-    navigator.clipboard?.writeText(text).then(
+    if (!navigator.clipboard) {
+      showToast('클립보드를 사용할 수 없습니다');
+      return;
+    }
+    navigator.clipboard.writeText(text).then(
       () => showCopied(text),
-      () => {},
+      () => showToast('복사에 실패했습니다'),
     );
   };
 
@@ -483,9 +495,9 @@ function ResultView({
               해당 조건에 맞는 제품이 없습니다.
             </div>
           ) : (
-            processed.map((item) => (
+            processed.map((item, idx) => (
               <div
-                key={item.product_name}
+                key={item.product_name ?? idx}
                 className="flex p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="w-28 h-28 shrink-0 rounded-xl overflow-hidden border border-slate-100">
@@ -577,8 +589,7 @@ function ResultView({
             }}
           >
             {[1, 2, 3, 4, 5].map((n) => {
-              // 표시값 기준 이 별의 채움 비율: 0(빈 별) / 0.5(반 개) / 1(꽉 참)
-              const displayed = hoverRating || rating;
+              // 이 별의 채움 비율: 0(빈 별) / 0.5(반 개) / 1(꽉 참)
               const fillRatio = Math.max(0, Math.min(1, displayed - (n - 1)));
               // 빠른 포인터 이동에도 반쪽을 놓치지 않도록, 자식 Star를 pointer-events-none로 두고
               // 별 컨테이너 단위 onMouseMove에서 offsetX(<17px=좌측 절반)로 좌/우를 판별한다.
