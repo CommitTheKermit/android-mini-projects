@@ -16,7 +16,7 @@ export interface Keyboard {
   switch_name?: string | null; // switches.json과 매칭된 정규 스위치 이름
   switch_manufacturer?: string | null;
   product_code?: string | null;
-  media_url?: string;
+  media_url?: string | null;
   price_compare_url?: string | null;
   media_url_is_placeholder?: boolean;
 }

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
+import { getProductTags } from './lib/productDisplay';
 import { getSwitchDisplayData, type GraphLevel } from './lib/switchDisplay';
 import type {
   Recommendation,
@@ -182,35 +183,18 @@ function LevelMeter({
   );
 }
 
-function normalizeDisplayValue(value: string): string {
-  return value.replace(/^\[키보드\]\s*/, '').trim();
-}
-
-function getProductTags(item: Recommendation): string[] {
-  const switchTag =
-    item.switch_type === '기계식'
-      ? item.raw_switch_name
-        ? `스위치 ${item.raw_switch_name}`
-        : '스위치 정보 확인 중'
-      : item.switch_type;
-
-  const tags = [
-    switchTag,
-    item.connection,
-    item.layout,
-    item.key_force === '0g' ? '키압 정보 확인 중' : `키압 ${item.key_force}`,
-    item.wireless_type === '유선' ? null : normalizeDisplayValue(item.wireless_type),
-    normalizeDisplayValue(item.backlight),
-  ];
-
-  return Array.from(new Set(tags.filter((tag): tag is string => Boolean(tag))));
-}
-
 export default function App() {
   const [view, setView] = useState<'home' | 'step' | 'results'>('home');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RecommendResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [minBudget, setMinBudget] = useState(0);
+  const [maxBudget, setMaxBudget] = useState(1000000);
+  const [activeFilter, setActiveFilter] = useState('전체');
+  const [sortOrder, setSortOrder] = useState<'default' | 'priceAsc' | 'priceDesc'>('default');
 
   const runRecommend = async (input: RecommendInput) => {
     setLoading(true);
@@ -218,6 +202,8 @@ export default function App() {
     try {
       const res = await recommend(input);
       setResult(res);
+      setActiveFilter('전체');
+      setSortOrder('default');
       setView('results');
     } catch (e) {
       setError(e instanceof Error ? e.message : '추천 중 오류가 발생했습니다.');
@@ -227,8 +213,7 @@ export default function App() {
   };
 
   // --- HOME VIEW ---
-  const HomeView = () => {
-    const [query, setQuery] = useState('');
+  const renderHomeView = () => {
     const templates = [
       '조용한 사무실에서 눈치보지 않고 사용할 도각도각 소리가 나는 키보드 추천해줘',
       '게임할 때 반응속도가 빠르고 화려한 RGB 조명이 있는 텐키리스 키보드 찾아줘',
@@ -292,7 +277,13 @@ export default function App() {
         <div className="w-full max-w-2xl border-t border-slate-200 pt-8 flex flex-col items-center">
           <p className="text-slate-500 text-sm mb-4">질문에 답하며 하나씩 찾고 싶다면?</p>
           <button
-            onClick={() => setView('step')}
+            onClick={() => {
+              setStep(0);
+              setAnswers({});
+              setMinBudget(0);
+              setMaxBudget(1000000);
+              setView('step');
+            }}
             className="flex items-center px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
           >
             <SlidersHorizontal size={18} className="mr-2 text-indigo-500" /> 단계별로 선택하기
@@ -303,12 +294,7 @@ export default function App() {
   };
 
   // --- STEP BY STEP VIEW ---
-  const StepByStepView = () => {
-    const [step, setStep] = useState(0);
-    const [answers, setAnswers] = useState<Record<string, string>>({});
-    const [minBudget, setMinBudget] = useState(0);
-    const [maxBudget, setMaxBudget] = useState(1000000);
-
+  const renderStepByStepView = () => {
     const currentQ = questions[step];
     const isLastStep = step === questions.length - 1;
 
@@ -326,7 +312,10 @@ export default function App() {
     return (
       <div className="max-w-2xl mx-auto pt-12 px-6 min-h-screen">
         <button
-          onClick={() => setView('home')}
+          onClick={() => {
+            setQuery('');
+            setView('home');
+          }}
           className="flex items-center text-slate-500 mb-6 hover:text-slate-800 transition-colors"
         >
           <ChevronLeft size={20} /> <span className="ml-1">처음으로</span>
@@ -450,10 +439,7 @@ export default function App() {
   };
 
   // --- RESULT VIEW ---
-  const ResultView = () => {
-    const [activeFilter, setActiveFilter] = useState('전체');
-    const [sortOrder, setSortOrder] = useState<'default' | 'priceAsc' | 'priceDesc'>('default');
-
+  const renderResultView = () => {
     const all: Recommendation[] = result?.recommendations ?? [];
 
     // 동적 필터 옵션: 브랜드 + DB 속성 기반 태그
@@ -478,7 +464,10 @@ export default function App() {
       <div className="max-w-6xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
         <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-10 px-4 py-4 flex items-center">
           <button
-            onClick={() => setView('home')}
+            onClick={() => {
+              setQuery('');
+              setView('home');
+            }}
             className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
           >
             <ChevronLeft size={24} />
@@ -544,9 +533,7 @@ export default function App() {
               processed.map((item, index) => {
                 const switchDisplay = getSwitchDisplayData(item, switches);
                 const productTags = getProductTags(item);
-                const mediaLabel = item.media_url_is_placeholder
-                  ? '예시 시청각 자료'
-                  : '시청각 자료 보기';
+                const mediaLabel = '시청각 자료 보기';
 
                 return (
                   <article
@@ -612,7 +599,9 @@ export default function App() {
                           role="status"
                           className="flex min-h-36 flex-1 items-center justify-center rounded-xl bg-slate-200 px-4 py-6 text-center text-sm font-semibold text-slate-500 lg:min-h-0"
                         >
-                          시청각 자료 정보 확인 중
+                          {item.media_url_is_placeholder
+                            ? '시청각 자료 준비 중'
+                            : '시청각 자료 정보 확인 중'}
                         </div>
                       )}
 
@@ -644,7 +633,10 @@ export default function App() {
 
           <div className="mt-10 flex justify-center">
             <button
-              onClick={() => setView('home')}
+              onClick={() => {
+                setQuery('');
+                setView('home');
+              }}
               className="flex items-center px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors shadow-sm"
             >
               <RefreshCw size={18} className="mr-2" /> 처음부터 다시 찾기
@@ -666,9 +658,9 @@ export default function App() {
         </div>
       )}
 
-      {view === 'home' && <HomeView />}
-      {view === 'step' && <StepByStepView />}
-      {view === 'results' && <ResultView />}
+      {view === 'home' && renderHomeView()}
+      {view === 'step' && renderStepByStepView()}
+      {view === 'results' && renderResultView()}
     </div>
   );
 }

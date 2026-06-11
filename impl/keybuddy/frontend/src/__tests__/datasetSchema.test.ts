@@ -273,12 +273,14 @@ describe('extractDatasetSchema - boolean 및 nullable 속성', () => {
     const keyboard: Keyboard = {
       ...makeKeyboard(),
       switch_name: null,
+      media_url: null,
       price_compare_url: null,
     };
 
     const schema = extractDatasetSchema([keyboard]);
 
     expect(hasField(schema, 'switch_name')).toBe(false);
+    expect(hasField(schema, 'media_url')).toBe(false);
     expect(hasField(schema, 'price_compare_url')).toBe(false);
   });
 });

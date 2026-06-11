@@ -17,7 +17,7 @@ interface Keyboard {
   switch_name?: string | null;
   switch_manufacturer?: string | null;
   product_code?: string | null;
-  media_url?: string;
+  media_url?: string | null;
   price_compare_url?: string | null;
   media_url_is_placeholder?: boolean;
 }
@@ -210,7 +210,10 @@ function selectCandidates(input: RecommendInput): Array<{ keyboard: Keyboard; in
 function catalogToText(candidates: Array<{ keyboard: Keyboard; index: number }>): string {
   return candidates
     .map(({ keyboard, index }) => {
-      const force = keyboard.key_force === '0g' ? '키압 미제공' : `키압 ${keyboard.key_force}`;
+      const force =
+        !keyboard.key_force.trim() || keyboard.key_force === '0g'
+          ? '키압 미제공'
+          : `키압 ${keyboard.key_force.trim()}`;
       return `[${index}] ${keyboard.product_name} | 브랜드:${keyboard.brand} | 가격:${keyboard.price}원 | 스위치:${keyboard.switch_type} | 연결:${keyboard.connection}(${keyboard.wireless_type}) | 배열:${keyboard.layout} | ${force} | 무게:${keyboard.weight_g}g | 각인:${keyboard.engraving} | 백라이트:${keyboard.backlight}`;
     })
     .join('\n');

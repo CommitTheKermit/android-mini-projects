@@ -47,7 +47,8 @@ keybuddy/
 
 가격비교 링크는 목록의 스위치 옵션별 가격 영역에서 수집해 `price_compare_url`에
 저장합니다. 옵션 링크가 없는 상품은 상품명 링크를 사용하며, 링크를 확인할 수 없으면
-`null`로 저장합니다. `media_url`은 아직 예시 주소입니다.
+`null`로 저장합니다. `media_url`은 실제 자료를 확보하기 전까지 `null`로 저장하고
+`media_url_is_placeholder`로 준비 중 상태를 표시합니다.
 
 ## 요청 흐름
 

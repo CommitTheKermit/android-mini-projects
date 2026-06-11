@@ -29,8 +29,6 @@ SWITCH_DATA_DIR = BASE_DIR / "keybuddy" / "frontend" / "src" / "data"
 SWITCHES_PATH = SWITCH_DATA_DIR / "switches.json"
 SWITCH_ALIASES_PATH = SWITCH_DATA_DIR / "switch_aliases.json"
 
-MEDIA_URL_PLACEHOLDER = "https://example.com/media"
-
 # 기존 데이터셋의 완전성 기준은 유지한다. 새 스위치 필드는 결측을 허용한다.
 REQUIRED_FIELDS = (
     "product_name",
@@ -329,7 +327,10 @@ def normalize_danawa_url(href: str | None) -> str | None:
 
     url = urljoin(LIST_URL, href.strip())
     parsed = urlparse(url)
-    if parsed.scheme not in ("http", "https") or parsed.netloc != "prod.danawa.com":
+    hostname = (parsed.hostname or "").lower()
+    if parsed.scheme not in ("http", "https"):
+        return None
+    if hostname != "danawa.com" and not hostname.endswith(".danawa.com"):
         return None
     return url
 
@@ -420,7 +421,7 @@ def parse_switch_variants(
 
 def build_links(price_compare_url: str | None) -> dict:
     return {
-        "media_url": MEDIA_URL_PLACEHOLDER,
+        "media_url": None,
         "price_compare_url": price_compare_url,
         "media_url_is_placeholder": True,
     }
@@ -511,7 +512,12 @@ def parse_page(html: str, switches: dict, aliases: dict) -> list[list[dict]]:
     for li in soup.select("div.main_prodlist li.prod_item"):
         if not li.select_one(".prod_main_info"):
             continue
-        records = parse_item(li, switches, aliases)
+        try:
+            records = parse_item(li, switches, aliases)
+        except Exception as error:
+            product_id = li.get("id", "unknown")
+            print(f"  [parse_item 실패] {product_id}: {error}")
+            continue
         if records:
             products.append(records)
     return products
@@ -557,6 +563,32 @@ def dedupe_key(item: dict) -> tuple:
         item.get("raw_switch_name"),
         item.get("product_code"),
     )
+
+
+def select_records_for_remaining_slots(
+    records: list[dict],
+    seen: set,
+    remaining: int,
+) -> tuple[list[tuple[tuple, dict]], int, int]:
+    """완전하고 중복되지 않은 레코드를 남은 수집량만큼 반환한다."""
+    complete_records = []
+    pending_keys = set()
+    skipped_incomplete = 0
+
+    for item in records:
+        if not is_complete(item):
+            skipped_incomplete += 1
+            continue
+
+        key = dedupe_key(item)
+        if key in seen or key in pending_keys:
+            continue
+
+        pending_keys.add(key)
+        complete_records.append((key, item))
+
+    truncated = max(0, len(complete_records) - remaining)
+    return complete_records[:remaining], skipped_incomplete, truncated
 
 
 def build_unmatched_switch_report(items: list[dict]) -> list[dict]:
@@ -611,6 +643,7 @@ def main():
     collected = []
     seen = set()
     skipped_incomplete = 0
+    truncated_options = 0
     product_count = 0
     page = 1
 
@@ -627,20 +660,22 @@ def main():
                 if len(collected) >= TARGET_RECORDS:
                     break
 
-                complete_records = []
-                for item in records:
-                    if not is_complete(item):
-                        skipped_incomplete += 1
-                        continue
-                    key = dedupe_key(item)
-                    if key in seen:
-                        continue
-                    complete_records.append((key, item))
-
-                # 같은 상품의 스위치 옵션 일부만 600개 경계에서 잘리지 않게 한다.
                 remaining = TARGET_RECORDS - len(collected)
-                if not complete_records or len(complete_records) > remaining:
+                complete_records, incomplete_count, truncated_count = (
+                    select_records_for_remaining_slots(records, seen, remaining)
+                )
+                skipped_incomplete += incomplete_count
+                truncated_options += truncated_count
+
+                if not complete_records:
                     continue
+
+                if truncated_count:
+                    product_name = records[0].get("product_name", "?")
+                    print(
+                        f"  [600개 제한] '{product_name}' 옵션 "
+                        f"{truncated_count}개를 제외합니다."
+                    )
 
                 for key, item in complete_records:
                     seen.add(key)
@@ -652,7 +687,8 @@ def main():
             print(
                 f"page {page}: 상품 +{added_products}, 조합 +{added_records} "
                 f"(상품 누적 {product_count}, 조합 누적 {len(collected)}, "
-                f"불완전 누적제외 {skipped_incomplete})"
+                f"불완전 누적제외 {skipped_incomplete}, "
+                f"600개 경계 제외 {truncated_options})"
             )
 
             if len(collected) >= TARGET_RECORDS:
