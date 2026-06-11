@@ -29,6 +29,17 @@ interface RawLLMResult {
   recommendations: RawRecommendation[];
 }
 
+interface RecommendationResult extends Keyboard {
+  reason: string;
+  tags: string[];
+}
+
+interface Candidate {
+  keyboard: Keyboard;
+  index: number;
+  score: number;
+}
+
 const keyboards = catalog as Keyboard[];
 const maxCandidates = 40;
 const maxRecommendations = 30;
@@ -192,15 +203,14 @@ function scoreKeyboard(keyboard: Keyboard, input: RecommendInput): number {
   return score;
 }
 
-function selectCandidates(input: RecommendInput): Array<{ keyboard: Keyboard; index: number }> {
+function selectCandidates(input: RecommendInput): Candidate[] {
   return keyboards
     .map((keyboard, index) => ({ keyboard, index, score: scoreKeyboard(keyboard, input) }))
     .sort((a, b) => b.score - a.score || a.keyboard.price - b.keyboard.price)
-    .slice(0, maxCandidates)
-    .map(({ keyboard, index }) => ({ keyboard, index }));
+    .slice(0, maxCandidates);
 }
 
-function catalogToText(candidates: Array<{ keyboard: Keyboard; index: number }>): string {
+function catalogToText(candidates: Candidate[]): string {
   return candidates
     .map(({ keyboard, index }) => {
       const force = keyboard.key_force === '0g' ? '키압 미제공' : `키압 ${keyboard.key_force}`;
@@ -244,7 +254,66 @@ function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
   return tags.slice(0, 6);
 }
 
-function buildPrompt(input: RecommendInput, candidates: Array<{ keyboard: Keyboard; index: number }>) {
+function fallbackReason(keyboard: Keyboard): string {
+  const traits = [keyboard.switch_type, keyboard.layout, keyboard.connection]
+    .map((value) => value?.trim() ?? '')
+    .filter((value) => value && value !== '정보없음')
+    .join('·');
+
+  if (traits) {
+    return `${traits} 구성을 갖춘 후보라 함께 비교해볼 만해요.`;
+  }
+
+  return '조건에 가까운 후보라 함께 비교해볼 만해요.';
+}
+
+function toRecommendation(keyboard: Keyboard, reason: string): RecommendationResult {
+  return {
+    ...keyboard,
+    reason,
+    tags: buildTagsFromKeyboard(keyboard),
+  };
+}
+
+function composeRecommendations(
+  raw: RawLLMResult,
+  candidates: Candidate[],
+): RecommendationResult[] {
+  const candidateByIndex = new Map(candidates.map((candidate) => [candidate.index, candidate]));
+  const selected = new Set<number>();
+  const recommendations: RecommendationResult[] = [];
+
+  for (const item of raw.recommendations) {
+    const candidate = candidateByIndex.get(item.index);
+    if (!candidate || selected.has(item.index)) {
+      continue;
+    }
+
+    selected.add(item.index);
+    recommendations.push(
+      toRecommendation(candidate.keyboard, item.reason.trim() || fallbackReason(candidate.keyboard)),
+    );
+    if (recommendations.length >= maxRecommendations) {
+      return recommendations;
+    }
+  }
+
+  for (const candidate of candidates) {
+    if (candidate.score <= 0 || selected.has(candidate.index)) {
+      continue;
+    }
+
+    selected.add(candidate.index);
+    recommendations.push(toRecommendation(candidate.keyboard, fallbackReason(candidate.keyboard)));
+    if (recommendations.length >= maxRecommendations) {
+      break;
+    }
+  }
+
+  return recommendations;
+}
+
+function buildPrompt(input: RecommendInput, candidates: Candidate[]) {
   return `당신은 한국어 키보드 추천 도우미 "keybuddy"입니다.
 
 아래 catalog 후보 안에서만 사용자 조건에 맞는 키보드를 추천하세요.
@@ -376,7 +445,6 @@ Deno.serve(async (request) => {
 
     const input = parseInput(await request.json());
     const candidates = selectCandidates(input);
-    const candidateIndexSet = new Set(candidates.map(({ index }) => index));
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), openaiTimeoutMs);
@@ -411,13 +479,7 @@ Deno.serve(async (request) => {
     }
 
     const raw = parseResult(outputText(parseOpenAIResponse(openaiBodyText)));
-    const recommendations = raw.recommendations
-      .filter((item) => candidateIndexSet.has(item.index))
-      .map((item) => ({
-        ...keyboards[item.index],
-        reason: item.reason,
-        tags: buildTagsFromKeyboard(keyboards[item.index]),
-      }));
+    const recommendations = composeRecommendations(raw, candidates);
 
     return Response.json(
       { summary: raw.summary, recommendations },
