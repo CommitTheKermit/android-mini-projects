@@ -47,7 +47,8 @@ const maxRecommendations = 30;
 const maxOutputTokens = maxRecommendations * 120 + 500;
 const openaiTimeoutMs = 40000;
 const rateLimitWindowMs = 60000;
-const rateLimitMaxRequests = 10;
+const postRateLimitMaxRequests = 10;
+const getRateLimitMaxRequests = 60;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
 
@@ -66,6 +67,14 @@ const versionHeaders = {
   'Access-Control-Expose-Headers': 'X-Keybuddy-Version',
   'X-Keybuddy-Version': appVersion,
 };
+
+function retryAfterHeaders(retryAfterSeconds: number) {
+  return {
+    ...corsHeaders,
+    'Access-Control-Expose-Headers': 'Retry-After',
+    'Retry-After': String(retryAfterSeconds),
+  };
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -116,17 +125,21 @@ function clientIp(request: Request): string {
   return request.headers.get('cf-connecting-ip') ?? request.headers.get('x-real-ip') ?? 'unknown';
 }
 
-function checkRateLimit(request: Request): { ok: true } | { ok: false; retryAfterSeconds: number } {
+function checkRateLimit(
+  request: Request,
+  kind: 'get' | 'post',
+): { ok: true } | { ok: false; retryAfterSeconds: number } {
   const now = Date.now();
-  const ip = clientIp(request);
-  const current = rateLimitBuckets.get(ip);
+  const bucketKey = `${kind}:${clientIp(request)}`;
+  const maxRequests = kind === 'get' ? getRateLimitMaxRequests : postRateLimitMaxRequests;
+  const current = rateLimitBuckets.get(bucketKey);
 
   if (!current || current.resetAt <= now) {
-    rateLimitBuckets.set(ip, { count: 1, resetAt: now + rateLimitWindowMs });
+    rateLimitBuckets.set(bucketKey, { count: 1, resetAt: now + rateLimitWindowMs });
     return { ok: true };
   }
 
-  if (current.count >= rateLimitMaxRequests) {
+  if (current.count >= maxRequests) {
     return { ok: false, retryAfterSeconds: Math.ceil((current.resetAt - now) / 1000) };
   }
 
@@ -300,8 +313,12 @@ function composeRecommendations(
     }
 
     candidateByIndex.delete(item.index);
+    const reason = item.reason.trim();
+    if (!reason) {
+      console.warn('recommend: empty LLM reason replaced with fallback.', { index: item.index });
+    }
     recommendations.push(
-      toRecommendation(candidate.keyboard, item.reason.trim() || fallbackReason(candidate.keyboard)),
+      toRecommendation(candidate.keyboard, reason || fallbackReason(candidate.keyboard)),
     );
     if (recommendations.length >= maxRecommendations) {
       return recommendations;
@@ -317,7 +334,6 @@ function composeRecommendations(
       continue;
     }
 
-    candidateByIndex.delete(candidate.index);
     recommendations.push(toRecommendation(candidate.keyboard, fallbackReason(candidate.keyboard)));
     if (recommendations.length >= maxRecommendations) {
       break;
@@ -433,16 +449,13 @@ Deno.serve(async (request) => {
   }
 
   if (request.method === 'GET') {
-    const rateLimit = checkRateLimit(request);
+    const rateLimit = checkRateLimit(request, 'get');
     if (!rateLimit.ok) {
       return Response.json(
         { error: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.' },
         {
           status: 429,
-          headers: {
-            ...corsHeaders,
-            'Retry-After': String(rateLimit.retryAfterSeconds),
-          },
+          headers: retryAfterHeaders(rateLimit.retryAfterSeconds),
         },
       );
     }
@@ -458,16 +471,13 @@ Deno.serve(async (request) => {
   }
 
   try {
-    const rateLimit = checkRateLimit(request);
+    const rateLimit = checkRateLimit(request, 'post');
     if (!rateLimit.ok) {
       return Response.json(
         { error: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.' },
         {
           status: 429,
-          headers: {
-            ...corsHeaders,
-            'Retry-After': String(rateLimit.retryAfterSeconds),
-          },
+          headers: retryAfterHeaders(rateLimit.retryAfterSeconds),
         },
       );
     }

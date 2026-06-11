@@ -112,4 +112,11 @@ npm run deploy:function
 호출하므로, `package.json`의 버전과 `supabase/functions/recommend/version.ts`의 버전이
 어긋난 상태로 배포될 가능성을 줄입니다.
 
+기본 Supabase 프로젝트 ref는 `kzgrduvwwoflybrqayyk`이며, 다른 프로젝트에 배포해야 할 때는
+환경 변수로 override합니다.
+
+```bash
+SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
+```
+
 Supabase Edge Function 배포는 사용자가 명시적으로 요청할 때만 수행합니다.

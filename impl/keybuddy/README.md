@@ -221,6 +221,13 @@ cd impl/keybuddy/frontend
 npm run deploy:function
 ```
 
+다른 Supabase 프로젝트에 배포해야 하면 `SUPABASE_PROJECT_REF`를 지정합니다.
+
+```bash
+cd impl/keybuddy/frontend
+SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
+```
+
 새 publishable key(`sb_publishable_...`)를 쓰는 경우 JWT 검증 설정이 반영되어야 하므로,
 문제가 있으면 아래처럼 project ref와 API 배포 옵션을 한 줄로 명시합니다. 단,
 `version.ts`가 오래된 상태로 배포되지 않도록 먼저 프론트 빌드를 실행합니다.
