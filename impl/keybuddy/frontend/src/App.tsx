@@ -6,14 +6,22 @@ import {
   SlidersHorizontal,
   Check,
   RefreshCw,
-  Copy,
-  CheckCircle2,
   Filter,
   ArrowUpDown,
+  ExternalLink,
+  Play,
 } from 'lucide-react';
+import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
-import type { GraphLevel } from './lib/switchDisplay';
-import type { Recommendation, RecommendInput, RecommendResult } from './types';
+import { getSwitchDisplayData, type GraphLevel } from './lib/switchDisplay';
+import type {
+  Recommendation,
+  RecommendInput,
+  RecommendResult,
+  SwitchDictionary,
+} from './types';
+
+const switches = switchesData as SwitchDictionary;
 
 // --- [질문 데이터] 단계별 선택지 ---
 const questions = [
@@ -135,48 +143,67 @@ function LevelMeter({
   highLabel = '강함',
 }: LevelMeterProps) {
   return (
-    <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)] sm:items-end sm:gap-4">
-      <p className="m-0 text-base font-medium text-slate-900 sm:pb-0.5">
-        {label}
-      </p>
-
-      <div className="min-w-0">
-        <div
-          aria-hidden="true"
-          className="mb-1 flex justify-between text-sm text-slate-700"
-        >
-          <span>{lowLabel}</span>
-          <span>{highLabel}</span>
-        </div>
-
-        {level === null ? (
-          <div
-            role="status"
-            aria-label={`${label} 정보 확인 중`}
-            className="flex h-4 items-center justify-center bg-slate-700 text-[11px] font-medium leading-none text-white"
-          >
-            정보 확인 중
-          </div>
-        ) : (
-          <div
-            role="meter"
-            aria-label={label}
-            aria-valuemin={1}
-            aria-valuemax={3}
-            aria-valuenow={level}
-            aria-valuetext={LEVEL_LABELS[level]}
-            className="h-4 overflow-hidden bg-slate-700"
-          >
-            <div
-              aria-hidden="true"
-              className="h-full bg-emerald-500"
-              style={{ width: LEVEL_WIDTHS[level] }}
-            />
-          </div>
-        )}
+    <div className="min-w-0">
+      <div
+        aria-hidden="true"
+        className="mb-1.5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm text-slate-800 sm:text-base"
+      >
+        <span className="text-left">{lowLabel}</span>
+        <span className="text-center font-medium">{label}</span>
+        <span className="text-right">{highLabel}</span>
       </div>
+
+      {level === null ? (
+        <div
+          role="status"
+          aria-label={`${label} 정보 확인 중`}
+          className="flex h-4 items-center justify-center bg-slate-700 text-[11px] font-medium leading-none text-white"
+        >
+          정보 확인 중
+        </div>
+      ) : (
+        <div
+          role="meter"
+          aria-label={label}
+          aria-valuemin={1}
+          aria-valuemax={3}
+          aria-valuenow={level}
+          aria-valuetext={LEVEL_LABELS[level]}
+          className="h-4 overflow-hidden bg-slate-700"
+        >
+          <div
+            aria-hidden="true"
+            className="h-full bg-emerald-500"
+            style={{ width: LEVEL_WIDTHS[level] }}
+          />
+        </div>
+      )}
     </div>
   );
+}
+
+function normalizeDisplayValue(value: string): string {
+  return value.replace(/^\[키보드\]\s*/, '').trim();
+}
+
+function getProductTags(item: Recommendation): string[] {
+  const switchTag =
+    item.switch_type === '기계식'
+      ? item.raw_switch_name
+        ? `스위치 ${item.raw_switch_name}`
+        : '스위치 정보 확인 중'
+      : item.switch_type;
+
+  const tags = [
+    switchTag,
+    item.connection,
+    item.layout,
+    item.key_force === '0g' ? '키압 정보 확인 중' : `키압 ${item.key_force}`,
+    item.wireless_type === '유선' ? null : normalizeDisplayValue(item.wireless_type),
+    normalizeDisplayValue(item.backlight),
+  ];
+
+  return Array.from(new Set(tags.filter((tag): tag is string => Boolean(tag))));
 }
 
 export default function App() {
@@ -426,7 +453,6 @@ export default function App() {
   const ResultView = () => {
     const [activeFilter, setActiveFilter] = useState('전체');
     const [sortOrder, setSortOrder] = useState<'default' | 'priceAsc' | 'priceDesc'>('default');
-    const [copiedName, setCopiedName] = useState<string | null>(null);
 
     const all: Recommendation[] = result?.recommendations ?? [];
 
@@ -448,18 +474,8 @@ export default function App() {
     if (sortOrder === 'priceAsc') processed.sort((a, b) => a.price - b.price);
     else if (sortOrder === 'priceDesc') processed.sort((a, b) => b.price - a.price);
 
-    const handleCopy = (text: string) => {
-      navigator.clipboard?.writeText(text).then(
-        () => {
-          setCopiedName(text);
-          setTimeout(() => setCopiedName(null), 2000);
-        },
-        () => {},
-      );
-    };
-
     return (
-      <div className="max-w-3xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
+      <div className="max-w-6xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
         <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-10 px-4 py-4 flex items-center">
           <button
             onClick={() => setView('home')}
@@ -525,61 +541,104 @@ export default function App() {
                 해당 조건에 맞는 제품이 없습니다.
               </div>
             ) : (
-              processed.map((item) => (
-                <div
-                  key={item.product_name}
-                  className="flex p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="w-28 h-28 shrink-0 rounded-xl overflow-hidden border border-slate-100">
-                    <KeyboardImage src={item.image_url} alt={item.product_name} />
-                  </div>
+              processed.map((item, index) => {
+                const switchDisplay = getSwitchDisplayData(item, switches);
+                const productTags = getProductTags(item);
+                const mediaLabel = item.media_url_is_placeholder
+                  ? '예시 시청각 자료'
+                  : '시청각 자료 보기';
 
-                  <div className="flex flex-col ml-4 sm:ml-5 flex-1 min-w-0">
-                    <div className="flex items-start justify-between">
-                      <h3 className="text-lg font-bold text-slate-900 truncate pr-2">
-                        {item.product_name}
-                      </h3>
-                      <button
-                        onClick={() => handleCopy(item.product_name)}
-                        className="p-1.5 shrink-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
-                        title="제품명 복사"
-                      >
-                        {copiedName === item.product_name ? (
-                          <CheckCircle2 size={18} className="text-green-500" />
-                        ) : (
-                          <Copy size={18} />
-                        )}
-                      </button>
-                    </div>
-                    <p className="text-slate-500 text-sm mt-1 leading-snug line-clamp-2">
-                      {item.reason}
-                    </p>
-
-                    <div className="flex flex-wrap gap-1.5 mt-2.5">
-                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-md font-bold">
-                        {item.brand}
-                      </span>
-                      {item.tags.map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-md font-medium"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="mt-auto pt-3 flex items-end justify-between">
-                      <span className="text-xs text-slate-400">
-                        {item.switch_type} · {item.layout} · {item.connection}
-                      </span>
-                      <span className="text-lg font-bold text-slate-900">
+                return (
+                  <article
+                    key={item.product_code ?? `${item.product_name}-${index}`}
+                    className="grid gap-5 rounded-2xl border border-slate-200 bg-slate-100 p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5 lg:grid-cols-[15rem_minmax(0,1fr)_13rem] lg:gap-7"
+                  >
+                    <div className="flex min-w-0 flex-col">
+                      <div className="aspect-[4/3] overflow-hidden rounded-xl border border-slate-200 bg-white">
+                        <KeyboardImage src={item.image_url} alt={item.product_name} />
+                      </div>
+                      <p className="mt-4 text-center text-2xl font-extrabold tracking-tight text-slate-950 lg:text-3xl">
                         {item.price.toLocaleString()}원
-                      </span>
+                      </p>
                     </div>
-                  </div>
-                </div>
-              ))
+
+                    <div className="flex min-w-0 flex-col">
+                      <div className="min-w-0">
+                        <h3
+                          className="truncate text-xl font-extrabold text-slate-950 lg:text-2xl"
+                          title={item.product_name}
+                        >
+                          {item.product_name}
+                        </h3>
+                        <p className="mt-1 line-clamp-1 text-sm leading-relaxed text-slate-500">
+                          {item.reason}
+                        </p>
+                      </div>
+
+                      <div className="mt-5 space-y-5 lg:mt-6">
+                        <LevelMeter
+                          label="누르는 중간에 걸리는 느낌"
+                          level={switchDisplay.tactility}
+                        />
+                        <LevelMeter label="소음" level={switchDisplay.noise} />
+                      </div>
+
+                      <div className="mt-auto flex flex-wrap gap-2 pt-5">
+                        {productTags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex min-w-0 flex-col gap-4 lg:justify-between">
+                      {item.media_url ? (
+                        <a
+                          href={item.media_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex min-h-36 flex-1 flex-col items-center justify-center gap-3 rounded-xl bg-slate-700 px-4 py-6 text-center text-sm font-bold text-white transition-colors hover:bg-slate-800 lg:min-h-0"
+                          aria-label={`${item.product_name} ${mediaLabel}`}
+                        >
+                          <Play size={28} aria-hidden="true" />
+                          <span>{mediaLabel}</span>
+                        </a>
+                      ) : (
+                        <div
+                          role="status"
+                          className="flex min-h-36 flex-1 items-center justify-center rounded-xl bg-slate-200 px-4 py-6 text-center text-sm font-semibold text-slate-500 lg:min-h-0"
+                        >
+                          시청각 자료 정보 확인 중
+                        </div>
+                      )}
+
+                      {item.price_compare_url ? (
+                        <a
+                          href={item.price_compare_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700"
+                          aria-label={`${item.product_name} 가격 비교 페이지 열기`}
+                        >
+                          가격 비교
+                          <ExternalLink size={16} aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <div
+                          role="status"
+                          className="rounded-xl bg-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-500"
+                        >
+                          가격 비교 정보 확인 중
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                );
+              })
             )}
           </div>
 
