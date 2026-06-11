@@ -242,7 +242,7 @@ function StepByStepView({
   const handleSelect = (option: string) => {
     setAnswers({ ...answers, [currentQ.id]: option });
     if (!isLastStep) {
-      setTimeout(() => setStep(step + 1), 200);
+      setTimeout(() => setStep((s) => s + 1), 200);
     }
   };
 
