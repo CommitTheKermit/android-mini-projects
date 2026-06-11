@@ -16,10 +16,10 @@ if (typeof version !== 'string' || version.trim().length === 0) {
 
 const targetDir = dirname(targetPath);
 if (!existsSync(targetDir)) {
-  throw new Error(
-    `Target directory does not exist: ${targetDir}\n` +
-      `Run 'supabase functions new recommend' or check the repo layout.`,
+  process.stderr.write(
+    `sync:function-version: skipped because target directory does not exist: ${targetDir}\n`,
   );
+  process.exit(0);
 }
 
 const nextContent =

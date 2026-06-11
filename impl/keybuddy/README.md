@@ -221,35 +221,23 @@ cd impl/keybuddy/frontend
 SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
 ```
 
-현재 프로젝트라면 아래처럼 실행합니다.
-
-```bash
-cd impl/keybuddy/frontend
-SUPABASE_PROJECT_REF=kzgrduvwwoflybrqayyk npm run deploy:function
-```
+실제 project ref는 공개 문서에 적지 말고 로컬 환경 변수나 비공개 설정에서 주입합니다.
 
 새 publishable key(`sb_publishable_...`)를 쓰는 경우 JWT 검증 설정이 반영되어야 하므로,
 문제가 있으면 아래처럼 project ref와 API 배포 옵션을 한 줄로 명시합니다. 단,
-`version.ts`가 오래된 상태로 배포되지 않도록 먼저 프론트 빌드를 실행합니다.
+`version.ts`가 오래된 상태로 배포되지 않도록 먼저 버전 동기화를 실행합니다.
 
 ```bash
 cd impl/keybuddy/frontend
-npm run build
+npm run sync:function-version
 cd ..
 supabase functions deploy recommend --project-ref your-project-ref --use-api
-```
-
-현재 프로젝트라면 아래처럼 실행합니다.
-
-```bash
-cd impl/keybuddy/frontend
-SUPABASE_PROJECT_REF=kzgrduvwwoflybrqayyk npm run deploy:function
 ```
 
 배포 후 Edge Function 버전 확인:
 
 ```bash
-curl https://kzgrduvwwoflybrqayyk.supabase.co/functions/v1/recommend
+curl https://your-project-ref.supabase.co/functions/v1/recommend
 ```
 
 프론트 정적 배포는 Supabase Hosting이 아니라 Vercel, Netlify, GitHub Pages 같은 정적

@@ -54,7 +54,6 @@ const getRateLimitMaxRequests = 60;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
 let lastRateLimitSweepAt = 0;
-const rateLimitScope = 'single-isolate';
 const invisibleTraitValues = new Set(['정보없음', '0g']);
 
 if (maxCandidates < maxRecommendations) {
@@ -67,16 +66,30 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
 
+function exposeHeaders(...headers: string[]): string {
+  return [
+    ...new Set(
+      headers
+        .flatMap((header) => header.split(','))
+        .map((header) => header.trim())
+        .filter(Boolean),
+    ),
+  ].join(', ');
+}
+
 const versionHeaders = {
   ...corsHeaders,
-  'Access-Control-Expose-Headers': 'X-Keybuddy-Version',
+  'Access-Control-Expose-Headers': exposeHeaders('X-Keybuddy-Version'),
   'X-Keybuddy-Version': appVersion,
 };
 
 function retryAfterHeaders(retryAfterSeconds: number) {
   return {
     ...versionHeaders,
-    'Access-Control-Expose-Headers': `Retry-After, ${versionHeaders['Access-Control-Expose-Headers']}`,
+    'Access-Control-Expose-Headers': exposeHeaders(
+      'Retry-After',
+      versionHeaders['Access-Control-Expose-Headers'],
+    ),
     'Retry-After': String(retryAfterSeconds),
   };
 }
@@ -310,8 +323,12 @@ function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
   return tags.slice(0, 6);
 }
 
-function fallbackReason(keyboard: Keyboard, score?: number): string {
-  if (typeof score === 'number' && score === 0) {
+function fallbackReason(
+  keyboard: Keyboard,
+  score?: number,
+  options: { preferTraits?: boolean } = {},
+): string {
+  if (!options.preferTraits && typeof score === 'number' && score === 0) {
     return '조건이 넓어 함께 비교할 후보로 보여드려요.';
   }
 
@@ -361,18 +378,25 @@ function composeRecommendations(
       console.warn('recommend: empty LLM reason replaced with fallback.', { index: item.index });
     }
     recommendations.push(
-      toRecommendation(candidate.keyboard, reason || fallbackReason(candidate.keyboard, candidate.score), source),
+      toRecommendation(
+        candidate.keyboard,
+        reason || fallbackReason(candidate.keyboard, candidate.score, { preferTraits: true }),
+        source,
+      ),
     );
     if (recommendations.length >= maxRecommendations) {
       return recommendations;
     }
   }
 
-  const minimumFallbackScoreInclusive = 0;
   for (const candidate of candidateByIndex.values()) {
     // Zero-score candidates are still useful as broad comparison fillers;
     // fallbackReason labels them separately from matched candidates.
-    if (candidate.score < minimumFallbackScoreInclusive) {
+    if (candidate.score < 0) {
+      console.warn('recommend: negative-score candidate excluded from fallback.', {
+        index: candidate.index,
+        score: candidate.score,
+      });
       continue;
     }
 
@@ -505,7 +529,7 @@ Deno.serve(async (request) => {
     }
 
     return Response.json(
-      { name: 'recommend', version: appVersion, rate_limit_scope: rateLimitScope },
+      { name: 'recommend', version: appVersion },
       { headers: versionHeaders },
     );
   }
@@ -573,7 +597,7 @@ Deno.serve(async (request) => {
       {
         summary: raw.summary,
         recommendations,
-        meta: { version: appVersion, rate_limit_scope: rateLimitScope },
+        meta: { version: appVersion },
       },
       { headers: versionHeaders },
     );
@@ -582,7 +606,7 @@ Deno.serve(async (request) => {
     return Response.json(
       {
         error: message,
-        meta: { version: appVersion, rate_limit_scope: rateLimitScope },
+        meta: { version: appVersion },
       },
       { status: 500, headers: versionHeaders },
     );

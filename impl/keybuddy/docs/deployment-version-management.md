@@ -46,7 +46,7 @@ Edge Function은 이 파일의 `appVersion`을 import해서 사용합니다.
 배포된 Edge Function은 OpenAI 호출 없이 `GET` 요청만으로 버전을 확인할 수 있습니다.
 
 ```bash
-curl https://kzgrduvwwoflybrqayyk.supabase.co/functions/v1/recommend
+curl https://your-project-ref.supabase.co/functions/v1/recommend
 ```
 
 예상 응답 형식:
@@ -102,21 +102,18 @@ npm version patch --no-git-tag-version
 npm run build
 ```
 
-Edge Function을 배포할 때는 빌드를 먼저 강제하는 래퍼를 사용합니다.
+Edge Function을 배포할 때는 버전 동기화와 타입 검사를 강제하는 래퍼를 사용합니다.
 
 ```bash
 SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
 ```
 
-이 래퍼는 `npm run build`를 먼저 실행한 뒤 `supabase functions deploy recommend`를
-호출하므로, `package.json`의 버전과 `supabase/functions/recommend/version.ts`의 버전이
-어긋난 상태로 배포될 가능성을 줄입니다.
+이 래퍼는 `tsc --noEmit` 타입 검사를 실행하고, 배포 스크립트 안에서
+`sync:function-version`을 실행한 뒤 `supabase functions deploy recommend`를 호출합니다.
+따라서 `package.json`의 버전과 `supabase/functions/recommend/version.ts`의 버전이
+어긋난 상태로 배포될 가능성을 줄이면서 불필요한 프론트 정적 빌드는 피합니다.
 
-프로덕션 오배포를 피하기 위해 `SUPABASE_PROJECT_REF`는 필수입니다. 현재 프로젝트에
-배포할 때는 아래처럼 명시합니다.
-
-```bash
-SUPABASE_PROJECT_REF=kzgrduvwwoflybrqayyk npm run deploy:function
-```
+프로덕션 오배포를 피하기 위해 `SUPABASE_PROJECT_REF`는 필수입니다. 실제 project ref는
+공개 문서에 적지 말고 로컬 환경 변수나 비공개 설정에서 주입합니다.
 
 Supabase Edge Function 배포는 사용자가 명시적으로 요청할 때만 수행합니다.
