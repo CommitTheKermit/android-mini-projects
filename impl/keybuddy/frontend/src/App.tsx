@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
-import { getBeginnerLabels, getCautionNotes, getProductTags } from './lib/productDisplay';
+import { getBeginnerGuide, getProductTags } from './lib/productDisplay';
 import { getSwitchDisplayData, type GraphLevel } from './lib/switchDisplay';
 import type {
   Recommendation,
@@ -212,6 +212,7 @@ export default function App() {
   const [view, setView] = useState<'home' | 'step' | 'results'>('home');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RecommendResult | null>(null);
+  const [resultQueryLabel, setResultQueryLabel] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [step, setStep] = useState(0);
@@ -230,6 +231,7 @@ export default function App() {
     try {
       const res = await recommend(input);
       setResult(res);
+      setResultQueryLabel(input.mode === 'freeform' ? input.query.trim() : '단계별 선택');
       setActiveFilter('전체');
       setSortOrder('default');
       setView('results');
@@ -489,9 +491,7 @@ export default function App() {
     else if (sortOrder === 'priceDesc') processed.sort((a, b) => b.price - a.price);
 
     const isAllFilter = activeFilter === '전체';
-    const headerCountText = isAllFilter
-      ? `전체 ${all.length}개`
-      : `${activeFilter} 필터 · ${processed.length}/${all.length}개`;
+    const searchLabel = resultQueryLabel || '입력한 조건';
     const resultCount = isAllFilter ? all.length : processed.length;
     const resultCountSpan = <span className="text-blue-600">{resultCount}개</span>;
 
@@ -507,8 +507,8 @@ export default function App() {
           >
             <ChevronLeft size={24} />
           </button>
-          <h1 className="text-lg font-bold text-slate-800 ml-2">
-            [{headerCountText}의 제품 찾음]
+          <h1 className="ml-2 min-w-0 truncate text-lg font-bold text-slate-800">
+            "{searchLabel}" 검색 결과 {all.length}개
           </h1>
         </div>
 
@@ -577,8 +577,7 @@ export default function App() {
               processed.map((item, index) => {
                 const switchDisplay = getSwitchDisplayData(item, switches);
                 const productTags = getProductTags(item);
-                const beginnerLabels = getBeginnerLabels(item);
-                const cautionNotes = getCautionNotes(item);
+                const beginnerGuide = getBeginnerGuide(item);
                 const mediaLabel = '시청각 자료 보기';
 
                 return (
@@ -608,9 +607,9 @@ export default function App() {
                         </p>
                       </div>
 
-                      {beginnerLabels.length > 0 && (
+                      {beginnerGuide.labels.length > 0 && (
                         <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                          {beginnerLabels.map((label) => (
+                          {beginnerGuide.labels.map((label) => (
                             <span
                               key={label}
                               className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-bold leading-snug text-blue-800"
@@ -621,14 +620,14 @@ export default function App() {
                         </div>
                       )}
 
-                      {cautionNotes.length > 0 && (
+                      {beginnerGuide.notes.length > 0 && (
                         <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
                           <div className="flex items-center gap-1.5 text-xs font-extrabold text-amber-800">
                             <AlertTriangle size={14} aria-hidden="true" />
                             확인할 점
                           </div>
                           <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-amber-900">
-                            {cautionNotes.map((note) => (
+                            {beginnerGuide.notes.map((note) => (
                               <li key={note}>{note}</li>
                             ))}
                           </ul>

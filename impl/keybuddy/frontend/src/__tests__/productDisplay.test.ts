@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { getBeginnerLabels, getCautionNotes, getProductTags } from '../lib/productDisplay';
+import {
+  getBeginnerGuide,
+  getBeginnerLabels,
+  getCautionNotes,
+  getProductTags,
+} from '../lib/productDisplay';
 import type { Recommendation } from '../types';
 
 function makeRecommendation(overrides: Partial<Recommendation> = {}): Recommendation {
@@ -178,6 +183,24 @@ describe('getBeginnerLabels', () => {
   });
 });
 
+describe('getBeginnerGuide', () => {
+  it('쉬운 라벨과 주의 문구를 한 번에 반환한다', () => {
+    const guide = getBeginnerGuide(
+      makeRecommendation({
+        switch_type: '기계식',
+        raw_switch_name: '청축',
+        layout: '텐키리스',
+      }),
+    );
+
+    expect(guide.labels).toContain('축에 따라 키감 차이 큼');
+    expect(guide.labels).toContain('숫자키 없음');
+    expect(guide.notes).toContain(
+      '클릭감 있는 축은 소리가 크게 느껴질 수 있어 조용한 공간에서는 확인이 필요해요.',
+    );
+  });
+});
+
 describe('getCautionNotes', () => {
   it('초보자가 놓치기 쉬운 불편 가능성을 속성 기반으로 안내한다', () => {
     const notes = getCautionNotes(
@@ -224,6 +247,37 @@ describe('getCautionNotes', () => {
 
     expect(notes).toContain(
       '블루투스가 필요한 노트북·태블릿 환경에서는 연결 방식을 확인해야 해요.',
+    );
+  });
+
+  it('유선+무선 제품은 전용 동글만 있어도 블루투스 부재 경고를 표시하지 않는다', () => {
+    const notes = getCautionNotes(
+      makeRecommendation({
+        connection: '유선+무선',
+        wireless_type: '전용동글(리시버)',
+        switch_type: '펜타그래프',
+        layout: '풀배열',
+        backlight: '없음',
+        weight_g: null,
+      }),
+    );
+
+    expect(notes).not.toContain(
+      '블루투스가 필요한 노트북·태블릿 환경에서는 연결 방식을 확인해야 해요.',
+    );
+  });
+
+  it('raw_switch_name이 빈 문자열이면 switch_name으로 클릭 소음 주의 문구를 판단한다', () => {
+    const notes = getCautionNotes(
+      makeRecommendation({
+        switch_type: '기계식',
+        raw_switch_name: '',
+        switch_name: '청축',
+      }),
+    );
+
+    expect(notes).toContain(
+      '클릭감 있는 축은 소리가 크게 느껴질 수 있어 조용한 공간에서는 확인이 필요해요.',
     );
   });
 });
