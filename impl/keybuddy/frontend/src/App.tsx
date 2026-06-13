@@ -487,6 +487,13 @@ export default function App() {
     if (sortOrder === 'priceAsc') processed.sort((a, b) => a.price - b.price);
     else if (sortOrder === 'priceDesc') processed.sort((a, b) => b.price - a.price);
 
+    const isAllFilter = activeFilter === '전체';
+    const headerCountText = isAllFilter
+      ? `전체 ${all.length}개`
+      : `${activeFilter} 필터 · ${processed.length}/${all.length}개`;
+    const resultCount = isAllFilter ? all.length : processed.length;
+    const resultCountSpan = <span className="text-blue-600">{resultCount}개</span>;
+
     return (
       <div className="max-w-6xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
         <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-10 px-4 py-4 flex items-center">
@@ -500,7 +507,7 @@ export default function App() {
             <ChevronLeft size={24} />
           </button>
           <h1 className="text-lg font-bold text-slate-800 ml-2">
-            [{processed.length}개의 제품 찾음]
+            [{headerCountText}의 제품 찾음]
           </h1>
         </div>
 
@@ -508,7 +515,14 @@ export default function App() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 gap-4">
             <div>
               <h2 className="text-xl font-extrabold text-slate-900">
-                총 <span className="text-blue-600">{processed.length}개</span>의 상품을 찾았어요
+                {isAllFilter ? (
+                  <>총 {resultCountSpan}의 상품을 찾았어요</>
+                ) : (
+                  <>
+                    <span className="text-blue-600">{activeFilter}</span> 필터로{' '}
+                    {resultCountSpan}의 상품이 남았어요
+                  </>
+                )}
               </h2>
               <p className="text-slate-500 text-sm mt-1">
                 {result?.summary ?? '입력하신 조건에 가장 잘 맞는 추천 목록입니다.'}
@@ -531,23 +545,25 @@ export default function App() {
           </div>
 
           {/* 필터 영역 */}
-          <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex items-center gap-2 mb-6 pb-2">
             <div className="flex items-center text-slate-400 mr-1 shrink-0">
               <Filter size={16} />
             </div>
-            {filterOptions.map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                  activeFilter === f
-                    ? 'bg-slate-800 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                {f}
-              </button>
-            ))}
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto scrollbar-hide">
+              {filterOptions.map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setActiveFilter(f)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0 ${
+                    activeFilter === f
+                      ? 'bg-slate-800 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* 제품 리스트 */}
