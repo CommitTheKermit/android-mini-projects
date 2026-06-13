@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
-import { getBeginnerLabels, getCautionNotes, getProductTags } from './lib/productDisplay';
+import { getBeginnerGuide, getProductTags } from './lib/productDisplay';
 import { getSwitchDisplayData, type GraphLevel } from './lib/switchDisplay';
 import type {
   Recommendation,
@@ -577,8 +577,7 @@ export default function App() {
               processed.map((item, index) => {
                 const switchDisplay = getSwitchDisplayData(item, switches);
                 const productTags = getProductTags(item);
-                const beginnerLabels = getBeginnerLabels(item);
-                const cautionNotes = getCautionNotes(item);
+                const beginnerGuide = getBeginnerGuide(item);
                 const mediaLabel = '시청각 자료 보기';
 
                 return (
@@ -608,9 +607,9 @@ export default function App() {
                         </p>
                       </div>
 
-                      {beginnerLabels.length > 0 && (
+                      {beginnerGuide.labels.length > 0 && (
                         <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                          {beginnerLabels.map((label) => (
+                          {beginnerGuide.labels.map((label) => (
                             <span
                               key={label}
                               className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-bold leading-snug text-blue-800"
@@ -621,14 +620,14 @@ export default function App() {
                         </div>
                       )}
 
-                      {cautionNotes.length > 0 && (
+                      {beginnerGuide.notes.length > 0 && (
                         <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
                           <div className="flex items-center gap-1.5 text-xs font-extrabold text-amber-800">
                             <AlertTriangle size={14} aria-hidden="true" />
                             확인할 점
                           </div>
                           <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-amber-900">
-                            {cautionNotes.map((note) => (
+                            {beginnerGuide.notes.map((note) => (
                               <li key={note}>{note}</li>
                             ))}
                           </ul>
