@@ -4,6 +4,8 @@ import {
   Keyboard,
   ChevronLeft,
   SlidersHorizontal,
+  MessageSquare,
+  ArrowRight,
   Check,
   RefreshCw,
   Filter,
@@ -253,11 +255,19 @@ export default function App() {
       runRecommend({ mode: 'freeform', query });
     };
 
+    const startStepByStep = () => {
+      setStep(0);
+      setAnswers({});
+      setMinBudget(0);
+      setMaxBudget(1000000);
+      setView('step');
+    };
+
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 bg-slate-50 py-12">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-3">나만의 키보드 찾기</h1>
-          <p className="text-slate-600">어떤 키보드를 찾으시나요? 자유롭게 말해주세요.</p>
+      <div className="flex flex-col items-center min-h-screen px-6 bg-slate-50 py-12">
+        <div className="text-center mb-7">
+          <h1 className="text-3xl font-bold text-slate-800 mb-2.5">나만의 키보드 찾기</h1>
+          <p className="text-slate-500">원하는 방식으로 키보드를 찾아보세요.</p>
         </div>
 
         {error && (
@@ -266,56 +276,72 @@ export default function App() {
           </div>
         )}
 
-        {/* 채팅창 섹션 */}
-        <div className="w-full max-w-2xl bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 relative">
-          <textarea
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="예: 조용한 사무용 키보드를 추천해줘"
-            className="w-full h-32 p-2 outline-none resize-none text-slate-800 bg-transparent"
-          />
-          <div className="flex justify-end mt-2">
+        {/* 입력 방식 선택 카드 */}
+        <div className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-4 mb-7">
+          {/* 자유롭게 입력 */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between">
+            <div className="flex flex-col gap-3">
+              <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
+                <MessageSquare size={22} className="text-blue-600" />
+              </div>
+              <h2 className="text-lg font-bold text-slate-800">자유롭게 입력</h2>
+              <textarea
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="예: 조용한 사무용 키보드를 추천해줘"
+                className="w-full h-[72px] p-3 rounded-[10px] bg-slate-50 border border-slate-200 outline-none resize-none text-sm text-slate-800 placeholder:text-slate-400 focus:border-blue-400"
+              />
+            </div>
             <button
               onClick={handleSubmit}
               disabled={!query}
-              className={`px-6 py-3 rounded-xl font-medium transition-colors flex items-center ${query ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' : 'bg-slate-100 text-slate-400'}`}
+              className={`mt-4 w-full py-3 rounded-[10px] font-medium flex items-center justify-center gap-2 transition-colors ${query ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-slate-100 text-slate-400'}`}
             >
-              분석하기 <Search size={18} className="ml-2" />
+              분석하기 <Search size={16} />
+            </button>
+          </div>
+
+          {/* 단계별 선택 */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between">
+            <div className="flex flex-col gap-3">
+              <div className="w-11 h-11 rounded-full bg-indigo-50 flex items-center justify-center">
+                <SlidersHorizontal size={22} className="text-indigo-500" />
+              </div>
+              <h2 className="text-lg font-bold text-slate-800">단계별 선택</h2>
+              <div className="flex items-center gap-2 h-[72px] p-3 rounded-[10px] bg-slate-50 border border-slate-200">
+                {['용도', '타건감', '예산'].map((label) => (
+                  <span
+                    key={label}
+                    className="px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-500 text-[13px] font-medium"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={startStepByStep}
+              className="mt-4 w-full py-3 rounded-[10px] bg-indigo-500 text-white font-medium flex items-center justify-center gap-2 hover:bg-indigo-600 transition-colors"
+            >
+              단계별로 시작 <ArrowRight size={16} />
             </button>
           </div>
         </div>
 
         {/* 템플릿 제공 섹션 */}
-        <div className="w-full max-w-2xl mb-12">
-          <p className="text-sm font-medium text-slate-500 mb-3 ml-1">이런 식으로 질문해 보세요:</p>
+        <div className="w-full max-w-2xl">
+          <p className="text-sm font-medium text-slate-500 mb-3">이런 식으로 질문해 보세요:</p>
           <div className="flex flex-col gap-2">
             {templates.map((txt, idx) => (
               <button
                 key={idx}
                 onClick={() => setQuery(txt)}
-                className="text-left p-3.5 rounded-xl bg-slate-100/50 hover:bg-blue-50 text-slate-700 text-sm transition-colors border border-transparent hover:border-blue-100 shadow-sm"
+                className="text-left p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-sm hover:bg-blue-50 hover:border-blue-100 transition-colors"
               >
                 "{txt}"
               </button>
             ))}
           </div>
-        </div>
-
-        {/* 단계별 선택 작게 배치 */}
-        <div className="w-full max-w-2xl border-t border-slate-200 pt-8 flex flex-col items-center">
-          <p className="text-slate-500 text-sm mb-4">질문에 답하며 하나씩 찾고 싶다면?</p>
-          <button
-            onClick={() => {
-              setStep(0);
-              setAnswers({});
-              setMinBudget(0);
-              setMaxBudget(1000000);
-              setView('step');
-            }}
-            className="flex items-center px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-          >
-            <SlidersHorizontal size={18} className="mr-2 text-indigo-500" /> 단계별로 선택하기
-          </button>
         </div>
       </div>
     );
