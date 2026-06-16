@@ -241,6 +241,15 @@ export default function App() {
     }
   };
 
+  // 홈으로 복귀할 때 공유하는 상태 초기화. 초기화 항목이 늘어도 이 한 곳만 고치면 된다.
+  const goHome = useCallback(() => {
+    setQuery('');
+    setHomeTab('freeform');
+    setRating(0);
+    setError(null);
+    setView('home');
+  }, []);
+
   // --- HOME VIEW ---
   const renderHomeView = () => {
     const templates = [
@@ -259,6 +268,7 @@ export default function App() {
       setAnswers({});
       setMinBudget(0);
       setMaxBudget(1000000);
+      setError(null);
       setView('step');
     };
 
@@ -283,7 +293,7 @@ export default function App() {
           ] as const).map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => setHomeTab(key)}
+              onClick={() => { setHomeTab(key); setError(null); }}
               className={`flex-1 py-2.5 rounded-[10px] text-sm transition-colors ${
                 homeTab === key
                   ? 'bg-white text-slate-800 font-semibold shadow-sm'
@@ -345,7 +355,7 @@ export default function App() {
             {templates.map((txt, idx) => (
               <button
                 key={idx}
-                onClick={() => { setQuery(txt); setHomeTab('freeform'); }}
+                onClick={() => { setQuery(txt); setHomeTab('freeform'); setError(null); }}
                 className="text-left p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-sm hover:bg-blue-50 hover:border-blue-100 transition-colors"
               >
                 "{txt}"
@@ -376,11 +386,7 @@ export default function App() {
     return (
       <div className="max-w-2xl mx-auto pt-12 px-6 min-h-screen">
         <button
-          onClick={() => {
-            setQuery('');
-            setHomeTab('freeform');
-            setView('home');
-          }}
+          onClick={goHome}
           className="flex items-center text-slate-500 mb-6 hover:text-slate-800 transition-colors"
         >
           <ChevronLeft size={20} /> <span className="ml-1">처음으로</span>
@@ -536,11 +542,7 @@ export default function App() {
       <div className="max-w-6xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
         <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-10 px-4 py-4 flex items-center">
           <button
-            onClick={() => {
-              setQuery('');
-              setHomeTab('freeform');
-              setView('home');
-            }}
+            onClick={goHome}
             className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
           >
             <ChevronLeft size={24} />
@@ -819,11 +821,7 @@ export default function App() {
 
           <div className="mt-10 flex justify-center">
             <button
-              onClick={() => {
-                setQuery('');
-                setHomeTab('freeform');
-                setView('home');
-              }}
+              onClick={goHome}
               className="flex items-center px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors shadow-sm"
             >
               <RefreshCw size={18} className="mr-2" /> 처음부터 다시 찾기
