@@ -3,7 +3,7 @@ import {
   Search,
   Keyboard,
   ChevronLeft,
-  SlidersHorizontal,
+  ArrowRight,
   Check,
   RefreshCw,
   Filter,
@@ -50,6 +50,11 @@ function useAutoDismiss<T>(duration: number) {
 }
 
 // --- [질문 데이터] 단계별 선택지 ---
+const HOME_TABS = [
+  { key: 'freeform', label: '자유롭게 입력' },
+  { key: 'step', label: '단계별 선택' },
+] as const;
+
 const questions = [
   { id: '용도', title: '어떤 용도로 사용하시나요?', options: ['사무용', '게임용', '상관없음'] },
   {
@@ -214,6 +219,7 @@ export default function App() {
   const [result, setResult] = useState<RecommendResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [homeTab, setHomeTab] = useState<'freeform' | 'step'>('freeform');
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [minBudget, setMinBudget] = useState(0);
@@ -240,6 +246,22 @@ export default function App() {
     }
   };
 
+  // 홈으로 복귀할 때 공유하는 상태 초기화. 초기화 항목이 늘어도 이 한 곳만 고치면 된다.
+  const goHome = () => {
+    setQuery('');
+    setHomeTab('freeform');
+    setRating(0);
+    setError(null);
+    setView('home');
+  };
+
+  // 템플릿 선택: 입력 채움 + freeform 탭 전환 + 오류 초기화를 한 지점에 모은다.
+  const selectTemplate = (text: string) => {
+    setQuery(text);
+    setHomeTab('freeform');
+    setError(null);
+  };
+
   // --- HOME VIEW ---
   const renderHomeView = () => {
     const templates = [
@@ -253,11 +275,20 @@ export default function App() {
       runRecommend({ mode: 'freeform', query });
     };
 
+    const startStepByStep = () => {
+      setStep(0);
+      setAnswers({});
+      setMinBudget(0);
+      setMaxBudget(1000000);
+      setError(null);
+      setView('step');
+    };
+
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 bg-slate-50 py-12">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-3">나만의 키보드 찾기</h1>
-          <p className="text-slate-600">어떤 키보드를 찾으시나요? 자유롭게 말해주세요.</p>
+      <div className="flex flex-col items-center min-h-screen px-6 bg-slate-50 py-12">
+        <div className="text-center mb-7">
+          <h1 className="text-3xl font-bold text-slate-800 mb-2.5">나만의 키보드 찾기</h1>
+          <p className="text-slate-500">원하는 방식으로 키보드를 찾아보세요.</p>
         </div>
 
         {error && (
@@ -266,56 +297,80 @@ export default function App() {
           </div>
         )}
 
-        {/* 채팅창 섹션 */}
-        <div className="w-full max-w-2xl bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 relative">
-          <textarea
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="예: 조용한 사무용 키보드를 추천해줘"
-            className="w-full h-32 p-2 outline-none resize-none text-slate-800 bg-transparent"
-          />
-          <div className="flex justify-end mt-2">
+        {/* 입력 방식 세그먼트 토글 */}
+        <div className="w-full max-w-2xl flex gap-1 p-1 rounded-xl bg-slate-100 mb-4">
+          {HOME_TABS.map(({ key, label }) => (
             <button
-              onClick={handleSubmit}
-              disabled={!query}
-              className={`px-6 py-3 rounded-xl font-medium transition-colors flex items-center ${query ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' : 'bg-slate-100 text-slate-400'}`}
+              key={key}
+              onClick={() => { setHomeTab(key); setError(null); }}
+              className={`flex-1 py-2.5 rounded-[10px] text-sm transition-colors ${
+                homeTab === key
+                  ? 'bg-white text-slate-800 font-semibold shadow-sm'
+                  : 'text-slate-500 font-medium hover:text-slate-700'
+              }`}
             >
-              분석하기 <Search size={18} className="ml-2" />
+              {label}
             </button>
-          </div>
+          ))}
+        </div>
+
+        {/* 선택한 방식에 따른 카드 */}
+        <div className="w-full max-w-2xl bg-white rounded-2xl border border-slate-200 p-4 mb-7">
+          {homeTab === 'freeform' ? (
+            <div className="flex flex-col gap-2">
+              <textarea
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="예: 조용한 사무용 키보드를 추천해줘"
+                className="w-full h-32 p-2 outline-none resize-none text-slate-800 bg-transparent placeholder:text-slate-400"
+              />
+              <div className="flex justify-end">
+                <button
+                  onClick={handleSubmit}
+                  disabled={!query || loading}
+                  className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-colors ${query && !loading ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-slate-100 text-slate-400'}`}
+                >
+                  분석하기 <Search size={18} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-4 py-6 px-2 text-center">
+              <div className="flex flex-wrap justify-center gap-2">
+                {['용도', '타건감', '예산'].map((label) => (
+                  <span
+                    key={label}
+                    className="px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-500 text-[13px] font-medium"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+              <p className="text-sm text-slate-500">몇 가지 질문에 답하면 조건에 맞는 키보드를 찾아드려요.</p>
+              <button
+                onClick={startStepByStep}
+                className="w-full max-w-xs py-3 rounded-xl bg-indigo-500 text-white font-medium flex items-center justify-center gap-2 hover:bg-indigo-600 transition-colors"
+              >
+                단계별로 시작 <ArrowRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 템플릿 제공 섹션 */}
-        <div className="w-full max-w-2xl mb-12">
-          <p className="text-sm font-medium text-slate-500 mb-3 ml-1">이런 식으로 질문해 보세요:</p>
+        <div className="w-full max-w-2xl">
+          <p className="text-sm font-medium text-slate-500 mb-3">이런 식으로 질문해 보세요:</p>
           <div className="flex flex-col gap-2">
             {templates.map((txt, idx) => (
               <button
                 key={idx}
-                onClick={() => setQuery(txt)}
-                className="text-left p-3.5 rounded-xl bg-slate-100/50 hover:bg-blue-50 text-slate-700 text-sm transition-colors border border-transparent hover:border-blue-100 shadow-sm"
+                onClick={() => selectTemplate(txt)}
+                className="text-left p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-sm hover:bg-blue-50 hover:border-blue-100 transition-colors"
               >
                 "{txt}"
               </button>
             ))}
           </div>
-        </div>
-
-        {/* 단계별 선택 작게 배치 */}
-        <div className="w-full max-w-2xl border-t border-slate-200 pt-8 flex flex-col items-center">
-          <p className="text-slate-500 text-sm mb-4">질문에 답하며 하나씩 찾고 싶다면?</p>
-          <button
-            onClick={() => {
-              setStep(0);
-              setAnswers({});
-              setMinBudget(0);
-              setMaxBudget(1000000);
-              setView('step');
-            }}
-            className="flex items-center px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-          >
-            <SlidersHorizontal size={18} className="mr-2 text-indigo-500" /> 단계별로 선택하기
-          </button>
         </div>
       </div>
     );
@@ -340,10 +395,7 @@ export default function App() {
     return (
       <div className="max-w-2xl mx-auto pt-12 px-6 min-h-screen">
         <button
-          onClick={() => {
-            setQuery('');
-            setView('home');
-          }}
+          onClick={goHome}
           className="flex items-center text-slate-500 mb-6 hover:text-slate-800 transition-colors"
         >
           <ChevronLeft size={20} /> <span className="ml-1">처음으로</span>
@@ -499,10 +551,7 @@ export default function App() {
       <div className="max-w-6xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
         <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-10 px-4 py-4 flex items-center">
           <button
-            onClick={() => {
-              setQuery('');
-              setView('home');
-            }}
+            onClick={goHome}
             className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
           >
             <ChevronLeft size={24} />
@@ -781,10 +830,7 @@ export default function App() {
 
           <div className="mt-10 flex justify-center">
             <button
-              onClick={() => {
-                setQuery('');
-                setView('home');
-              }}
+              onClick={goHome}
               className="flex items-center px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors shadow-sm"
             >
               <RefreshCw size={18} className="mr-2" /> 처음부터 다시 찾기
