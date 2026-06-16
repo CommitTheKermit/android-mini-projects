@@ -50,6 +50,11 @@ function useAutoDismiss<T>(duration: number) {
 }
 
 // --- [질문 데이터] 단계별 선택지 ---
+const HOME_TABS = [
+  { key: 'freeform', label: '자유롭게 입력' },
+  { key: 'step', label: '단계별 선택' },
+] as const;
+
 const questions = [
   { id: '용도', title: '어떤 용도로 사용하시나요?', options: ['사무용', '게임용', '상관없음'] },
   {
@@ -242,13 +247,20 @@ export default function App() {
   };
 
   // 홈으로 복귀할 때 공유하는 상태 초기화. 초기화 항목이 늘어도 이 한 곳만 고치면 된다.
-  const goHome = useCallback(() => {
+  const goHome = () => {
     setQuery('');
     setHomeTab('freeform');
     setRating(0);
     setError(null);
     setView('home');
-  }, []);
+  };
+
+  // 템플릿 선택: 입력 채움 + freeform 탭 전환 + 오류 초기화를 한 지점에 모은다.
+  const selectTemplate = (text: string) => {
+    setQuery(text);
+    setHomeTab('freeform');
+    setError(null);
+  };
 
   // --- HOME VIEW ---
   const renderHomeView = () => {
@@ -287,10 +299,7 @@ export default function App() {
 
         {/* 입력 방식 세그먼트 토글 */}
         <div className="w-full max-w-2xl flex gap-1 p-1 rounded-xl bg-slate-100 mb-4">
-          {([
-            { key: 'freeform', label: '자유롭게 입력' },
-            { key: 'step', label: '단계별 선택' },
-          ] as const).map(({ key, label }) => (
+          {HOME_TABS.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => { setHomeTab(key); setError(null); }}
@@ -355,7 +364,7 @@ export default function App() {
             {templates.map((txt, idx) => (
               <button
                 key={idx}
-                onClick={() => { setQuery(txt); setHomeTab('freeform'); setError(null); }}
+                onClick={() => selectTemplate(txt)}
                 className="text-left p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-sm hover:bg-blue-50 hover:border-blue-100 transition-colors"
               >
                 "{txt}"
