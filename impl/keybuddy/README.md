@@ -4,7 +4,7 @@
 추천해 주는 웹 서비스입니다.
 
 브라우저에서 OpenAI API를 직접 호출하지 않고, Supabase Edge Function이 서버사이드에서
-OpenAI를 호출합니다. Edge Function에서 먼저 후보를 25개 이하로 압축한 뒤 추천 품질을
+OpenAI를 호출합니다. Edge Function에서 먼저 후보를 40개 이하로 압축한 뒤 추천 품질을
 위해 `gpt-5.4` 모델에 넘깁니다.
 
 ## 구조
@@ -26,6 +26,14 @@ keybuddy/
         index.ts                    OpenAI 호출 + 후보 압축 + 결과 매핑
         keyboards.json              추천 후보 카탈로그
 ```
+
+## 더 읽을거리 (기술 문서)
+
+설계·운영 관련 기술 문서는 저장소 루트 `docs/`에 모여 있습니다.
+
+- `docs/tag-extraction-flow.md` - 자연어를 의도/제약 태그로 번역하고 결정론적으로 확장하는 흐름
+- `docs/intent-harness-before-after.md` - 의도 하네스 적용 전/후 정성 비교
+- `docs/deployment-version-management.md` - 배포 및 버전 관리 규칙
 
 ## 크롤링 데이터와 스위치 매칭
 
@@ -56,7 +64,7 @@ keybuddy/
 React 브라우저
   -> Supabase Edge Function /recommend
   -> OPENAI_API_KEY secret 읽기
-  -> 후보 25개 이하로 압축
+  -> 후보 40개 이하로 압축
   -> OpenAI gpt-5.4 모델 호출
   -> catalog index 기반 추천 JSON 반환
   -> 프론트가 결과 렌더링
@@ -347,7 +355,7 @@ npm run sync:data
 - `VITE_` 환경변수는 브라우저 번들에 포함됩니다.
 - `OPENAI_API_KEY`는 Supabase secret으로만 저장합니다.
 - 기본 모델은 추천 품질을 고려해 `gpt-5.4`로 설정합니다.
-- Edge Function은 LLM 호출 전에 후보를 25개 이하로 줄여 입력 토큰을 줄입니다.
+- Edge Function은 LLM 호출 전에 후보를 40개 이하로 줄여 입력 토큰을 줄입니다.
 - `recommend` 함수에는 IP 기준 1분 10회 best-effort rate limit을 둡니다.
 - `recommend` 함수는 공개 엔드포인트이므로 운영 시 Supabase Dashboard의 Edge
   Functions rate limit 또는 별도 인증/사용량 제한을 반드시 설정합니다.
