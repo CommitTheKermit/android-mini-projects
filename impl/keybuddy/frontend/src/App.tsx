@@ -3,8 +3,6 @@ import {
   Search,
   Keyboard,
   ChevronLeft,
-  SlidersHorizontal,
-  MessageSquare,
   ArrowRight,
   Check,
   RefreshCw,
@@ -310,8 +308,8 @@ export default function App() {
               <div className="flex justify-end">
                 <button
                   onClick={handleSubmit}
-                  disabled={!query}
-                  className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-colors ${query ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-slate-100 text-slate-400'}`}
+                  disabled={!query || loading}
+                  className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-colors ${query && !loading ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-slate-100 text-slate-400'}`}
                 >
                   분석하기 <Search size={18} />
                 </button>
@@ -347,7 +345,7 @@ export default function App() {
             {templates.map((txt, idx) => (
               <button
                 key={idx}
-                onClick={() => setQuery(txt)}
+                onClick={() => { setQuery(txt); setHomeTab('freeform'); }}
                 className="text-left p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-sm hover:bg-blue-50 hover:border-blue-100 transition-colors"
               >
                 "{txt}"
@@ -380,6 +378,7 @@ export default function App() {
         <button
           onClick={() => {
             setQuery('');
+            setHomeTab('freeform');
             setView('home');
           }}
           className="flex items-center text-slate-500 mb-6 hover:text-slate-800 transition-colors"
@@ -539,6 +538,7 @@ export default function App() {
           <button
             onClick={() => {
               setQuery('');
+              setHomeTab('freeform');
               setView('home');
             }}
             className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
@@ -821,6 +821,7 @@ export default function App() {
             <button
               onClick={() => {
                 setQuery('');
+                setHomeTab('freeform');
                 setView('home');
               }}
               className="flex items-center px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors shadow-sm"
