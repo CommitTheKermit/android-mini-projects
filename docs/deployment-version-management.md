@@ -6,7 +6,7 @@
 
 - `impl/keybuddy/README.md`
   - `## 배포` 섹션에 앱 버전 단일 소스, 버전 증가 방식, Supabase Edge Function 배포 및 버전 확인 방법을 반영했습니다.
-- `impl/keybuddy/docs/deployment-version-management.md`
+- `docs/deployment-version-management.md`
   - 이 파일입니다. 어떤 내용을 어디에 기록했는지와 코드 변경 이유를 별도로 정리합니다.
 
 대화에서 언급된 Firebase 프로젝트 `socratic-learn-web` 관련 배포 절차는 이 저장소의 실제 배포 대상이 아니므로 그대로 적용하지 않았습니다. 대신 해당 프로젝트의 원칙 중 “배포할 때마다 SemVer 기준으로 단일 버전을 올린다”는 부분만 Supabase Edge Function 구조에 맞게 적용했습니다.
