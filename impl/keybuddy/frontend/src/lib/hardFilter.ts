@@ -84,6 +84,7 @@ export function checkPriceMinViolation(keyboard: Keyboard, priceMinTag: number):
  */
 export function checkWeightMaxViolation(keyboard: Keyboard, weightMaxTag: number): boolean {
   if (weightMaxTag <= 0) return false;
+  if (keyboard.weight_g === null) return true;
   return keyboard.weight_g > weightMaxTag;
 }
 

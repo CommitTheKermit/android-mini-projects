@@ -4,7 +4,7 @@
 추천해 주는 웹 서비스입니다.
 
 브라우저에서 OpenAI API를 직접 호출하지 않고, Supabase Edge Function이 서버사이드에서
-OpenAI를 호출합니다. Edge Function에서 먼저 후보를 25개 이하로 압축한 뒤 추천 품질을
+OpenAI를 호출합니다. Edge Function에서 먼저 후보를 40개 이하로 압축한 뒤 추천 품질을
 위해 `gpt-5.4` 모델에 넘깁니다.
 
 ## 구조
@@ -27,13 +27,44 @@ keybuddy/
         keyboards.json              추천 후보 카탈로그
 ```
 
+## 더 읽을거리 (기술 문서)
+
+설계·운영 관련 기술 문서는 저장소 루트 `docs/`에 모여 있습니다.
+
+- `docs/tag-extraction-flow.md` - 자연어를 의도/제약 태그로 번역하고 결정론적으로 확장하는 흐름
+- `docs/intent-harness-before-after.md` - 의도 하네스 적용 전/후 정성 비교
+- `docs/deployment-version-management.md` - 배포 및 버전 관리 규칙
+
+## 크롤링 데이터와 스위치 매칭
+
+`../crawl.py`는 상세 페이지를 열지 않고 다나와 키보드 목록만 조회합니다. 같은 상품에
+스위치 옵션이 여러 개 있으면 제품-스위치 조합별로 분리하며, 최종 출력 레코드 수를
+600개로 제한합니다.
+
+스위치 이름은 `frontend/src/data/switch_aliases.json`에서 다음 순서로 매칭합니다.
+
+1. `switches.json`의 이름과 정확히 일치
+2. `exact` 별칭과 일치
+3. `by_manufacturer`의 제조사와 스위치 이름이 모두 일치
+
+`적축`, `갈축`, `청축`처럼 여러 제조사가 사용하는 이름은 `exact`에 넣지 않습니다.
+매칭되지 않은 이름은 임의로 추론하지 않고 `output/unmatched_switches.json`에 저장합니다.
+다만 MVP 화면에서는 정확한 `raw_switch_name`이 `적축`, `갈축`, `청축`인 경우에만
+각각 `linear`, `tactile`, `clicky`로 계산하며, 세 스위치 모두 비저소음으로
+표시합니다. `저소음 갈축`같은 변형명은 이 규칙으로 추론하지 않습니다.
+
+가격비교 링크는 목록의 스위치 옵션별 가격 영역에서 수집해 `price_compare_url`에
+저장합니다. 옵션 링크가 없는 상품은 상품명 링크를 사용하며, 링크를 확인할 수 없으면
+`null`로 저장합니다. `media_url`은 실제 자료를 확보하기 전까지 `null`로 저장하고
+`media_url_is_placeholder`로 준비 중 상태를 표시합니다.
+
 ## 요청 흐름
 
 ```text
 React 브라우저
   -> Supabase Edge Function /recommend
   -> OPENAI_API_KEY secret 읽기
-  -> 후보 25개 이하로 압축
+  -> 후보 40개 이하로 압축
   -> OpenAI gpt-5.4 모델 호출
   -> catalog index 기반 추천 JSON 반환
   -> 프론트가 결과 렌더링
@@ -194,6 +225,19 @@ VITE_SUPABASE_RECOMMEND_URL=http://127.0.0.1:54321/functions/v1/recommend
 
 ## 배포
 
+앱 버전은 `frontend/package.json`의 `version`을 단일 소스로 사용합니다. Edge Function은
+이 값을 정적 import 해서 `GET /functions/v1/recommend`, 추천 응답의 `meta.version`,
+그리고 `X-Keybuddy-Version` 헤더에 노출합니다.
+
+배포 전 변경 성격에 맞춰 SemVer 기준으로 버전을 올립니다.
+
+```bash
+cd impl/keybuddy/frontend
+npm version patch --no-git-tag-version
+```
+
+호환되는 기능 추가는 `minor`, 호환 깨짐은 `major`를 사용합니다.
+
 프론트 빌드:
 
 ```bash
@@ -204,21 +248,27 @@ npm run build
 Edge Function 배포:
 
 ```bash
-cd impl/keybuddy
-supabase functions deploy recommend
+cd impl/keybuddy/frontend
+SUPABASE_PROJECT_REF=your-project-ref npm run deploy:function
 ```
 
+실제 project ref는 공개 문서에 적지 말고 로컬 환경 변수나 비공개 설정에서 주입합니다.
+
 새 publishable key(`sb_publishable_...`)를 쓰는 경우 JWT 검증 설정이 반영되어야 하므로,
-문제가 있으면 아래처럼 project ref와 API 배포 옵션을 한 줄로 명시합니다.
+문제가 있으면 아래처럼 project ref와 API 배포 옵션을 한 줄로 명시합니다. 단,
+`version.ts`가 오래된 상태로 배포되지 않도록 먼저 버전 동기화를 실행합니다.
 
 ```bash
+cd impl/keybuddy/frontend
+npm run sync:function-version
+cd ..
 supabase functions deploy recommend --project-ref your-project-ref --use-api
 ```
 
-현재 프로젝트라면 아래처럼 실행합니다.
+배포 후 Edge Function 버전 확인:
 
 ```bash
-supabase functions deploy recommend --project-ref kzgrduvwwoflybrqayyk --use-api
+curl https://your-project-ref.supabase.co/functions/v1/recommend
 ```
 
 프론트 정적 배포는 Supabase Hosting이 아니라 Vercel, Netlify, GitHub Pages 같은 정적
@@ -305,7 +355,7 @@ npm run sync:data
 - `VITE_` 환경변수는 브라우저 번들에 포함됩니다.
 - `OPENAI_API_KEY`는 Supabase secret으로만 저장합니다.
 - 기본 모델은 추천 품질을 고려해 `gpt-5.4`로 설정합니다.
-- Edge Function은 LLM 호출 전에 후보를 25개 이하로 줄여 입력 토큰을 줄입니다.
+- Edge Function은 LLM 호출 전에 후보를 40개 이하로 줄여 입력 토큰을 줄입니다.
 - `recommend` 함수에는 IP 기준 1분 10회 best-effort rate limit을 둡니다.
 - `recommend` 함수는 공개 엔드포인트이므로 운영 시 Supabase Dashboard의 Edge
   Functions rate limit 또는 별도 인증/사용량 제한을 반드시 설정합니다.

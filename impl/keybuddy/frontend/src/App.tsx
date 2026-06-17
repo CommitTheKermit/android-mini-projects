@@ -1,20 +1,60 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Search,
   Keyboard,
   ChevronLeft,
-  SlidersHorizontal,
+  ArrowRight,
   Check,
   RefreshCw,
-  Copy,
-  CheckCircle2,
   Filter,
   ArrowUpDown,
+  ExternalLink,
+  Play,
+  ShoppingCart,
+  Star,
+  AlertTriangle,
 } from 'lucide-react';
+import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
-import type { Recommendation, RecommendInput, RecommendResult } from './types';
+import { getBeginnerGuide, getProductTags } from './lib/productDisplay';
+import { getSwitchDisplayData, type GraphLevel } from './lib/switchDisplay';
+import type {
+  Recommendation,
+  RecommendInput,
+  RecommendResult,
+  SwitchDictionary,
+} from './types';
+
+const switches = switchesData as SwitchDictionary;
+
+function useAutoDismiss<T>(duration: number) {
+  const [value, setValue] = useState<T | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const durationRef = useRef(duration);
+  durationRef.current = duration;
+
+  const show = useCallback((next: T) => {
+    setValue(next);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setValue(null), durationRef.current);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  return [value, show] as const;
+}
 
 // --- [질문 데이터] 단계별 선택지 ---
+const HOME_TABS = [
+  { key: 'freeform', label: '자유롭게 입력' },
+  { key: 'step', label: '단계별 선택' },
+] as const;
+
 const questions = [
   { id: '용도', title: '어떤 용도로 사용하시나요?', options: ['사무용', '게임용', '상관없음'] },
   {
@@ -108,11 +148,87 @@ function KeyboardImage({ src, alt }: { src: string; alt: string }) {
   );
 }
 
+interface LevelMeterProps {
+  label: string;
+  level: GraphLevel | null;
+  lowLabel?: string;
+  highLabel?: string;
+}
+
+const LEVEL_WIDTHS: Record<GraphLevel, string> = {
+  1: '33.3333%',
+  2: '66.6667%',
+  3: '100%',
+};
+
+const LEVEL_LABELS: Record<GraphLevel, string> = {
+  1: '약함',
+  2: '중간',
+  3: '강함',
+};
+
+function LevelMeter({
+  label,
+  level,
+  lowLabel = '약함',
+  highLabel = '강함',
+}: LevelMeterProps) {
+  return (
+    <div className="min-w-0">
+      <div
+        aria-hidden="true"
+        className="mb-1.5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm text-slate-800 sm:text-base"
+      >
+        <span className="text-left">{lowLabel}</span>
+        <span className="text-center font-medium">{label}</span>
+        <span className="text-right">{highLabel}</span>
+      </div>
+
+      {level === null ? (
+        <div
+          role="status"
+          aria-label={`${label} 정보 확인 중`}
+          className="flex h-4 items-center justify-center bg-slate-700 text-[11px] font-medium leading-none text-white"
+        >
+          정보 확인 중
+        </div>
+      ) : (
+        <div
+          role="meter"
+          aria-label={label}
+          aria-valuemin={1}
+          aria-valuemax={3}
+          aria-valuenow={level}
+          aria-valuetext={LEVEL_LABELS[level]}
+          className="h-4 overflow-hidden bg-slate-700"
+        >
+          <div
+            aria-hidden="true"
+            className="h-full bg-emerald-500"
+            style={{ width: LEVEL_WIDTHS[level] }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function App() {
   const [view, setView] = useState<'home' | 'step' | 'results'>('home');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RecommendResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [homeTab, setHomeTab] = useState<'freeform' | 'step'>('freeform');
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [minBudget, setMinBudget] = useState(0);
+  const [maxBudget, setMaxBudget] = useState(1000000);
+  const [activeFilter, setActiveFilter] = useState('전체');
+  const [sortOrder, setSortOrder] = useState<'default' | 'priceAsc' | 'priceDesc'>('default');
+  const [toast, showToast] = useAutoDismiss<string>(2000);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
 
   const runRecommend = async (input: RecommendInput) => {
     setLoading(true);
@@ -120,6 +236,8 @@ export default function App() {
     try {
       const res = await recommend(input);
       setResult(res);
+      setActiveFilter('전체');
+      setSortOrder('default');
       setView('results');
     } catch (e) {
       setError(e instanceof Error ? e.message : '추천 중 오류가 발생했습니다.');
@@ -128,9 +246,24 @@ export default function App() {
     }
   };
 
+  // 홈으로 복귀할 때 공유하는 상태 초기화. 초기화 항목이 늘어도 이 한 곳만 고치면 된다.
+  const goHome = () => {
+    setQuery('');
+    setHomeTab('freeform');
+    setRating(0);
+    setError(null);
+    setView('home');
+  };
+
+  // 템플릿 선택: 입력 채움 + freeform 탭 전환 + 오류 초기화를 한 지점에 모은다.
+  const selectTemplate = (text: string) => {
+    setQuery(text);
+    setHomeTab('freeform');
+    setError(null);
+  };
+
   // --- HOME VIEW ---
-  const HomeView = () => {
-    const [query, setQuery] = useState('');
+  const renderHomeView = () => {
     const templates = [
       '조용한 사무실에서 눈치보지 않고 사용할 도각도각 소리가 나는 키보드 추천해줘',
       '게임할 때 반응속도가 빠르고 화려한 RGB 조명이 있는 텐키리스 키보드 찾아줘',
@@ -142,11 +275,20 @@ export default function App() {
       runRecommend({ mode: 'freeform', query });
     };
 
+    const startStepByStep = () => {
+      setStep(0);
+      setAnswers({});
+      setMinBudget(0);
+      setMaxBudget(1000000);
+      setError(null);
+      setView('step');
+    };
+
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 bg-slate-50 py-12">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-3">나만의 키보드 찾기</h1>
-          <p className="text-slate-600">어떤 키보드를 찾으시나요? 자유롭게 말해주세요.</p>
+      <div className="flex flex-col items-center min-h-screen px-6 bg-slate-50 py-12">
+        <div className="text-center mb-7">
+          <h1 className="text-3xl font-bold text-slate-800 mb-2.5">나만의 키보드 찾기</h1>
+          <p className="text-slate-500">원하는 방식으로 키보드를 찾아보세요.</p>
         </div>
 
         {error && (
@@ -155,62 +297,87 @@ export default function App() {
           </div>
         )}
 
-        {/* 채팅창 섹션 */}
-        <div className="w-full max-w-2xl bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 relative">
-          <textarea
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="예: 조용한 사무용 키보드를 추천해줘"
-            className="w-full h-32 p-2 outline-none resize-none text-slate-800 bg-transparent"
-          />
-          <div className="flex justify-end mt-2">
+        {/* 입력 방식 세그먼트 토글 */}
+        <div className="w-full max-w-2xl flex gap-1 p-1 rounded-xl bg-slate-100 mb-4">
+          {HOME_TABS.map(({ key, label }) => (
             <button
-              onClick={handleSubmit}
-              disabled={!query}
-              className={`px-6 py-3 rounded-xl font-medium transition-colors flex items-center ${query ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' : 'bg-slate-100 text-slate-400'}`}
+              key={key}
+              onClick={() => { setHomeTab(key); setError(null); }}
+              className={`flex-1 py-2.5 rounded-[10px] text-sm transition-colors ${
+                homeTab === key
+                  ? 'bg-white text-slate-800 font-semibold shadow-sm'
+                  : 'text-slate-500 font-medium hover:text-slate-700'
+              }`}
             >
-              분석하기 <Search size={18} className="ml-2" />
+              {label}
             </button>
-          </div>
+          ))}
+        </div>
+
+        {/* 선택한 방식에 따른 카드 */}
+        <div className="w-full max-w-2xl bg-white rounded-2xl border border-slate-200 p-4 mb-7">
+          {homeTab === 'freeform' ? (
+            <div className="flex flex-col gap-2">
+              <textarea
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="예: 조용한 사무용 키보드를 추천해줘"
+                className="w-full h-32 p-2 outline-none resize-none text-slate-800 bg-transparent placeholder:text-slate-400"
+              />
+              <div className="flex justify-end">
+                <button
+                  onClick={handleSubmit}
+                  disabled={!query || loading}
+                  className={`px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-colors ${query && !loading ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-slate-100 text-slate-400'}`}
+                >
+                  분석하기 <Search size={18} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-4 py-6 px-2 text-center">
+              <div className="flex flex-wrap justify-center gap-2">
+                {['용도', '타건감', '예산'].map((label) => (
+                  <span
+                    key={label}
+                    className="px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-500 text-[13px] font-medium"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+              <p className="text-sm text-slate-500">몇 가지 질문에 답하면 조건에 맞는 키보드를 찾아드려요.</p>
+              <button
+                onClick={startStepByStep}
+                className="w-full max-w-xs py-3 rounded-xl bg-indigo-500 text-white font-medium flex items-center justify-center gap-2 hover:bg-indigo-600 transition-colors"
+              >
+                단계별로 시작 <ArrowRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 템플릿 제공 섹션 */}
-        <div className="w-full max-w-2xl mb-12">
-          <p className="text-sm font-medium text-slate-500 mb-3 ml-1">이런 식으로 질문해 보세요:</p>
+        <div className="w-full max-w-2xl">
+          <p className="text-sm font-medium text-slate-500 mb-3">이런 식으로 질문해 보세요:</p>
           <div className="flex flex-col gap-2">
             {templates.map((txt, idx) => (
               <button
                 key={idx}
-                onClick={() => setQuery(txt)}
-                className="text-left p-3.5 rounded-xl bg-slate-100/50 hover:bg-blue-50 text-slate-700 text-sm transition-colors border border-transparent hover:border-blue-100 shadow-sm"
+                onClick={() => selectTemplate(txt)}
+                className="text-left p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-sm hover:bg-blue-50 hover:border-blue-100 transition-colors"
               >
                 "{txt}"
               </button>
             ))}
           </div>
         </div>
-
-        {/* 단계별 선택 작게 배치 */}
-        <div className="w-full max-w-2xl border-t border-slate-200 pt-8 flex flex-col items-center">
-          <p className="text-slate-500 text-sm mb-4">질문에 답하며 하나씩 찾고 싶다면?</p>
-          <button
-            onClick={() => setView('step')}
-            className="flex items-center px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-          >
-            <SlidersHorizontal size={18} className="mr-2 text-indigo-500" /> 단계별로 선택하기
-          </button>
-        </div>
       </div>
     );
   };
 
   // --- STEP BY STEP VIEW ---
-  const StepByStepView = () => {
-    const [step, setStep] = useState(0);
-    const [answers, setAnswers] = useState<Record<string, string>>({});
-    const [minBudget, setMinBudget] = useState(0);
-    const [maxBudget, setMaxBudget] = useState(1000000);
-
+  const renderStepByStepView = () => {
     const currentQ = questions[step];
     const isLastStep = step === questions.length - 1;
 
@@ -228,7 +395,7 @@ export default function App() {
     return (
       <div className="max-w-2xl mx-auto pt-12 px-6 min-h-screen">
         <button
-          onClick={() => setView('home')}
+          onClick={goHome}
           className="flex items-center text-slate-500 mb-6 hover:text-slate-800 transition-colors"
         >
           <ChevronLeft size={20} /> <span className="ml-1">처음으로</span>
@@ -352,11 +519,7 @@ export default function App() {
   };
 
   // --- RESULT VIEW ---
-  const ResultView = () => {
-    const [activeFilter, setActiveFilter] = useState('전체');
-    const [sortOrder, setSortOrder] = useState<'default' | 'priceAsc' | 'priceDesc'>('default');
-    const [copiedName, setCopiedName] = useState<string | null>(null);
-
+  const renderResultView = () => {
     const all: Recommendation[] = result?.recommendations ?? [];
 
     // 동적 필터 옵션: 브랜드 + DB 속성 기반 태그
@@ -377,27 +540,24 @@ export default function App() {
     if (sortOrder === 'priceAsc') processed.sort((a, b) => a.price - b.price);
     else if (sortOrder === 'priceDesc') processed.sort((a, b) => b.price - a.price);
 
-    const handleCopy = (text: string) => {
-      navigator.clipboard?.writeText(text).then(
-        () => {
-          setCopiedName(text);
-          setTimeout(() => setCopiedName(null), 2000);
-        },
-        () => {},
-      );
-    };
+    const isAllFilter = activeFilter === '전체';
+    const headerCountText = isAllFilter
+      ? `전체 ${all.length}개`
+      : `${activeFilter} 필터 · ${processed.length}/${all.length}개`;
+    const resultCount = isAllFilter ? all.length : processed.length;
+    const resultCountSpan = <span className="text-blue-600">{resultCount}개</span>;
 
     return (
-      <div className="max-w-3xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
+      <div className="max-w-6xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
         <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-10 px-4 py-4 flex items-center">
           <button
-            onClick={() => setView('home')}
+            onClick={goHome}
             className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
           >
             <ChevronLeft size={24} />
           </button>
           <h1 className="text-lg font-bold text-slate-800 ml-2">
-            [{processed.length}개의 제품 찾음]
+            [{headerCountText}의 제품 찾음]
           </h1>
         </div>
 
@@ -405,7 +565,14 @@ export default function App() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 gap-4">
             <div>
               <h2 className="text-xl font-extrabold text-slate-900">
-                총 <span className="text-blue-600">{processed.length}개</span>의 상품을 찾았어요
+                {isAllFilter ? (
+                  <>총 {resultCountSpan}의 상품을 찾았어요</>
+                ) : (
+                  <>
+                    <span className="text-blue-600">{activeFilter}</span> 필터로{' '}
+                    {resultCountSpan}의 상품이 남았어요
+                  </>
+                )}
               </h2>
               <p className="text-slate-500 text-sm mt-1">
                 {result?.summary ?? '입력하신 조건에 가장 잘 맞는 추천 목록입니다.'}
@@ -428,23 +595,25 @@ export default function App() {
           </div>
 
           {/* 필터 영역 */}
-          <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex items-center gap-2 mb-6 pb-2">
             <div className="flex items-center text-slate-400 mr-1 shrink-0">
               <Filter size={16} />
             </div>
-            {filterOptions.map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                  activeFilter === f
-                    ? 'bg-slate-800 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                {f}
-              </button>
-            ))}
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto scrollbar-hide">
+              {filterOptions.map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setActiveFilter(f)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0 ${
+                    activeFilter === f
+                      ? 'bg-slate-800 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* 제품 리스트 */}
@@ -454,73 +623,226 @@ export default function App() {
                 해당 조건에 맞는 제품이 없습니다.
               </div>
             ) : (
-              processed.map((item) => (
-                <div
-                  key={item.product_name}
-                  className="flex p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="w-28 h-28 shrink-0 rounded-xl overflow-hidden border border-slate-100">
-                    <KeyboardImage src={item.image_url} alt={item.product_name} />
-                  </div>
+              processed.map((item, index) => {
+                const switchDisplay = getSwitchDisplayData(item, switches);
+                const productTags = getProductTags(item);
+                const beginnerGuide = getBeginnerGuide(item);
+                const mediaLabel = '시청각 자료 보기';
 
-                  <div className="flex flex-col ml-4 sm:ml-5 flex-1 min-w-0">
-                    <div className="flex items-start justify-between">
-                      <h3 className="text-lg font-bold text-slate-900 truncate pr-2">
-                        {item.product_name}
-                      </h3>
+                return (
+                  <article
+                    key={item.product_code ?? `${item.product_name}-${index}`}
+                    className="grid gap-5 rounded-2xl border border-slate-200 bg-slate-100 p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5 lg:grid-cols-[15rem_minmax(0,1fr)_13rem] lg:gap-7"
+                  >
+                    <div className="flex min-w-0 flex-col">
+                      <div className="aspect-[4/3] overflow-hidden rounded-xl border border-slate-200 bg-white">
+                        <KeyboardImage src={item.image_url} alt={item.product_name} />
+                      </div>
+                      <p className="mt-4 text-center text-2xl font-extrabold tracking-tight text-slate-950 lg:text-3xl">
+                        {item.price.toLocaleString()}원
+                      </p>
+                    </div>
+
+                    <div className="flex min-w-0 flex-col">
+                      <div className="min-w-0">
+                        <h3
+                          className="truncate text-xl font-extrabold text-slate-950 lg:text-2xl"
+                          title={item.product_name}
+                        >
+                          {item.product_name}
+                        </h3>
+                        <p className="mt-1 line-clamp-1 text-sm leading-relaxed text-slate-500">
+                          {item.reason}
+                        </p>
+                      </div>
+
+                      {beginnerGuide.labels.length > 0 && (
+                        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          {beginnerGuide.labels.map((label) => (
+                            <span
+                              key={label}
+                              className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-bold leading-snug text-blue-800"
+                            >
+                              {label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {beginnerGuide.notes.length > 0 && (
+                        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
+                          <div className="flex items-center gap-1.5 text-xs font-extrabold text-amber-800">
+                            <AlertTriangle size={14} aria-hidden="true" />
+                            확인할 점
+                          </div>
+                          <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-amber-900">
+                            {beginnerGuide.notes.map((note) => (
+                              <li key={note}>{note}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="mt-5 space-y-5 lg:mt-6">
+                        <LevelMeter
+                          label="누르는 중간에 걸리는 느낌"
+                          level={switchDisplay.tactility}
+                        />
+                        <LevelMeter label="소음" level={switchDisplay.noise} />
+                      </div>
+
+                      <div className="mt-auto flex flex-wrap gap-2 pt-5">
+                        {productTags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex min-w-0 flex-col gap-4 lg:justify-between">
+                      {item.media_url ? (
+                        <a
+                          href={item.media_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex min-h-36 flex-1 flex-col items-center justify-center gap-3 rounded-xl bg-slate-700 px-4 py-6 text-center text-sm font-bold text-white transition-colors hover:bg-slate-800 lg:min-h-0"
+                          aria-label={`${item.product_name} ${mediaLabel}`}
+                        >
+                          <Play size={28} aria-hidden="true" />
+                          <span>{mediaLabel}</span>
+                        </a>
+                      ) : (
+                        <div
+                          role="status"
+                          className="flex min-h-36 flex-1 items-center justify-center rounded-xl bg-slate-200 px-4 py-6 text-center text-sm font-semibold text-slate-500 lg:min-h-0"
+                        >
+                          {item.media_url_is_placeholder
+                            ? '시청각 자료 준비 중'
+                            : '시청각 자료 정보 확인 중'}
+                        </div>
+                      )}
+
+                      {item.price_compare_url ? (
+                        <a
+                          href={item.price_compare_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700"
+                          aria-label={`${item.product_name} 가격 비교 페이지 열기`}
+                        >
+                          가격 비교
+                          <ExternalLink size={16} aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <div
+                          role="status"
+                          className="rounded-xl bg-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-500"
+                        >
+                          가격 비교 정보 확인 중
+                        </div>
+                      )}
+
                       <button
-                        onClick={() => handleCopy(item.product_name)}
-                        className="p-1.5 shrink-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
-                        title="제품명 복사"
+                        type="button"
+                        onClick={() => showToast('준비 중인 기능입니다')}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-blue-700"
                       >
-                        {copiedName === item.product_name ? (
-                          <CheckCircle2 size={18} className="text-green-500" />
-                        ) : (
-                          <Copy size={18} />
-                        )}
+                        <ShoppingCart size={16} aria-hidden="true" />
+                        구매하기
                       </button>
                     </div>
-                    <p className="text-slate-500 text-sm mt-1 leading-snug line-clamp-2">
-                      {item.reason}
-                    </p>
+                  </article>
+                );
+              })
+            )}
+          </div>
 
-                    <div className="flex flex-wrap gap-1.5 mt-2.5">
-                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-md font-bold">
-                        {item.brand}
-                      </span>
-                      {item.tags.map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-md font-medium"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-base font-bold text-slate-800">이번 추천, 얼마나 마음에 드세요?</h3>
+            <p className="mt-1 text-[13px] text-slate-500">별점으로 매칭 결과를 평가해 주세요.</p>
 
-                    <div className="mt-auto pt-3 flex items-end justify-between">
-                      <span className="text-xs text-slate-400">
-                        {item.switch_type} · {item.layout} · {item.connection}
-                      </span>
-                      <span className="text-lg font-bold text-slate-900">
-                        {item.price.toLocaleString()}원
-                      </span>
+            <div
+              className="mt-4 flex justify-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              role="slider"
+              tabIndex={0}
+              aria-label="추천 결과 별점"
+              aria-valuemin={0}
+              aria-valuemax={5}
+              aria-valuenow={rating}
+              aria-valuetext={`${rating}점`}
+              onMouseLeave={() => setHoverRating(0)}
+              onKeyDown={(event) => {
+                if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+                  event.preventDefault();
+                  setRating((current) => Math.min(5, current + 0.5));
+                } else if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
+                  event.preventDefault();
+                  setRating((current) => Math.max(0, current - 0.5));
+                }
+              }}
+            >
+              {[1, 2, 3, 4, 5].map((value) => {
+                const displayedRating = hoverRating || rating;
+                const fillRatio = Math.max(0, Math.min(1, displayedRating - (value - 1)));
+
+                return (
+                  <div
+                    key={value}
+                    className="relative h-[34px] w-[34px] cursor-pointer"
+                    onMouseMove={(event) =>
+                      setHoverRating(event.nativeEvent.offsetX < 17 ? value - 0.5 : value)
+                    }
+                    onClick={(event) =>
+                      setRating(event.nativeEvent.offsetX < 17 ? value - 0.5 : value)
+                    }
+                  >
+                    <Star size={34} className="pointer-events-none text-slate-300" fill="none" />
+                    <div
+                      className="pointer-events-none absolute inset-0 overflow-hidden"
+                      style={{ width: `${fillRatio * 100}%` }}
+                    >
+                      <Star size={34} className="text-blue-600" fill="#2563EB" />
                     </div>
                   </div>
-                </div>
-              ))
-            )}
+                );
+              })}
+            </div>
+
+            <div className="mt-3 flex justify-center">
+              <div className="flex w-[280px] justify-between text-xs text-slate-400">
+                {rating > 0 ? (
+                  <span className="w-full text-center font-medium text-blue-600">
+                    감사합니다 ({rating}점)
+                  </span>
+                ) : (
+                  <>
+                    <span>아쉬워요</span>
+                    <span>완벽해요</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="mt-10 flex justify-center">
             <button
-              onClick={() => setView('home')}
+              onClick={goHome}
               className="flex items-center px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors shadow-sm"
             >
               <RefreshCw size={18} className="mr-2" /> 처음부터 다시 찾기
             </button>
           </div>
         </div>
+
+        {toast && (
+          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-lg">
+            {toast}
+          </div>
+        )}
       </div>
     );
   };
@@ -536,9 +858,9 @@ export default function App() {
         </div>
       )}
 
-      {view === 'home' && <HomeView />}
-      {view === 'step' && <StepByStepView />}
-      {view === 'results' && <ResultView />}
+      {view === 'home' && renderHomeView()}
+      {view === 'step' && renderStepByStepView()}
+      {view === 'results' && renderResultView()}
     </div>
   );
 }

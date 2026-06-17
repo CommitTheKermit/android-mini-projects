@@ -1,4 +1,6 @@
 import catalog from './keyboards.json' with { type: 'json' };
+import { formatCatalogEntry } from './catalogText.ts';
+import { appVersion } from './version.ts';
 
 interface Keyboard {
   product_name: string;
@@ -9,10 +11,17 @@ interface Keyboard {
   connection: string;
   layout: string;
   key_force: string;
-  weight_g: number;
+  weight_g: number | null;
   wireless_type: string;
   engraving: string;
   backlight: string;
+  raw_switch_name?: string | null;
+  switch_name?: string | null;
+  switch_manufacturer?: string | null;
+  product_code?: string | null;
+  media_url?: string | null;
+  price_compare_url?: string | null;
+  media_url_is_placeholder?: boolean;
 }
 
 type RecommendInput =
@@ -29,15 +38,31 @@ interface RawLLMResult {
   recommendations: RawRecommendation[];
 }
 
+interface RecommendationResult extends Keyboard {
+  reason: string;
+  tags: string[];
+  is_fallback: boolean;
+  source: 'llm' | 'fallback';
+}
+
+interface Candidate {
+  keyboard: Keyboard;
+  index: number;
+  score: number;
+}
+
 const keyboards = catalog as Keyboard[];
 const maxCandidates = 40;
 const maxRecommendations = 30;
 const maxOutputTokens = maxRecommendations * 120 + 500;
 const openaiTimeoutMs = 40000;
 const rateLimitWindowMs = 60000;
-const rateLimitMaxRequests = 10;
+const postRateLimitMaxRequests = 10;
+const getRateLimitMaxRequests = 60;
 const model = Deno.env.get('OPENAI_MODEL') ?? 'gpt-5.4';
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
+let lastRateLimitSweepAt = 0;
+const invisibleTraitValues = new Set(['정보없음', '0g']);
 
 if (maxCandidates < maxRecommendations) {
   throw new Error('maxCandidates must be greater than or equal to maxRecommendations.');
@@ -46,8 +71,36 @@ if (maxCandidates < maxRecommendations) {
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
+
+function exposeHeaders(...headers: string[]): string {
+  return [
+    ...new Set(
+      headers
+        .flatMap((header) => header.split(','))
+        .map((header) => header.trim())
+        .filter(Boolean),
+    ),
+  ].join(', ');
+}
+
+const versionHeaders = {
+  ...corsHeaders,
+  'Access-Control-Expose-Headers': exposeHeaders('X-Keybuddy-Version'),
+  'X-Keybuddy-Version': appVersion,
+};
+
+function retryAfterHeaders(retryAfterSeconds: number) {
+  return {
+    ...versionHeaders,
+    'Access-Control-Expose-Headers': exposeHeaders(
+      'Retry-After',
+      versionHeaders['Access-Control-Expose-Headers'],
+    ),
+    'Retry-After': String(retryAfterSeconds),
+  };
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -98,17 +151,43 @@ function clientIp(request: Request): string {
   return request.headers.get('cf-connecting-ip') ?? request.headers.get('x-real-ip') ?? 'unknown';
 }
 
-function checkRateLimit(request: Request): { ok: true } | { ok: false; retryAfterSeconds: number } {
+function sweepExpiredRateLimitBuckets(now: number) {
+  if (rateLimitBuckets.size === 0) {
+    return;
+  }
+
+  if (now - lastRateLimitSweepAt < rateLimitWindowMs) {
+    return;
+  }
+
+  lastRateLimitSweepAt = now;
+  for (const [key, bucket] of rateLimitBuckets) {
+    if (bucket.resetAt <= now) {
+      rateLimitBuckets.delete(key);
+    }
+  }
+}
+
+function checkRateLimit(
+  request: Request,
+  kind: 'get' | 'post',
+): { ok: true } | { ok: false; retryAfterSeconds: number } {
   const now = Date.now();
-  const ip = clientIp(request);
-  const current = rateLimitBuckets.get(ip);
+  sweepExpiredRateLimitBuckets(now);
+
+  // Best-effort per-isolate guard. Distributed rate limiting needs shared storage.
+  // GET is a cheap version/health endpoint, so it has a separate relaxed bucket.
+  // POST still has its own lower limit because it can trigger an OpenAI request.
+  const bucketKey = `${kind}:${clientIp(request)}`;
+  const maxRequests = kind === 'get' ? getRateLimitMaxRequests : postRateLimitMaxRequests;
+  const current = rateLimitBuckets.get(bucketKey);
 
   if (!current || current.resetAt <= now) {
-    rateLimitBuckets.set(ip, { count: 1, resetAt: now + rateLimitWindowMs });
+    rateLimitBuckets.set(bucketKey, { count: 1, resetAt: now + rateLimitWindowMs });
     return { ok: true };
   }
 
-  if (current.count >= rateLimitMaxRequests) {
+  if (current.count >= maxRequests) {
     return { ok: false, retryAfterSeconds: Math.ceil((current.resetAt - now) / 1000) };
   }
 
@@ -192,26 +271,27 @@ function scoreKeyboard(keyboard: Keyboard, input: RecommendInput): number {
   return score;
 }
 
-function selectCandidates(input: RecommendInput): Array<{ keyboard: Keyboard; index: number }> {
+function selectCandidates(input: RecommendInput): Candidate[] {
   return keyboards
     .map((keyboard, index) => ({ keyboard, index, score: scoreKeyboard(keyboard, input) }))
     .sort((a, b) => b.score - a.score || a.keyboard.price - b.keyboard.price)
-    .slice(0, maxCandidates)
-    .map(({ keyboard, index }) => ({ keyboard, index }));
+    .slice(0, maxCandidates);
 }
 
-function catalogToText(candidates: Array<{ keyboard: Keyboard; index: number }>): string {
+function catalogToText(candidates: Candidate[]): string {
   return candidates
-    .map(({ keyboard, index }) => {
-      const force = keyboard.key_force === '0g' ? '키압 미제공' : `키압 ${keyboard.key_force}`;
-      return `[${index}] ${keyboard.product_name} | 브랜드:${keyboard.brand} | 가격:${keyboard.price}원 | 스위치:${keyboard.switch_type} | 연결:${keyboard.connection}(${keyboard.wireless_type}) | 배열:${keyboard.layout} | ${force} | 무게:${keyboard.weight_g}g | 각인:${keyboard.engraving} | 백라이트:${keyboard.backlight}`;
-    })
+    .map(({ keyboard, index }) => formatCatalogEntry(keyboard, index))
     .join('\n');
 }
 
-function addTag(tags: string[], value: string | undefined) {
+function visibleTrait(value: string | undefined): string | null {
   const tag = value?.trim();
-  if (tag && tag !== '정보없음' && tag !== '0g' && !tags.includes(tag)) {
+  return tag && !invisibleTraitValues.has(tag) ? tag : null;
+}
+
+function addTag(tags: string[], value: string | undefined) {
+  const tag = visibleTrait(value);
+  if (tag && !tags.includes(tag)) {
     tags.push(tag);
   }
 }
@@ -244,7 +324,97 @@ function buildTagsFromKeyboard(keyboard: Keyboard): string[] {
   return tags.slice(0, 6);
 }
 
-function buildPrompt(input: RecommendInput, candidates: Array<{ keyboard: Keyboard; index: number }>) {
+function fallbackReason(
+  keyboard: Keyboard,
+  score?: number,
+  options: { preferTraits?: boolean } = {},
+): string {
+  if (!options.preferTraits && typeof score === 'number' && score === 0) {
+    return '조건이 넓어 함께 비교할 후보로 보여드려요.';
+  }
+
+  const traits = [keyboard.switch_type, keyboard.layout, keyboard.connection]
+    .flatMap((value) => {
+      const trait = visibleTrait(value);
+      return trait ? [trait] : [];
+    })
+    .join('·');
+
+  if (traits) {
+    return `${traits} 구성을 갖춘 후보라 함께 비교해볼 만해요.`;
+  }
+
+  return '조건에 가까운 후보라 함께 비교해볼 만해요.';
+}
+
+function toRecommendation(
+  keyboard: Keyboard,
+  reason: string,
+  source: RecommendationResult['source'],
+): RecommendationResult {
+  return {
+    ...keyboard,
+    reason,
+    tags: buildTagsFromKeyboard(keyboard),
+    is_fallback: source === 'fallback',
+    source,
+  };
+}
+
+function composeRecommendations(
+  raw: RawLLMResult,
+  candidates: Candidate[],
+): RecommendationResult[] {
+  const candidateByIndex = new Map(candidates.map((candidate) => [candidate.index, candidate]));
+  const recommendations: RecommendationResult[] = [];
+
+  for (const item of raw.recommendations) {
+    const candidate = candidateByIndex.get(item.index);
+    if (!candidate) {
+      continue;
+    }
+
+    candidateByIndex.delete(item.index);
+    const reason = item.reason.trim();
+    const source: RecommendationResult['source'] = reason ? 'llm' : 'fallback';
+    if (!reason) {
+      console.warn('recommend: empty LLM reason replaced with fallback.', { index: item.index });
+    }
+    recommendations.push(
+      toRecommendation(
+        candidate.keyboard,
+        reason || fallbackReason(candidate.keyboard, candidate.score, { preferTraits: true }),
+        source,
+      ),
+    );
+    if (recommendations.length >= maxRecommendations) {
+      return recommendations;
+    }
+  }
+
+  for (const candidate of candidateByIndex.values()) {
+    // Zero-score candidates are still useful as broad comparison fillers;
+    // fallbackReason labels them separately from matched candidates.
+    if (candidate.score < 0) {
+      console.warn('recommend: negative-score candidate excluded from fallback.', {
+        index: candidate.index,
+        score: candidate.score,
+      });
+      continue;
+    }
+
+    recommendations.push(
+      toRecommendation(candidate.keyboard, fallbackReason(candidate.keyboard, candidate.score), 'fallback'),
+    );
+    if (recommendations.length >= maxRecommendations) {
+      break;
+    }
+  }
+
+  return recommendations;
+}
+
+function buildPrompt(input: RecommendInput, candidates: Candidate[]) {
   return `당신은 한국어 키보드 추천 도우미 "keybuddy"입니다.
 
 아래 catalog 후보 안에서만 사용자 조건에 맞는 키보드를 추천하세요.
@@ -304,6 +474,7 @@ function parseResult(text: string): RawLLMResult {
   return {
     summary: parsed.summary,
     recommendations: parsed.recommendations
+      .slice(0, maxRecommendations)
       .filter((item): item is RawRecommendation => {
         return (
           isRecord(item) &&
@@ -311,7 +482,6 @@ function parseResult(text: string): RawLLMResult {
           typeof item.reason === 'string'
         );
       })
-      .slice(0, maxRecommendations)
       .map((item) => ({
         index: item.index,
         reason: item.reason,
@@ -350,21 +520,36 @@ Deno.serve(async (request) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
-  if (request.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
-  }
-
-  try {
-    const rateLimit = checkRateLimit(request);
+  if (request.method === 'GET') {
+    const rateLimit = checkRateLimit(request, 'get');
     if (!rateLimit.ok) {
       return Response.json(
         { error: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.' },
         {
           status: 429,
-          headers: {
-            ...corsHeaders,
-            'Retry-After': String(rateLimit.retryAfterSeconds),
-          },
+          headers: retryAfterHeaders(rateLimit.retryAfterSeconds),
+        },
+      );
+    }
+
+    return Response.json(
+      { name: 'recommend', version: appVersion },
+      { headers: versionHeaders },
+    );
+  }
+
+  if (request.method !== 'POST') {
+    return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
+  }
+
+  try {
+    const rateLimit = checkRateLimit(request, 'post');
+    if (!rateLimit.ok) {
+      return Response.json(
+        { error: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.' },
+        {
+          status: 429,
+          headers: retryAfterHeaders(rateLimit.retryAfterSeconds),
         },
       );
     }
@@ -376,7 +561,6 @@ Deno.serve(async (request) => {
 
     const input = parseInput(await request.json());
     const candidates = selectCandidates(input);
-    const candidateIndexSet = new Set(candidates.map(({ index }) => index));
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), openaiTimeoutMs);
@@ -411,20 +595,24 @@ Deno.serve(async (request) => {
     }
 
     const raw = parseResult(outputText(parseOpenAIResponse(openaiBodyText)));
-    const recommendations = raw.recommendations
-      .filter((item) => candidateIndexSet.has(item.index))
-      .map((item) => ({
-        ...keyboards[item.index],
-        reason: item.reason,
-        tags: buildTagsFromKeyboard(keyboards[item.index]),
-      }));
+    const recommendations = composeRecommendations(raw, candidates);
 
     return Response.json(
-      { summary: raw.summary, recommendations },
-      { headers: corsHeaders },
+      {
+        summary: raw.summary,
+        recommendations,
+        meta: { version: appVersion },
+      },
+      { headers: versionHeaders },
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : '추천 생성에 실패했습니다.';
-    return Response.json({ error: message }, { status: 500, headers: corsHeaders });
+    return Response.json(
+      {
+        error: message,
+        meta: { version: appVersion },
+      },
+      { status: 500, headers: versionHeaders },
+    );
   }
 });

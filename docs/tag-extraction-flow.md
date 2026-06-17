@@ -1,6 +1,12 @@
 # 자연어 → 태그 추출 플로우
 
-keybuddy 추천은 **2단계 분리** 구조입니다.
+> **상태: 미연결 클라이언트 설계 기록.** 현재 배포된 추천 경로는 이 문서가 아니라
+> Supabase Edge Function + OpenAI(`gpt-5.4`) 서버사이드다(루트 `AGENTS.md`의 "아키텍처: 두 개의 추천 경로",
+> `impl/keybuddy/README.md` 참조). 아래 의도 하네싱(`extractIntentInput`/`expandIntents`/`searchWithProfile`)은
+> `impl/keybuddy/frontend/src/lib/`에 코드·테스트로 존재하나 앱 진입점(`App.tsx → lib/recommend.ts`)에
+> 연결돼 있지 않다. 이 문서의 코드 경로는 `impl/keybuddy/frontend/` 기준이다.
+
+이 설계에서 추천은 **2단계 분리** 구조입니다.
 
 - **LLM은 자연어를 "의도 + 명시 제약"으로 번역만** 합니다.
 - 그걸 **태그로 펼치고 검색하는 건 전부 결정론**입니다 (LLM 호출 0회).
@@ -173,4 +179,4 @@ LLM이 정숙 요구를 `경쾌함`으로 잘못 섞는 것을 1차로 차단합
 | `src/lib/searchEngine.ts` | 하드 필터·완화 순서 등 코어(미수정, 조합만) |
 | `src/lib/recommend.ts` | 전체 오케스트레이션 + 개발 콘솔 로그 |
 
-검증/비교: [`../intent-harness-before-after.md`](../intent-harness-before-after.md) (전/후 정성 리포트)
+검증/비교: [`intent-harness-before-after.md`](intent-harness-before-after.md) (전/후 정성 리포트)
