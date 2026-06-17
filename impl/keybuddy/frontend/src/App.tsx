@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
+import { getDisplayImageUrl } from './lib/imageUrl';
 import { getBeginnerGuide, getProductTags } from './lib/productDisplay';
 import { getSwitchDisplayData, type GraphLevel } from './lib/switchDisplay';
 import type {
@@ -1826,7 +1827,7 @@ function KeyboardImage({ src, alt }: { src: string; alt: string }) {
   }
   return (
     <img
-      src={src}
+      src={getDisplayImageUrl(src)}
       alt={alt}
       loading="lazy"
       onError={() => setFailed(true)}
