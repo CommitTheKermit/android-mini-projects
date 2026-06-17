@@ -139,6 +139,38 @@ describe('getSwitchDisplayData', () => {
     });
   });
 
+  it.each([
+    ['멤브레인', 2, 1],
+    ['펜타그래프', 2, 2],
+    ['무접점', 1, 1],
+    ['무접점 광축', 1, 1],
+    ['무접점 자석축', 1, 1],
+  ] as const)('switch_type=%s이면 레벨미터 값을 고정한다', (switchType, tactility, noise) => {
+    expect(
+      getSwitchDisplayData(
+        { switch_name: null, raw_switch_name: null, switch_type: switchType },
+        switches,
+      ),
+    ).toEqual({
+      switchName: null,
+      tactility,
+      noise,
+    });
+  });
+
+  it('비기계식 switch_type 고정값은 사전 매칭보다 우선한다', () => {
+    expect(
+      getSwitchDisplayData(
+        { switch_name: 'Clicky', raw_switch_name: '청축', switch_type: '펜타그래프' },
+        switches,
+      ),
+    ).toEqual({
+      switchName: '청축',
+      tactility: 2,
+      noise: 2,
+    });
+  });
+
   it('사전에 매칭된 switch_name을 범용 스위치 규칙보다 우선한다', () => {
     expect(
       getSwitchDisplayData(
