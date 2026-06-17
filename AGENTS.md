@@ -83,6 +83,8 @@ cd keybuddy/frontend && npm run sync:data   # output/keyboards.json -> 프론트
 
 카탈로그 `keyboards.json`은 **두 군데에 사본**으로 존재한다(프론트 표시용 + Edge Function 후보용). 반드시 `npm run sync:data`로 함께 갱신해야 둘이 엇갈리지 않는다.
 
+YouTube 타건 영상 링크는 공식 YouTube Data API로만 수집한다(YouTube HTML 검색/스크래핑 우회 금지). `impl/output/youtube_media_cache.json`은 누적 캐시이며, 다음 크롤링 때 캐시를 먼저 입히고 캐시 미스만 새로 검색한다. `keyboards.json`에는 영상 메타데이터 전체를 넣지 않고 `media_url`, `media_url_is_placeholder`만 반영한다. 제목·점수·채널 등 감사 정보는 `youtube_media_cache.json`/`youtube_media_report.json`에 둔다.
+
 ## 버전 관리
 
 앱 버전의 단일 소스는 `frontend/package.json`의 `version`이다. `npm run build`/`deploy:function`이 `sync:function-version`으로 이 값을 Edge Function의 `version.ts`에 주입하며, Edge Function은 `GET /recommend`, 응답 `meta.version`, `X-Keybuddy-Version` 헤더로 노출한다. 배포 전 `npm version patch|minor|major --no-git-tag-version`으로 SemVer 증가.
