@@ -34,8 +34,9 @@ echo "$now" > "$STAMP"
 ctx="지식 후보가 ${sessions}개 세션 분량 쌓였습니다. 시간 날 때 docs/knowledge/README.md 의 승격 워크플로로 리뷰를 권장합니다(마지막 안내 후 3일+ 경과). 후보 파일: ${PENDING}"
 
 if [ "$KNOWLEDGE_NUDGE_FORMAT" = "claude-json" ]; then
-  # SessionStart additionalContext 로 주입. ctx 는 따옴표/역슬래시 없는 통제된 문자열.
-  printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$ctx"
+  # SessionStart additionalContext 로 주입. 경로에 따옴표/역슬래시가 있어도
+  # JSON 이 깨지지 않도록 jq 로 인코딩한다(extract 와 동일하게 jq 의존).
+  jq -cn --arg ctx "$ctx" '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx}}'
 else
   printf '%s\n' "$ctx"
 fi

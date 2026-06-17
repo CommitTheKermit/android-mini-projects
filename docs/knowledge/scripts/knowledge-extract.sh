@@ -12,7 +12,8 @@
 
 input=$(cat)
 transcript=$(echo "$input" | jq -r '.transcript_path // empty')
-cwd=$(echo "$input" | jq -r '.cwd // "?"')
+cwd=$(echo "$input" | jq -r '.cwd // empty')
+cwd=${cwd:-$PWD}
 session_id=$(echo "$input" | jq -r '.session_id // "unknown"')
 [ -f "$transcript" ] || exit 0
 
@@ -39,7 +40,9 @@ n_user=$(jq -rs '
 n_user=${n_user:-0}
 
 interrupts=$(grep -c 'Request interrupted by user' "$transcript" 2>/dev/null)
+interrupts=${interrupts:-0}
 commits=$(grep -c 'git commit' "$transcript" 2>/dev/null)
+commits=${commits:-0}
 
 # 직전 추출 시점의 처리 위치(high-water mark). 같은 세션이 종료마다 재추출되며
 # 동일 지식을 중복 적재하는 것을 막는다.

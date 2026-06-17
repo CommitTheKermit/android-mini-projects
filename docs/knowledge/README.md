@@ -79,11 +79,14 @@ docs/knowledge/
 
 도구가 "세션 종료" 훅을 지원하면 거기서 `knowledge-extract.sh` 를 호출하면 된다. 지원하지 않으면 작업을 마칠 때 수동으로 한 번 실행해도 동일하다.
 
+스크립트의 stdin 은 transcript 파일 자체가 아니라, 그 경로를 가리키는 `{ "transcript_path": ..., "cwd": ..., "session_id": ... }` JSON 이다 (Claude Code SessionEnd 훅 입력 형식). 그래서 transcript 를 직접 파이프하지 말고 아래처럼 경로를 담은 JSON 을 넘긴다.
+
 ```bash
-KNOWLEDGE_LLM_CMD="codex exec" bash docs/knowledge/scripts/knowledge-extract.sh < /경로/세션-transcript.json
+echo '{"transcript_path":"/경로/transcript.jsonl","cwd":"'"$PWD"'","session_id":"manual"}' \
+  | KNOWLEDGE_LLM_CMD="codex exec" bash docs/knowledge/scripts/knowledge-extract.sh
 ```
 
-스크립트는 stdin 으로 `{ "transcript_path": ..., "cwd": ..., "session_id": ... }` JSON 을 받는다 (Claude Code SessionEnd 훅 입력 형식). 다른 도구라면 이 형식에 맞춰 transcript 경로만 넘겨주면 된다.
+다른 도구라면 위 형식에 맞춰 transcript 경로만 채워 넘겨주면 된다.
 
 ### C. 완전 수동
 
