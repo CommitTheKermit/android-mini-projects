@@ -41,17 +41,23 @@ export function getSwitchDisplayData(
   switches: SwitchDictionary,
 ): SwitchDisplayData {
   const switchName = keyboard.switch_name ?? null;
-  const matchedSwitchInfo = switchName ? switches[switchName] : null;
+  const rawSwitchName = keyboard.raw_switch_name?.trim() ?? null;
+  const matchedSwitchName =
+    switchName && switches[switchName]
+      ? switchName
+      : rawSwitchName && switches[rawSwitchName]
+        ? rawSwitchName
+        : null;
+  const matchedSwitchInfo = matchedSwitchName ? switches[matchedSwitchName] : null;
 
   if (matchedSwitchInfo) {
     return {
-      switchName,
+      switchName: matchedSwitchName,
       tactility: getTactilityLevel(matchedSwitchInfo.switch_type),
       noise: getNoiseLevel(matchedSwitchInfo.is_silent),
     };
   }
 
-  const rawSwitchName = keyboard.raw_switch_name?.trim() ?? null;
   const genericSwitchInfo = rawSwitchName
     ? GENERIC_SWITCH_PROFILES[rawSwitchName]
     : null;
