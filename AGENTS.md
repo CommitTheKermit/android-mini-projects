@@ -77,6 +77,15 @@ cd keybuddy/frontend && npm run sync:data   # output/keyboards.json -> 프론트
 - `softScorer.ts` - 소프트 태그 매칭 점수 → 랭킹
 - `searchEngine.ts`/`intentSearch.ts` - 무결과 시 제약을 우선순위 역순으로 1개씩 완화 후 재검색(`HARD_CONSTRAINT_RELAXATION_ORDER`). `searchKeyboards`는 LEGACY, `searchWithProfile`이 신규 진입점.
 
+### 이벤트 수집 (구매 클릭 / 추천 별점)
+
+추천 가설 검증용 데이터를 모으기 위해 두 가지 사용자 행동을 Supabase에 적재한다(커머스 아님, 실결제 없음).
+
+- `lib/session.ts` - 로그인 없는 익명 세션 식별자(localStorage UUID). 추천 -> 구매 클릭 -> 별점 흐름을 느슨하게 묶는다. PII 아님.
+- `lib/events.ts` - `purchase_click`('구매하기' 버튼 클릭, payload `{product_code}`)과 `rating`(추천 전체 별점, payload `{rating}`)을 anon key로 PostgREST `/rest/v1/events`에 직접 insert. **best-effort**라 설정 누락/네트워크 실패는 삼키고 `false`만 반환해 UX를 막지 않는다.
+- 스키마: `supabase/migrations/20260617000000_create_events.sql` - 단일 `events`(id, event_type, session_id, payload jsonb, created_at) + **insert-only RLS**(anon은 insert만, select/update/delete는 정책 부재로 기본 거부).
+- 검증: `__tests__/events.test.ts`가 payload 형태와 PostgREST 요청/실패 동작을 단위검증. 실제 적재는 라이브 Supabase에서 수동 확인(아래 README 참고).
+
 ## 데이터 파이프라인
 
 `crawl.py`는 다나와 **목록 페이지만** 조회한다(상세 페이지 요청 안 함, `DELAY_SEC` 레이트리밋 준수). 한 상품에 스위치 옵션이 여럿이면 제품-스위치 조합별 레코드로 펼치고 최종 **600개**로 제한(`TARGET_RECORDS`). 스위치 이름은 `src/data/switch_aliases.json` 규칙으로만 매칭하고, 매칭 실패는 추론하지 않고 `output/unmatched_switches.json`에 격리한다.
@@ -89,7 +98,7 @@ cd keybuddy/frontend && npm run sync:data   # output/keyboards.json -> 프론트
 
 ## 테스트 규약
 
-`src/__tests__/`에 39개 vitest 스위트가 있다. 특징적인 패턴:
+`src/__tests__/`에 40개 vitest 스위트가 있다. 특징적인 패턴:
 
 - **`*LlmNoCall.test.ts`** - 결정론 경로가 실제로 LLM을 호출하지 않음을 강제하는 불변식 테스트. lib/ 검색 로직 수정 시 이 보증을 깨지 말 것.
 - **`*.goldset.test.ts`** - 정답셋 기반 정확도 회귀 테스트(하드제약/소프트의도 정확도).

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
+import { logPurchaseClick, logRating } from './lib/events';
 import { getBeginnerGuide, getProductTags } from './lib/productDisplay';
 import { getSwitchDisplayData, type GraphLevel } from './lib/switchDisplay';
 import type {
@@ -748,7 +749,11 @@ export default function App() {
 
                       <button
                         type="button"
-                        onClick={() => showToast('준비 중인 기능입니다')}
+                        onClick={() => {
+                          // 실결제는 없고, 구매 의도 클릭을 이벤트로 적재만 한다(best-effort).
+                          void logPurchaseClick(item.product_code);
+                          showToast('준비 중인 기능입니다');
+                        }}
                         className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-blue-700"
                       >
                         <ShoppingCart size={16} aria-hidden="true" />
@@ -796,9 +801,12 @@ export default function App() {
                     onMouseMove={(event) =>
                       setHoverRating(event.nativeEvent.offsetX < 17 ? value - 0.5 : value)
                     }
-                    onClick={(event) =>
-                      setRating(event.nativeEvent.offsetX < 17 ? value - 0.5 : value)
-                    }
+                    onClick={(event) => {
+                      const next = event.nativeEvent.offsetX < 17 ? value - 0.5 : value;
+                      setRating(next);
+                      // 추천 전체 별점을 피드백 이벤트로 적재만 한다(best-effort).
+                      void logRating(next);
+                    }}
                   >
                     <Star size={34} className="pointer-events-none text-slate-300" fill="none" />
                     <div

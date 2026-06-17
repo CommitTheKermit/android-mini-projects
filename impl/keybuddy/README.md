@@ -185,6 +185,31 @@ VITE_SUPABASE_URL=https://your-project-ref.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-publishable-key
 ```
 
+#### 이벤트 수집 테이블 적용
+
+구매 클릭/추천 별점을 수집하려면 `events` 테이블 마이그레이션을 한 번 적용해야 합니다.
+(같은 `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`를 쓰는 프론트가 PostgREST로 직접 insert 합니다.)
+
+```bash
+cd impl/keybuddy
+supabase db push --project-ref your-project-ref
+```
+
+CLI를 쓰지 않는다면 Supabase 대시보드 SQL Editor에
+`supabase/migrations/20260617000000_create_events.sql` 내용을 붙여 실행해도 됩니다.
+이 마이그레이션은 anon에게 **insert만** 허용하는 RLS를 걸어, 이벤트는 적재만 되고
+브라우저로 다시 조회되지 않습니다.
+
+**수동 적재 확인**: 프론트에서 추천을 받은 뒤 ① '구매하기' 버튼 클릭 ② 별점 클릭을 하고,
+대시보드 SQL Editor에서 다음으로 행이 쌓였는지 확인합니다.
+
+```sql
+select event_type, session_id, payload, created_at
+from public.events
+order by created_at desc
+limit 10;
+```
+
 ## 로컬 실행
 
 프론트:
