@@ -5,8 +5,8 @@
  *   태그추출만 받고(LLM 키는 서버 secret에만), 검색·랭킹은 클라이언트 결정론 파이프라인이 수행.
  * - guided(단계선택): selectionOptionConverter로 답변을 태그로 직접 변환(LLM 0회).
  *
- * 두 경로 모두 expandIntents → searchWithProfile(점수순 정렬) → 상위 MAX_RESULTS개로 끝난다.
- * 점수 내림차순은 searchWithProfile/deriveRankOrder가 보장하므로 결과는 "점수순 top N"이다.
+ * freeform은 의미 있는 추출 신호가 있을 때만 expandIntents → searchWithProfile로 검색한다.
+ * guided는 사용자가 고른 모든 선택지를 만족하는 상품만 별도 strict filter로 검색한다.
  */
 
 import catalog from '../data/keyboards.json';
@@ -62,6 +62,21 @@ function sanitizeExtraction(data: unknown): IntentExtraction {
   const { hardConstraints, softIntentTags } = sanitizeTags(rec);
 
   return { intents, hardConstraints, softIntentTags };
+}
+
+function emptySearchResult(): RecommendResult {
+  return {
+    summary: '입력하신 조건에 맞는 제품을 찾지 못했어요. 조건을 바꿔 다시 시도해 주세요.',
+    recommendations: [],
+  };
+}
+
+function hasSearchSignal(extraction: IntentExtraction): boolean {
+  return (
+    extraction.intents.length > 0 ||
+    Object.keys(extraction.hardConstraints).length > 0 ||
+    extraction.softIntentTags.length > 0
+  );
 }
 
 /** Edge Function 태그추출 모드 호출: 자연어 → IntentExtraction (OpenAI, 키는 서버에만). */
@@ -294,6 +309,10 @@ export async function recommend(input: RecommendInput): Promise<RecommendResult>
 
   // freeform: 서버에서 OpenAI 태그추출만, 검색·랭킹은 클라 결정론
   const extraction = await extractTags(input.query);
+  if (!hasSearchSignal(extraction)) {
+    return emptySearchResult();
+  }
+
   return runDeterministicSearch(extraction.intents, {
     hardConstraints: extraction.hardConstraints,
     softIntentTags: extraction.softIntentTags,

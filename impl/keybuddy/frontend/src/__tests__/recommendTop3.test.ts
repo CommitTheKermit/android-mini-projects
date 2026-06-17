@@ -44,6 +44,20 @@ describe('recommend - 경로2 배선 + 점수순 상위 3개', () => {
     expect(result.recommendations.length).toBeLessThanOrEqual(3);
   });
 
+  it('freeform: 추출된 의도와 조건이 없으면 기본 후보를 끼워넣지 않고 0개를 반환한다', async () => {
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(extractResponse({ intents: [], hardConstraints: {}, softIntentTags: [] }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await recommend({ mode: 'freeform', query: '응가' });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.recommendations).toHaveLength(0);
+    expect(result.summary).toContain('찾지 못했어요');
+  });
+
   it('guided: 결정론 검색으로 결과는 1~3개', async () => {
     // 네트워크 미호출 불변식 자체는 recommendLlmNoCall.test.ts에서 단언한다.
     // 여기서는 fetch를 reject로 막아 결정론 경로임을 보장하면서 상위 3개 컷만 확인한다.
