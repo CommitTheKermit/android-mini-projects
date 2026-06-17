@@ -544,11 +544,6 @@ function formatBudget(value: number) {
   return value >= 1000000 ? '100만원+' : `${value.toLocaleString()}원`;
 }
 
-function shortenSearchText(text: string, maxLength = 34) {
-  const normalized = text.trim().replace(/\s+/g, ' ');
-  return normalized.length > maxLength ? `${normalized.slice(0, maxLength - 1)}…` : normalized;
-}
-
 function getBudgetSearchLabel(budget: { min: number; max: number }) {
   const hasMin = budget.min > 0;
   const hasMax = budget.max < 1000000;
@@ -578,7 +573,7 @@ function getGuidedSearchTitle(answers: Record<string, string>, budget: { min: nu
 }
 
 function getSearchContextTitle(input: RecommendInput) {
-  if (input.mode === 'freeform') return `"${shortenSearchText(input.query)}"`;
+  if (input.mode === 'freeform') return `"${input.query.trim().replace(/\s+/g, ' ')}"`;
   return getGuidedSearchTitle(input.answers, input.budget);
 }
 
@@ -2345,7 +2340,7 @@ export default function App() {
           >
             <ChevronLeft size={24} />
           </button>
-          <h1 className="text-lg font-bold text-slate-800 ml-2">
+          <h1 className="ml-2 min-w-0 flex-1 break-words text-lg font-bold leading-snug text-slate-800">
             [{headerTitle}]
           </h1>
         </div>
