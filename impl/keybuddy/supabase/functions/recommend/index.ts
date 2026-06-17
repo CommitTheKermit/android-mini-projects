@@ -1,6 +1,21 @@
 import catalog from './keyboards.json' with { type: 'json' };
 import { formatCatalogEntry } from './catalogText.ts';
 import { appVersion } from './version.ts';
+import {
+  INTENT_VOCABULARY,
+  HARD_ENUM_KEYS,
+  HARD_CONSTRAINT_ENUMS,
+  SOFT_INTENT_VOCAB,
+  isIntentTag,
+  isSoftIntentTag,
+  isHardNumericKey,
+  isHardEnumKey,
+  isValidHardEnumValue,
+  type HardConstraints,
+  type IntentExtraction,
+  type IntentTag,
+  type SoftIntentTag,
+} from './vocabulary.ts';
 
 interface Keyboard {
   product_name: string;
@@ -55,6 +70,7 @@ const keyboards = catalog as Keyboard[];
 const maxCandidates = 40;
 const maxRecommendations = 30;
 const maxOutputTokens = maxRecommendations * 120 + 500;
+const extractMaxOutputTokens = 1024;
 const openaiTimeoutMs = 40000;
 const rateLimitWindowMs = 60000;
 const postRateLimitMaxRequests = 10;
@@ -515,6 +531,133 @@ function openaiErrorMessage(status: number, text: string): string {
   return fallback;
 }
 
+async function callOpenAIResponses(
+  prompt: string,
+  maxTokens: number,
+  apiKey: string,
+): Promise<string> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), openaiTimeoutMs);
+  let response: Response;
+  let bodyText = '';
+  try {
+    response = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        max_output_tokens: maxTokens,
+        input: prompt,
+      }),
+    });
+    bodyText = await response.text();
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('OpenAI 응답 시간이 길어 요청을 중단했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  if (!response.ok) {
+    throw new Error(openaiErrorMessage(response.status, bodyText));
+  }
+
+  return outputText(parseOpenAIResponse(bodyText));
+}
+
+// ---------------------------------------------------------------------------
+// 자연어 → {intents, hardConstraints, softIntentTags} 태그추출 (결정론 검색의 입력)
+//
+// 추천 결과를 LLM이 직접 고르는 대신, 여기서는 자연어를 통제 어휘로 "번역"만 한다.
+// 어휘 확장·필터·스코어링·랭킹은 클라이언트의 결정론 파이프라인이 담당한다.
+// ---------------------------------------------------------------------------
+
+function parseExtractQuery(value: Record<string, unknown>): string {
+  if (typeof value.query !== 'string' || value.query.trim().length === 0) {
+    throw new Error('추천 요청 문장을 입력해 주세요.');
+  }
+  return value.query.trim().slice(0, 800);
+}
+
+function buildExtractPrompt(query: string): string {
+  const enumLines = HARD_ENUM_KEYS.map(
+    (key) => `   - "${key}": ${HARD_CONSTRAINT_ENUMS[key].map((v) => `"${v}"`).join(' | ')}`,
+  ).join('\n');
+
+  return `당신은 키보드 추천 시스템의 의도/제약 추출기입니다.
+사용자의 자연어 입력에서 아래 3가지를 분리해 추출하세요.
+
+1) intents: 사용자의 고수준 사용 목적(use-case). 아래 어휘에서만 선택(복수 가능, 없으면 []):
+   [${INTENT_VOCABULARY.map((v) => `"${v}"`).join(', ')}]
+
+2) hardConstraints: 사용자가 명시적으로 요구한 구체 제약(없으면 {}):
+   숫자: "price_max","price_min","weight_max_g"
+   열거형:
+${enumLines}
+
+3) softIntentTags: 사용자가 직접 언급한 구체 속성 선호. 아래 어휘에서만(없으면 []):
+   [${SOFT_INTENT_VOCAB.map((v) => `"${v}"`).join(', ')}]
+
+규칙:
+- 사용 목적(사무/게임/휴대)은 intents로, 구체 속성 선호(RGB/무선/텐키리스 등)는 hardConstraints나 softIntentTags로 분리합니다.
+- 소음 축의 상반된 태그를 함께 넣지 마세요: 조용함/저소음(정숙)과 고소음/경쾌함(시끄러움)은 동시에 추출하지 않습니다.
+- 어휘/스키마 밖 값은 포함하지 않습니다.
+- 반드시 유효한 JSON만 반환합니다 (코드 블록 없이).
+
+응답 형식: {"intents": [...], "hardConstraints": {...}, "softIntentTags": [...]}
+
+사용자 입력: "${query}"
+`;
+}
+
+function parseExtractJson(text: string): unknown {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error('LLM 응답에서 JSON을 찾지 못했습니다.');
+  }
+  return JSON.parse(text.slice(start, end + 1));
+}
+
+// LLM 출력을 신뢰하지 않는다는 전제로 어휘/스키마 밖 값을 서버에서 1차 폐기한다.
+// 클라이언트도 동일 검증을 한 번 더 수행한다(2중 방어).
+function sanitizeExtraction(raw: unknown): IntentExtraction {
+  if (!isRecord(raw)) {
+    return { intents: [], hardConstraints: {}, softIntentTags: [] };
+  }
+
+  const intents = Array.isArray(raw.intents)
+    ? raw.intents.filter((x): x is IntentTag => typeof x === 'string' && isIntentTag(x))
+    : [];
+
+  const softIntentTags = Array.isArray(raw.softIntentTags)
+    ? raw.softIntentTags.filter((x): x is SoftIntentTag => typeof x === 'string' && isSoftIntentTag(x))
+    : [];
+
+  const hardConstraints: HardConstraints = {};
+  if (isRecord(raw.hardConstraints)) {
+    for (const [key, value] of Object.entries(raw.hardConstraints)) {
+      if (isHardNumericKey(key)) {
+        if (typeof value === 'number') {
+          (hardConstraints as Record<string, unknown>)[key] = value;
+        }
+      } else if (isHardEnumKey(key)) {
+        if (typeof value === 'string' && isValidHardEnumValue(key, value)) {
+          (hardConstraints as Record<string, unknown>)[key] = value;
+        }
+      }
+    }
+  }
+
+  return { intents, hardConstraints, softIntentTags };
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -559,42 +702,32 @@ Deno.serve(async (request) => {
       throw new Error('OPENAI_API_KEY secret이 설정되지 않았습니다.');
     }
 
-    const input = parseInput(await request.json());
+    const body = await request.json();
+
+    // 태그추출 모드: 자연어를 통제 어휘로 번역만 하고 결정론 검색은 클라이언트가 수행한다.
+    if (isRecord(body) && body.mode === 'extract') {
+      const query = parseExtractQuery(body);
+      const text = await callOpenAIResponses(
+        buildExtractPrompt(query),
+        extractMaxOutputTokens,
+        apiKey,
+      );
+      const extraction = sanitizeExtraction(parseExtractJson(text));
+      return Response.json(
+        { ...extraction, meta: { version: appVersion } },
+        { headers: versionHeaders },
+      );
+    }
+
+    // 레거시 추천 생성 모드(freeform/guided): LLM이 후보 중 직접 선택. 현재 UI는 미사용.
+    const input = parseInput(body);
     const candidates = selectCandidates(input);
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), openaiTimeoutMs);
-    let openaiResponse: Response;
-    let openaiBodyText = '';
-    try {
-      openaiResponse = await fetch('https://api.openai.com/v1/responses', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          model,
-          max_output_tokens: maxOutputTokens,
-          input: buildPrompt(input, candidates),
-        }),
-      });
-      openaiBodyText = await openaiResponse.text();
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new Error('OpenAI 응답 시간이 길어 요청을 중단했습니다. 잠시 후 다시 시도해 주세요.');
-      }
-      throw error;
-    } finally {
-      clearTimeout(timeout);
-    }
-
-    if (!openaiResponse.ok) {
-      throw new Error(openaiErrorMessage(openaiResponse.status, openaiBodyText));
-    }
-
-    const raw = parseResult(outputText(parseOpenAIResponse(openaiBodyText)));
+    const text = await callOpenAIResponses(
+      buildPrompt(input, candidates),
+      maxOutputTokens,
+      apiKey,
+    );
+    const raw = parseResult(text);
     const recommendations = composeRecommendations(raw, candidates);
 
     return Response.json(
