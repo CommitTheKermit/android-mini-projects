@@ -221,6 +221,10 @@ function budgetRange(input: RecommendInput): { min: number; max: number } | null
   return null;
 }
 
+function guidedAnswer(input: RecommendInput, question: string): string {
+  return input.mode === 'guided' ? input.answers[question] ?? '' : '';
+}
+
 function scoreKeyboard(keyboard: Keyboard, input: RecommendInput): number {
   const text = normalizedInputText(input);
   const searchable = [
@@ -256,12 +260,21 @@ function scoreKeyboard(keyboard: Keyboard, input: RecommendInput): number {
     if (/무선|블루투스|동글|리시버|2\.4GHz/.test(searchable)) score += 5;
   }
 
-  if (/텐키리스|숫자\s*패드\s*없|작|미니|휴대/.test(text)) {
-    if (/텐키리스|미니|87키|84키|68키|61키/.test(searchable)) score += 4;
-  }
+  const layoutAnswer = guidedAnswer(input, '크기');
+  if (layoutAnswer) {
+    if (/풀배열|1800/.test(layoutAnswer)) {
+      if (/풀배열|104키|108키|96키|98키|100키/.test(searchable)) score += 2;
+    } else if (/텐키리스|75%|65%|60%|미니|F열/.test(layoutAnswer)) {
+      if (/텐키리스|미니|87키|84키|75%|68키|65%|61키|60%/.test(searchable)) score += 4;
+    }
+  } else {
+    if (/텐키리스|숫자\s*패드\s*없|작|미니|휴대/.test(text)) {
+      if (/텐키리스|미니|87키|84키|68키|61키/.test(searchable)) score += 4;
+    }
 
-  if (/풀배열|숫자\s*패드|사무/.test(text)) {
-    if (/풀배열|104키|108키/.test(searchable)) score += 2;
+    if (/풀배열|숫자\s*패드|사무/.test(text)) {
+      if (/풀배열|104키|108키/.test(searchable)) score += 2;
+    }
   }
 
   for (const token of text.split(/\s+/).filter((token) => token.length >= 2)) {

@@ -450,80 +450,6 @@ const DEFAULT_GUIDE: StepOptionGuide = {
   badges: ['조건', '추천', '비교'],
 };
 
-const KEYBOARD_MAIN_ROWS: KeyboardRow[] = [
-  [
-    '`',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '0',
-    '-',
-    '=',
-    { label: 'Bksp', span: 8 },
-  ],
-  [
-    { label: 'Tab', span: 7 },
-    'Q',
-    'W',
-    'E',
-    'R',
-    'T',
-    'Y',
-    'U',
-    'I',
-    'O',
-    'P',
-    '[',
-    ']',
-    { label: '\\', span: 5 },
-  ],
-  [
-    { label: 'Caps', span: 8 },
-    'A',
-    'S',
-    'D',
-    'F',
-    'G',
-    'H',
-    'J',
-    'K',
-    'L',
-    ';',
-    "'",
-    { label: 'Enter', span: 8 },
-  ],
-  [
-    { label: 'Shift', span: 8 },
-    'Z',
-    'X',
-    'C',
-    'V',
-    'B',
-    'N',
-    'M',
-    ',',
-    '.',
-    '/',
-    { label: 'Shift', span: 8 },
-  ],
-  [
-    { label: 'Ctrl', span: 5 },
-    { label: 'Win', span: 5 },
-    { label: 'Alt', span: 5 },
-    { label: 'Space', span: 26 },
-    { label: 'Alt', span: 5 },
-    { label: 'Fn', span: 4 },
-    { label: 'Menu', span: 5 },
-    { label: 'Ctrl', span: 5 },
-  ],
-];
-
 const SIZE_REFERENCE_VISIBLE_LABELS = [
   'Esc', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
   '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Del', 'Bksp',
@@ -558,10 +484,9 @@ const NUMPAD_KEYS: KeyToken[] = [
   '1',
   '2',
   '3',
-  'Ent',
+  { label: 'Ent', rowSpan: 2 },
   { label: '0', span: 2 },
   '.',
-  'Ent',
 ];
 
 const NUMPAD_1800_KEYS: KeyToken[] = [
@@ -1364,8 +1289,7 @@ function KeyboardSizePreview({
             </div>
           )}
 
-          {blueprint.clusters?.includes('numpad') &&
-            renderNumpadCluster(blueprint.clusters?.includes('compactNav') ? NUMPAD_1800_KEYS : NUMPAD_KEYS)}
+          {blueprint.clusters?.includes('numpad') && renderNumpadCluster(NUMPAD_KEYS)}
         </div>
       </div>
     </div>
@@ -1741,7 +1665,7 @@ function BudgetArtwork({ minBudget, maxBudget }: { minBudget: number; maxBudget:
           style={{ left: `${minPercent}%`, right: `${100 - maxPercent}%` }}
         />
         <div className="absolute -top-2 h-8 w-2 rounded-full bg-white shadow" style={{ left: `${minPercent}%` }} />
-        <div className="absolute -top-2 h-8 w-2 rounded-full bg-white shadow" style={{ left: `${maxPercent}%` }} />
+        <div className="absolute -top-2 h-8 w-2 rounded-full bg-white shadow" style={{ right: `${100 - maxPercent}%` }} />
       </div>
       <div className="mt-4 flex justify-between text-xs font-bold text-slate-400">
         <span>입문</span>
@@ -2159,7 +2083,7 @@ export default function App() {
     };
 
     const handleComplete = () => {
-      if (!canSubmit) return;
+      if (!canSubmit || loading) return;
       runRecommend({ mode: 'guided', answers, budget: { min: minBudget, max: maxBudget } });
     };
 

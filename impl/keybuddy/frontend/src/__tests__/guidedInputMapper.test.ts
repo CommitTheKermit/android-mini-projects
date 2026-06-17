@@ -140,6 +140,7 @@ describe('mapLayoutToConstraints', () => {
 
   it('75%/65% -> 빈 객체 (스키마 단일값 표현 불가)', () => {
     expect(mapLayoutToConstraints(LAYOUT_OPTIONS.SEVENTY_FIVE)).toEqual({});
+    expect(mapLayoutToConstraints(LAYOUT_OPTIONS.SIXTY_FIVE)).toEqual({});
   });
 
   it('알 수 없는 값 -> 빈 객체', () => {
@@ -305,9 +306,10 @@ describe('guidedAnswersToHardConstraints', () => {
   });
 
   it('75%/65% 선택 시 layout 하드 제약 없음', () => {
-    const answers = { 크기: '숫자 패드도, 일부 특수키도 없음 (75%/65%)' };
-    const result = guidedAnswersToHardConstraints(answers, { min: 0, max: 1_000_000 });
-    expect(result.layout).toBeUndefined();
+    for (const layout of [LAYOUT_OPTIONS.SEVENTY_FIVE, LAYOUT_OPTIONS.SIXTY_FIVE]) {
+      const result = guidedAnswersToHardConstraints({ 크기: layout }, { min: 0, max: 1_000_000 });
+      expect(result.layout).toBeUndefined();
+    }
   });
 
   it('한국어만 각인 선택 시 engraving 하드 제약 없음', () => {
