@@ -3436,5 +3436,365 @@
     "switch_type": "linear",
     "is_silent": false,
     "source": null
+  },
+  {
+    "canonical_name": "리치베리축",
+    "manufacturer": null,
+    "raw_name": "리치베리축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 바다축",
+    "manufacturer": null,
+    "raw_name": "저소음 바다축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "맘모스축",
+    "manufacturer": null,
+    "raw_name": "맘모스축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "덕킹축",
+    "manufacturer": null,
+    "raw_name": "덕킹축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "딥 사운드축",
+    "manufacturer": null,
+    "raw_name": "딥 사운드축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "조약돌 슈팅스타축",
+    "manufacturer": null,
+    "raw_name": "조약돌 슈팅스타축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "페블축",
+    "manufacturer": null,
+    "raw_name": "페블축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "허니축",
+    "manufacturer": null,
+    "raw_name": "허니축",
+    "aliases": [],
+    "switch_type": "tactile",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "거북이 등껍질축",
+    "manufacturer": null,
+    "raw_name": "거북이 등껍질축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 피치축 V2",
+    "manufacturer": null,
+    "raw_name": "저소음 피치축 V2",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 피치축 V3",
+    "manufacturer": null,
+    "raw_name": "저소음 피치축 V3",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "베이비 화이트축",
+    "manufacturer": null,
+    "raw_name": "베이비 화이트축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "소복눈축",
+    "manufacturer": null,
+    "raw_name": "소복눈축",
+    "aliases": [],
+    "switch_type": "tactile",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "스피드 은축",
+    "manufacturer": null,
+    "raw_name": "스피드 은축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 너울축",
+    "manufacturer": null,
+    "raw_name": "저소음 너울축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 안개축",
+    "manufacturer": null,
+    "raw_name": "저소음 안개축",
+    "aliases": [],
+    "switch_type": "tactile",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "카라멜 커피 V1축",
+    "manufacturer": null,
+    "raw_name": "카라멜 커피 V1축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "코코아 크림 V2축",
+    "manufacturer": null,
+    "raw_name": "코코아 크림 V2축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "검은콩축",
+    "manufacturer": null,
+    "raw_name": "검은콩축",
+    "aliases": [],
+    "switch_type": "tactile",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "다크적축",
+    "manufacturer": null,
+    "raw_name": "다크적축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "마그네틱축",
+    "manufacturer": null,
+    "raw_name": "마그네틱축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "바닐라 아이스크림축",
+    "manufacturer": null,
+    "raw_name": "바닐라 아이스크림축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "복고축",
+    "manufacturer": null,
+    "raw_name": "복고축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "블랙빈축",
+    "manufacturer": null,
+    "raw_name": "블랙빈축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "아이비축",
+    "manufacturer": null,
+    "raw_name": "아이비축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 눈송이축",
+    "manufacturer": null,
+    "raw_name": "저소음 눈송이축",
+    "aliases": [],
+    "switch_type": "tactile",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 로즈축",
+    "manufacturer": null,
+    "raw_name": "저소음 로즈축",
+    "aliases": [],
+    "switch_type": "tactile",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 스톰축",
+    "manufacturer": null,
+    "raw_name": "저소음 스톰축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "청우축",
+    "manufacturer": null,
+    "raw_name": "청우축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "체리축",
+    "manufacturer": null,
+    "raw_name": "체리축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "퀀텀축",
+    "manufacturer": null,
+    "raw_name": "퀀텀축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "풍령축",
+    "manufacturer": null,
+    "raw_name": "풍령축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "퓨전축",
+    "manufacturer": null,
+    "raw_name": "퓨전축",
+    "aliases": [],
+    "switch_type": "tactile",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "플라스마축",
+    "manufacturer": null,
+    "raw_name": "플라스마축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "햇살축",
+    "manufacturer": null,
+    "raw_name": "햇살축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "Carda축",
+    "manufacturer": null,
+    "raw_name": "Carda축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": false,
+    "source": null
+  },
+  {
+    "canonical_name": "Deep Oil축",
+    "manufacturer": null,
+    "raw_name": "Deep Oil축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 Deep Oil축",
+    "manufacturer": null,
+    "raw_name": "저소음 Deep Oil축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 솜사탕축",
+    "manufacturer": null,
+    "raw_name": "저소음 솜사탕축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
+  },
+  {
+    "canonical_name": "저소음 블루축",
+    "manufacturer": null,
+    "raw_name": "저소음 블루축",
+    "aliases": [],
+    "switch_type": "linear",
+    "is_silent": true,
+    "source": null
   }
 ]
