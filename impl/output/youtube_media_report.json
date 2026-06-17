@@ -1,0 +1,3240 @@
+{
+  "generated_at": "2026-06-17T14:49:25+00:00",
+  "stats": {
+    "items": 600,
+    "cache_hits": 0,
+    "api_searches": 90,
+    "matched": 89,
+    "not_found": 1,
+    "skipped": 181,
+    "limited": 329,
+    "errors": 0
+  },
+  "entries": [
+    {
+      "cache_key": "product_code:94026473::switch:경해축",
+      "product_name": "AULA F108 PRO 유무선 기계식 치즈 화이트 한글",
+      "raw_switch_name": "경해축",
+      "switch_name": "Blue Whale 경해축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=5D_H8O8LeZ0",
+      "video_id": "5D_H8O8LeZ0",
+      "title": "경해축 뭐가 더 좋을까요? 아콘 AK74 vs Aula F108 독거미 키보드 풀배열 #키보드추천 #기계식키보드 #ak74 #독거미키보드",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2024-12-25T04:55:51Z",
+      "view_count": "373851",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 치즈 화이트 한글 경해축",
+      "updated_at": "2026-06-17T14:48:30+00:00"
+    },
+    {
+      "cache_key": "product_code:94026470::switch:세이야축",
+      "product_name": "AULA F108 PRO 유무선 기계식 치즈 화이트 한글",
+      "raw_switch_name": "세이야축",
+      "switch_name": "SEIYA 세이야",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=1pe--2ZYUH4",
+      "video_id": "1pe--2ZYUH4",
+      "title": "풀배열 키보드 그냥 이거 사세요 독거미 AULA F108 세이야축 여전히 1티어 키보드 입니다.",
+      "channel_title": "심플 Simple",
+      "published_at": "2025-01-10T09:16:21Z",
+      "view_count": "33246",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 치즈 화이트 한글 세이야축",
+      "updated_at": "2026-06-17T14:48:30+00:00"
+    },
+    {
+      "cache_key": "product_code:94026476::switch:저소음 바다축",
+      "product_name": "AULA F108 PRO 유무선 기계식 치즈 화이트 한글",
+      "raw_switch_name": "저소음 바다축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=pZ7a-md9q5s",
+      "video_id": "pZ7a-md9q5s",
+      "title": "가성비를 넘어 실력기로 거듭나고 있는 풀배열 기계식 키보드 AULA f108pro 저소음 바다축, 저소음 솜사탕축 오로라블랙, 치즈화이트 | 독거미 F108pro",
+      "channel_title": "인태크 INTAECH",
+      "published_at": "2026-01-01T22:32:24Z",
+      "view_count": "15495",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 치즈 화이트 한글 저소음 바다축",
+      "updated_at": "2026-06-17T14:48:31+00:00"
+    },
+    {
+      "cache_key": "product_code:94026467::switch:저소음 솜사탕축",
+      "product_name": "AULA F108 PRO 유무선 기계식 치즈 화이트 한글",
+      "raw_switch_name": "저소음 솜사탕축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=pZ7a-md9q5s",
+      "video_id": "pZ7a-md9q5s",
+      "title": "가성비를 넘어 실력기로 거듭나고 있는 풀배열 기계식 키보드 AULA f108pro 저소음 바다축, 저소음 솜사탕축 오로라블랙, 치즈화이트 | 독거미 F108pro",
+      "channel_title": "인태크 INTAECH",
+      "published_at": "2026-01-01T22:32:24Z",
+      "view_count": "15495",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 치즈 화이트 한글 저소음 솜사탕축",
+      "updated_at": "2026-06-17T14:48:32+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 KEYS-TO-GO 2 (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:97122362::switch:리치베리축",
+      "product_name": "FL-ESPORTS NX108 유무선 기계식 크림 말차",
+      "raw_switch_name": "리치베리축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=tkVNPzFJTbA",
+      "video_id": "tkVNPzFJTbA",
+      "title": "FL-ESPORTS NX108 풀배열 유무선 기계식 키보드 스위치 4종 비교 타건(저소음 갈축 신규 출시)",
+      "channel_title": "Funkeys",
+      "published_at": "2026-02-05T08:15:50Z",
+      "view_count": "1953",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "fl-esports nx108 유무선 기계식 크림 말차 리치베리축",
+      "updated_at": "2026-06-17T14:48:32+00:00"
+    },
+    {
+      "cache_key": "product_code:104964920::switch:저소음 갈축",
+      "product_name": "FL-ESPORTS NX108 유무선 기계식 크림 말차",
+      "raw_switch_name": "저소음 갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=tkVNPzFJTbA",
+      "video_id": "tkVNPzFJTbA",
+      "title": "FL-ESPORTS NX108 풀배열 유무선 기계식 키보드 스위치 4종 비교 타건(저소음 갈축 신규 출시)",
+      "channel_title": "Funkeys",
+      "published_at": "2026-02-05T08:15:50Z",
+      "view_count": "1953",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "fl-esports nx108 유무선 기계식 크림 말차 저소음 갈축",
+      "updated_at": "2026-06-17T14:48:33+00:00"
+    },
+    {
+      "cache_key": "product_code:97122386::switch:저소음 스노우축",
+      "product_name": "FL-ESPORTS NX108 유무선 기계식 크림 말차",
+      "raw_switch_name": "저소음 스노우축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=08FOYB9rzfE",
+      "video_id": "08FOYB9rzfE",
+      "title": "나의 FL-ESPORTS X80 / NX108 키보드 스위치 취향은?? 3종 타건소리 비교 (리치베리축,저소음스노우축,저소음파도축) #키보드 #키보드스위치 #funkeys",
+      "channel_title": "데브키 DevKey ASMR",
+      "published_at": "2025-08-25T13:30:01Z",
+      "view_count": "44844",
+      "score": 15,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "fl-esports nx108 유무선 기계식 크림 말차 저소음 스노우축",
+      "updated_at": "2026-06-17T14:48:34+00:00"
+    },
+    {
+      "cache_key": "product_code:97122377::switch:저소음 파도축",
+      "product_name": "FL-ESPORTS NX108 유무선 기계식 크림 말차",
+      "raw_switch_name": "저소음 파도축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=tkVNPzFJTbA",
+      "video_id": "tkVNPzFJTbA",
+      "title": "FL-ESPORTS NX108 풀배열 유무선 기계식 키보드 스위치 4종 비교 타건(저소음 갈축 신규 출시)",
+      "channel_title": "Funkeys",
+      "published_at": "2026-02-05T08:15:50Z",
+      "view_count": "1953",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "fl-esports nx108 유무선 기계식 크림 말차 저소음 파도축",
+      "updated_at": "2026-06-17T14:48:34+00:00"
+    },
+    {
+      "cache_key": "product_code:63466952::switch:세이야축",
+      "product_name": "AULA F87 Pro 기계식 다크 올리비아 한글",
+      "raw_switch_name": "세이야축",
+      "switch_name": "SEIYA 세이야",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=vVz-2C7XTt0",
+      "video_id": "vVz-2C7XTt0",
+      "title": "독거미 키보드 AULA F87 Pro, 유무선 다 되는 기계식 키보드 직구 꿀템!",
+      "channel_title": "테크한줄평",
+      "published_at": "2025-06-22T10:43:00Z",
+      "view_count": "192267",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 기계식 다크 올리비아 한글 세이야축",
+      "updated_at": "2026-06-17T14:48:35+00:00"
+    },
+    {
+      "cache_key": "product_code:63466976::switch:저소음 바다축",
+      "product_name": "AULA F87 Pro 기계식 다크 올리비아 한글",
+      "raw_switch_name": "저소음 바다축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=u5ECTg57FX8",
+      "video_id": "u5ECTg57FX8",
+      "title": "진정한 가성비 1티어 키보드! 독거미 정발 F87, F99 & 저소음 바다축, 오테뮤 피치축, 세이야축, 황축, 신월축 비교",
+      "channel_title": "로미키 RomiKey",
+      "published_at": "2024-11-22T10:36:19Z",
+      "view_count": "15082",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 기계식 다크 올리비아 한글 저소음 바다축",
+      "updated_at": "2026-06-17T14:48:36+00:00"
+    },
+    {
+      "cache_key": "product_code:13363187::switch:갈축",
+      "product_name": "앱코 K560 축교환 레인보우 무빙 LED 기계식 블랙",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=KQ5xYEmuByU",
+      "video_id": "KQ5xYEmuByU",
+      "title": "[ABKO] K560 축교환 기계식 무빙 LED 모드",
+      "channel_title": "ABKO",
+      "published_at": "2021-02-15T01:56:14Z",
+      "view_count": "54111",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "views:1000+"
+      ],
+      "query": "앱코 k560 축교환 레인보우 무빙 led 기계식 블랙 갈축",
+      "updated_at": "2026-06-17T14:48:36+00:00"
+    },
+    {
+      "cache_key": "product_code:13363190::switch:적축",
+      "product_name": "앱코 K560 축교환 레인보우 무빙 LED 기계식 블랙",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=KQ5xYEmuByU",
+      "video_id": "KQ5xYEmuByU",
+      "title": "[ABKO] K560 축교환 기계식 무빙 LED 모드",
+      "channel_title": "ABKO",
+      "published_at": "2021-02-15T01:56:14Z",
+      "view_count": "54111",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "views:1000+"
+      ],
+      "query": "앱코 k560 축교환 레인보우 무빙 led 기계식 블랙 적축",
+      "updated_at": "2026-06-17T14:48:37+00:00"
+    },
+    {
+      "cache_key": "product_code:13363175::switch:청축",
+      "product_name": "앱코 K560 축교환 레인보우 무빙 LED 기계식 블랙",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=xBDSs_k9e_c",
+      "video_id": "xBDSs_k9e_c",
+      "title": "[광고] ABKO K560 축교환 레인보우 무빙 LED 기계식 키보드 (청축) 타건시연",
+      "channel_title": "서울호랑이",
+      "published_at": "2021-05-01T13:43:17Z",
+      "view_count": "13437",
+      "score": 16,
+      "score_reasons": [
+        "product_tokens:4",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 k560 축교환 레인보우 무빙 led 기계식 블랙 청축",
+      "updated_at": "2026-06-17T14:48:38+00:00"
+    },
+    {
+      "cache_key": "product_code:108423053::switch:세이야축",
+      "product_name": "AULA F108 기계식 라이트 그레이",
+      "raw_switch_name": "세이야축",
+      "switch_name": "SEIYA 세이야",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=9VbkoWvFPIA",
+      "video_id": "9VbkoWvFPIA",
+      "title": "독거미키보드 풀배열 모든 스위치 리뷰 AULA F108 경해축 황축 세이야축 저소음바다축",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2024-12-12T10:02:24Z",
+      "view_count": "126772",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 기계식 라이트 그레이 세이야축",
+      "updated_at": "2026-06-17T14:48:38+00:00"
+    },
+    {
+      "cache_key": "product_code:108423050::switch:저소음 바다축",
+      "product_name": "AULA F108 기계식 라이트 그레이",
+      "raw_switch_name": "저소음 바다축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=pZ7a-md9q5s",
+      "video_id": "pZ7a-md9q5s",
+      "title": "가성비를 넘어 실력기로 거듭나고 있는 풀배열 기계식 키보드 AULA f108pro 저소음 바다축, 저소음 솜사탕축 오로라블랙, 치즈화이트 | 독거미 F108pro",
+      "channel_title": "인태크 INTAECH",
+      "published_at": "2026-01-01T22:32:24Z",
+      "view_count": "15495",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 기계식 라이트 그레이 저소음 바다축",
+      "updated_at": "2026-06-17T14:48:39+00:00"
+    },
+    {
+      "cache_key": "product_code:5040324::switch:적축",
+      "product_name": "앱코 HACKER K640 축교환 게이밍 기계식 블랙",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=jsFJGFMZXfk",
+      "video_id": "jsFJGFMZXfk",
+      "title": "가성비 기계식 키보드 앱코 해커 k640 (갈축)리뷰! (ABKO HACKER K640 Review!)",
+      "channel_title": "냉묘",
+      "published_at": "2022-01-17T14:19:40Z",
+      "view_count": "15865",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 hacker k640 축교환 게이밍 기계식 블랙 적축",
+      "updated_at": "2026-06-17T14:48:40+00:00"
+    },
+    {
+      "cache_key": "product_code:5040307::switch:갈축",
+      "product_name": "앱코 HACKER K640 축교환 게이밍 기계식 블랙",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=jsFJGFMZXfk",
+      "video_id": "jsFJGFMZXfk",
+      "title": "가성비 기계식 키보드 앱코 해커 k640 (갈축)리뷰! (ABKO HACKER K640 Review!)",
+      "channel_title": "냉묘",
+      "published_at": "2022-01-17T14:19:40Z",
+      "view_count": "15865",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 hacker k640 축교환 게이밍 기계식 블랙 갈축",
+      "updated_at": "2026-06-17T14:48:40+00:00"
+    },
+    {
+      "cache_key": "product_code:4709084::switch:청축",
+      "product_name": "앱코 HACKER K640 축교환 게이밍 기계식 블랙",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=jsFJGFMZXfk",
+      "video_id": "jsFJGFMZXfk",
+      "title": "가성비 기계식 키보드 앱코 해커 k640 (갈축)리뷰! (ABKO HACKER K640 Review!)",
+      "channel_title": "냉묘",
+      "published_at": "2022-01-17T14:19:40Z",
+      "view_count": "15865",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 hacker k640 축교환 게이밍 기계식 블랙 청축",
+      "updated_at": "2026-06-17T14:48:41+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 MX Keys S (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:94998188::switch:저소음 솜사탕축",
+      "product_name": "AULA F87 Pro 유무선 기계식 인디고 블랙 한글",
+      "raw_switch_name": "저소음 솜사탕축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=b3QMonzqeg0",
+      "video_id": "b3QMonzqeg0",
+      "title": "저소음 솜사탕축 | 정발 AULA 독거미 키보드 신상 스위치 (Leobog Cotton Candy Switch) 타건사운드 #F108 #키보드 #keyboard #funkeys",
+      "channel_title": "데브키 DevKey ASMR",
+      "published_at": "2025-03-06T13:45:08Z",
+      "view_count": "41347",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 유무선 기계식 인디고 블랙 한글 저소음 솜사탕축",
+      "updated_at": "2026-06-17T14:48:42+00:00"
+    },
+    {
+      "cache_key": "product_code:61437527::switch:저소음 피치축 v2",
+      "product_name": "AULA F87 Pro 유무선 기계식 인디고 블랙 한글",
+      "raw_switch_name": "저소음 피치축 V2",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=hAwrs9tESpw",
+      "video_id": "hAwrs9tESpw",
+      "title": "나의 독거미 저소음 스위치 취향은?? 3종 타건소리 비교 (저소음 바다축, 저소음 솜사탕축, 저소음 피치축) AULA F108 #키보드 #keyboard #ASMR #typing",
+      "channel_title": "데브키 DevKey ASMR",
+      "published_at": "2025-03-23T14:16:43Z",
+      "view_count": "967754",
+      "score": 16,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:3",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 유무선 기계식 인디고 블랙 한글 저소음 피치축 v2",
+      "updated_at": "2026-06-17T14:48:42+00:00"
+    },
+    {
+      "cache_key": "product_code:61437491::switch:황축 v3",
+      "product_name": "AULA F87 Pro 유무선 기계식 인디고 블랙 한글",
+      "raw_switch_name": "황축 V3",
+      "switch_name": "Yellow V3 황축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=4cS8JySiHUo",
+      "video_id": "4cS8JySiHUo",
+      "title": "신규컬러출시 59,000원 미쳤다는 말밖에 안나오는 독거미 키보드 AULA F87Pro리뷰",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2024-07-08T10:36:19Z",
+      "view_count": "148043",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 유무선 기계식 인디고 블랙 한글 황축 v3",
+      "updated_at": "2026-06-17T14:48:43+00:00"
+    },
+    {
+      "cache_key": "product_code:61437545::switch:회목축 v4",
+      "product_name": "AULA F87 Pro 유무선 기계식 인디고 블랙 한글",
+      "raw_switch_name": "회목축 V4",
+      "switch_name": "Grey Wood V4 회목축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=omDPZHbdULI",
+      "video_id": "omDPZHbdULI",
+      "title": "독거미 키보드 이렇게 사면 됩니다! 독거미(AULA) F87·F99·F108 비교 및 스위치 총정리!",
+      "channel_title": "발품파는남자",
+      "published_at": "2025-08-29T10:30:39Z",
+      "view_count": "216743",
+      "score": 13,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 유무선 기계식 인디고 블랙 한글 회목축 v4",
+      "updated_at": "2026-06-17T14:48:44+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CKM40W 저소음 무선 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Razer Huntsman V3 Pro TKL 8K KR",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:103690751::switch:벚꽃축",
+      "product_name": "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루",
+      "raw_switch_name": "벚꽃축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=LMxt0joX6fo",
+      "video_id": "LMxt0joX6fo",
+      "title": "🎁구독자 이벤트🎁 출근이 기다려지게 만드는 키보드 미친 가성비의 사무용 저소음 기계식 키보드 앱코 ACH105",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2026-04-06T08:52:06Z",
+      "view_count": "17537",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 ach105 오피스워커 유무선 기계식 앨리스블루 벚꽃축",
+      "updated_at": "2026-06-17T14:48:44+00:00"
+    },
+    {
+      "cache_key": "product_code:103690760::switch:저소음 바다소금축",
+      "product_name": "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루",
+      "raw_switch_name": "저소음 바다소금축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=fpxi7qty6nM",
+      "video_id": "fpxi7qty6nM",
+      "title": "[구독자이벤트] 사무실 저소음 3종 출시? 이걸 어떻게 참아?🤷🏻‍♀️",
+      "channel_title": "꼬꼬마레이",
+      "published_at": "2026-01-18T14:20:03Z",
+      "view_count": "9034",
+      "score": 15,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 ach105 오피스워커 유무선 기계식 앨리스블루 저소음 바다소금축",
+      "updated_at": "2026-06-17T14:48:45+00:00"
+    },
+    {
+      "cache_key": "product_code:103690754::switch:저소음 택타일 바다소금축",
+      "product_name": "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루",
+      "raw_switch_name": "저소음 택타일 바다소금축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=fpxi7qty6nM",
+      "video_id": "fpxi7qty6nM",
+      "title": "[구독자이벤트] 사무실 저소음 3종 출시? 이걸 어떻게 참아?🤷🏻‍♀️",
+      "channel_title": "꼬꼬마레이",
+      "published_at": "2026-01-18T14:20:03Z",
+      "view_count": "9034",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:3",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 ach105 오피스워커 유무선 기계식 앨리스블루 저소음 택타일 바다소금축",
+      "updated_at": "2026-06-17T14:48:46+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 시그니처 슬림 MK950 키보드 마우스 세트 (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:36708812::switch:적축",
+      "product_name": "앱코 K561 교체축 유무선 블루투스 기계식 블랙",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=B4TPUVHm1DI",
+      "video_id": "B4TPUVHm1DI",
+      "title": "이제 기계식 키보드 입문은 이걸로 하세요 - 앱코 K580 (적축 / 갈축 / 청축)",
+      "channel_title": "JN테크리뷰",
+      "published_at": "2024-11-04T12:29:19Z",
+      "view_count": "40702",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k561 교체축 유무선 블루투스 기계식 블랙 적축",
+      "updated_at": "2026-06-17T14:48:46+00:00"
+    },
+    {
+      "cache_key": "product_code:36708827::switch:갈축",
+      "product_name": "앱코 K561 교체축 유무선 블루투스 기계식 블랙",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=B4TPUVHm1DI",
+      "video_id": "B4TPUVHm1DI",
+      "title": "이제 기계식 키보드 입문은 이걸로 하세요 - 앱코 K580 (적축 / 갈축 / 청축)",
+      "channel_title": "JN테크리뷰",
+      "published_at": "2024-11-04T12:29:19Z",
+      "view_count": "40702",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k561 교체축 유무선 블루투스 기계식 블랙 갈축",
+      "updated_at": "2026-06-17T14:48:47+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "한성컴퓨터 GK698 OfficeMaster 유무선",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:94026440::switch:저소음 바다축",
+      "product_name": "AULA F108 PRO 유무선 기계식 오로라 블랙 한글",
+      "raw_switch_name": "저소음 바다축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=pZ7a-md9q5s",
+      "video_id": "pZ7a-md9q5s",
+      "title": "가성비를 넘어 실력기로 거듭나고 있는 풀배열 기계식 키보드 AULA f108pro 저소음 바다축, 저소음 솜사탕축 오로라블랙, 치즈화이트 | 독거미 F108pro",
+      "channel_title": "인태크 INTAECH",
+      "published_at": "2026-01-01T22:32:24Z",
+      "view_count": "15495",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 오로라 블랙 한글 저소음 바다축",
+      "updated_at": "2026-06-17T14:48:47+00:00"
+    },
+    {
+      "cache_key": "product_code:94026458::switch:경해축",
+      "product_name": "AULA F108 PRO 유무선 기계식 오로라 블랙 한글",
+      "raw_switch_name": "경해축",
+      "switch_name": "Blue Whale 경해축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=m4mjxl6HVMk",
+      "video_id": "m4mjxl6HVMk",
+      "title": "오만상사(?) | 5만원대 키보드 중 최고라는 화제의 독거미 F108 Pro 언빡싱&첫인상",
+      "channel_title": "ITSub잇섭",
+      "published_at": "2025-01-21T11:30:35Z",
+      "view_count": "1508110",
+      "score": 8,
+      "score_reasons": [
+        "product_tokens:4",
+        "media_hint:타건",
+        "views:1000+",
+        "missing_switch_token"
+      ],
+      "query": "aula f108 pro 유무선 기계식 오로라 블랙 한글 경해축",
+      "updated_at": "2026-06-17T14:48:48+00:00"
+    },
+    {
+      "cache_key": "product_code:94026449::switch:세이야축",
+      "product_name": "AULA F108 PRO 유무선 기계식 오로라 블랙 한글",
+      "raw_switch_name": "세이야축",
+      "switch_name": "SEIYA 세이야",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=1pe--2ZYUH4",
+      "video_id": "1pe--2ZYUH4",
+      "title": "풀배열 키보드 그냥 이거 사세요 독거미 AULA F108 세이야축 여전히 1티어 키보드 입니다.",
+      "channel_title": "심플 Simple",
+      "published_at": "2025-01-10T09:16:21Z",
+      "view_count": "33246",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 오로라 블랙 한글 세이야축",
+      "updated_at": "2026-06-17T14:48:49+00:00"
+    },
+    {
+      "cache_key": "product_code:94026455::switch:저소음 솜사탕축",
+      "product_name": "AULA F108 PRO 유무선 기계식 오로라 블랙 한글",
+      "raw_switch_name": "저소음 솜사탕축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=pZ7a-md9q5s",
+      "video_id": "pZ7a-md9q5s",
+      "title": "가성비를 넘어 실력기로 거듭나고 있는 풀배열 기계식 키보드 AULA f108pro 저소음 바다축, 저소음 솜사탕축 오로라블랙, 치즈화이트 | 독거미 F108pro",
+      "channel_title": "인태크 INTAECH",
+      "published_at": "2026-01-01T22:32:24Z",
+      "view_count": "15495",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 오로라 블랙 한글 저소음 솜사탕축",
+      "updated_at": "2026-06-17T14:48:49+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "지클릭커 오피스프로 WK35",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "AULA S102Pro 유무선",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:63467021::switch:저소음 바다축",
+      "product_name": "AULA F87 Pro 기계식 라이트 올리비아 한글",
+      "raw_switch_name": "저소음 바다축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=hAwrs9tESpw",
+      "video_id": "hAwrs9tESpw",
+      "title": "나의 독거미 저소음 스위치 취향은?? 3종 타건소리 비교 (저소음 바다축, 저소음 솜사탕축, 저소음 피치축) AULA F108 #키보드 #keyboard #ASMR #typing",
+      "channel_title": "데브키 DevKey ASMR",
+      "published_at": "2025-03-23T14:16:43Z",
+      "view_count": "967754",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 기계식 라이트 올리비아 한글 저소음 바다축",
+      "updated_at": "2026-06-17T14:48:50+00:00"
+    },
+    {
+      "cache_key": "product_code:63467006::switch:세이야축",
+      "product_name": "AULA F87 Pro 기계식 라이트 올리비아 한글",
+      "raw_switch_name": "세이야축",
+      "switch_name": "SEIYA 세이야",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=KXprwXXHeHI",
+      "video_id": "KXprwXXHeHI",
+      "title": "경해축 VS 세이야축 비교 타건 [AULA 독거미 F99 키보드]  #asmr",
+      "channel_title": "밍키",
+      "published_at": "2024-09-13T08:30:06Z",
+      "view_count": "758093",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 기계식 라이트 올리비아 한글 세이야축",
+      "updated_at": "2026-06-17T14:48:51+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 MK345 (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "한성컴퓨터 TFG Magnetox 2XF",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:16387952::switch:적축",
+      "product_name": "CORSAIR K70 RGB PRO",
+      "raw_switch_name": "적축",
+      "switch_name": "MX Red",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=XOOyNmjdkRA",
+      "video_id": "XOOyNmjdkRA",
+      "title": "전설의 귀환! 8배 빠른 커세어 풀배열 게이밍 키보드! 커세어 K70 RGB PRO (적축, 청축)",
+      "channel_title": "해용 HAEYONG",
+      "published_at": "2022-03-14T02:30:06Z",
+      "view_count": "87994",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "corsair k70 rgb pro 적축",
+      "updated_at": "2026-06-17T14:48:51+00:00"
+    },
+    {
+      "cache_key": "product_code:16388009::switch:저소음 적축",
+      "product_name": "CORSAIR K70 RGB PRO",
+      "raw_switch_name": "저소음 적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=KOvHcpB3-4Q",
+      "video_id": "KOvHcpB3-4Q",
+      "title": "조용히 적어보는 정글 차이 K70 RGB PRO 저소음적축",
+      "channel_title": "KuR쿠르",
+      "published_at": "2025-05-29T06:25:16Z",
+      "view_count": "6424",
+      "score": 13,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "corsair k70 rgb pro 저소음 적축",
+      "updated_at": "2026-06-17T14:48:52+00:00"
+    },
+    {
+      "cache_key": "product_code:16387904::switch:갈축",
+      "product_name": "CORSAIR K70 RGB PRO",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=hlSAXcuyRrE",
+      "video_id": "hlSAXcuyRrE",
+      "title": "뭘 좋아할지 몰라서 다 타건했어 커세어 k70 rgb mk2  빠른 입력속도와 게임에 최적화된 기계식 키보드  (은축 적축 저소음적축 갈축 청축) #15 [4k]",
+      "channel_title": "게임장비리뷰 겜용이",
+      "published_at": "2020-07-15T12:10:21Z",
+      "view_count": "197779",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "corsair k70 rgb pro 갈축",
+      "updated_at": "2026-06-17T14:48:53+00:00"
+    },
+    {
+      "cache_key": "product_code:16388081::switch:스피드 은축",
+      "product_name": "CORSAIR K70 RGB PRO",
+      "raw_switch_name": "스피드 은축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=rtzKp5dxejw",
+      "video_id": "rtzKp5dxejw",
+      "title": "커세어 K70 RGB PRO 리뷰, 저소음 적축, 스피드은축 8배 빠른 8,000Hz 폴링레이트와 분리형 USB C타입을 탑재한 게이밍 키보드 K70 RGB MK.2 비해 달라진점",
+      "channel_title": "PennyTV 패니티비",
+      "published_at": "2022-03-16T06:23:44Z",
+      "view_count": "39856",
+      "score": 13,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:2",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "corsair k70 rgb pro 스피드 은축",
+      "updated_at": "2026-06-17T14:48:53+00:00"
+    },
+    {
+      "cache_key": "product_code:16387832::switch:청축",
+      "product_name": "CORSAIR K70 RGB PRO",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=XOOyNmjdkRA",
+      "video_id": "XOOyNmjdkRA",
+      "title": "전설의 귀환! 8배 빠른 커세어 풀배열 게이밍 키보드! 커세어 K70 RGB PRO (적축, 청축)",
+      "channel_title": "해용 HAEYONG",
+      "published_at": "2022-03-14T02:30:06Z",
+      "view_count": "87994",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "corsair k70 rgb pro 청축",
+      "updated_at": "2026-06-17T14:48:54+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 MK235 (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:36708029::switch:저소음 크림축",
+      "product_name": "FL-ESPORTS OG104 유무선 핫스왑 풀윤활 기계식 그레이 한글",
+      "raw_switch_name": "저소음 크림축",
+      "switch_name": "Silent Cream 저소음 크림",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=zHeVW5FVpBo",
+      "video_id": "zHeVW5FVpBo",
+      "title": "flesports 추천 구매 후기를 확인해 보세요 실제 구매자들이 추천하는 상품 10가지",
+      "channel_title": "리뷰TV",
+      "published_at": "2025-02-02T05:39:45Z",
+      "view_count": "9",
+      "score": 15,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1"
+      ],
+      "query": "fl-esports og104 유무선 핫스왑 풀윤활 기계식 그레이 한글 저소음 크림축",
+      "updated_at": "2026-06-17T14:48:54+00:00"
+    },
+    {
+      "cache_key": "product_code:36707879::switch:민트축",
+      "product_name": "FL-ESPORTS OG104 유무선 핫스왑 풀윤활 기계식 그레이 한글",
+      "raw_switch_name": "민트축",
+      "switch_name": null,
+      "status": "not_found",
+      "query": "fl-esports og104 유무선 핫스왑 풀윤활 기계식 그레이 한글 민트축",
+      "media_url": null,
+      "top_title": "사무실에서 써도 되는 저소음 기계식 키보드 - FL Esports OG87 / OG104 레트로",
+      "top_video_id": "jQ_3PKNkZDM",
+      "updated_at": "2026-06-17T14:48:55+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 G413 SE (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 Pebble 2 Combo 무선 키보드 마우스 세트 (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:18878243::switch:적축",
+      "product_name": "앱코 K517 레트로 기계식",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=3DK_pQfXP8w",
+      "video_id": "3DK_pQfXP8w",
+      "title": "앱코 k517 레트로 적축 후기, 그런데 이제 ASMR을 곁들인",
+      "channel_title": "몽자로그",
+      "published_at": "2023-10-04T11:23:58Z",
+      "view_count": "28435",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:asmr",
+        "views:1000+"
+      ],
+      "query": "앱코 k517 레트로 기계식 적축",
+      "updated_at": "2026-06-17T14:48:56+00:00"
+    },
+    {
+      "cache_key": "product_code:20118203::switch:갈축",
+      "product_name": "앱코 K517 레트로 기계식",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=GsosdOR8abs",
+      "video_id": "GsosdOR8abs",
+      "title": "앱코 K517 갈축 레트로 풀배열 키보드 리뷰! ⭐️⭐️⭐️⭐️⭐️ #앱코 #갈축 #키보드추천#asmr",
+      "channel_title": "윤정 YunJeong",
+      "published_at": "2024-10-22T10:00:18Z",
+      "view_count": "12016",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k517 레트로 기계식 갈축",
+      "updated_at": "2026-06-17T14:48:56+00:00"
+    },
+    {
+      "cache_key": "product_code:20118197::switch:청축",
+      "product_name": "앱코 K517 레트로 기계식",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=B4TPUVHm1DI",
+      "video_id": "B4TPUVHm1DI",
+      "title": "이제 기계식 키보드 입문은 이걸로 하세요 - 앱코 K580 (적축 / 갈축 / 청축)",
+      "channel_title": "JN테크리뷰",
+      "published_at": "2024-11-04T12:29:19Z",
+      "view_count": "40702",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k517 레트로 기계식 청축",
+      "updated_at": "2026-06-17T14:48:57+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "한성컴퓨터 TFG Magnetox 2XL",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:27546863::switch:마그네틱축",
+      "product_name": "CORSAIR K70 MAX RGB MGX 게이밍 기계식",
+      "raw_switch_name": "마그네틱축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=dnfZh4XfiK4",
+      "video_id": "dnfZh4XfiK4",
+      "title": "커세어 K70 MAX RGB MGX 마그네틱축 게이밍 키보드 추천",
+      "channel_title": "PennyTV 패니티비",
+      "published_at": "2023-08-26T04:14:10Z",
+      "view_count": "90049",
+      "score": 16,
+      "score_reasons": [
+        "product_tokens:4",
+        "switch_tokens:1",
+        "media_hint:sound",
+        "views:1000+"
+      ],
+      "query": "corsair k70 max rgb mgx 게이밍 기계식 마그네틱축",
+      "updated_at": "2026-06-17T14:48:57+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "한성컴퓨터 TFG Magnetox 2XF 저소음",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:15185441::switch:저소음 백축",
+      "product_name": "COX CK01 PBT SL 기계식 키보드",
+      "raw_switch_name": "저소음 백축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=0QsVyvtCzig",
+      "video_id": "0QsVyvtCzig",
+      "title": "Cox 콕스 저소음백축(COX CK01 PBT SL) , 적축(CK01 TKL) 타건소리 비교",
+      "channel_title": "하람 Haram log",
+      "published_at": "2023-04-29T08:45:20Z",
+      "view_count": "110668",
+      "score": 17,
+      "score_reasons": [
+        "product_tokens:4",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "cox ck01 pbt sl 기계식 키보드 저소음 백축",
+      "updated_at": "2026-06-17T14:48:58+00:00"
+    },
+    {
+      "cache_key": "product_code:122633320::switch:경해축",
+      "product_name": "앱코 AF108PRO ABKO x SOAI 콜라보 3모드 기계식 와인그레이",
+      "raw_switch_name": "경해축",
+      "switch_name": "Blue Whale 경해축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=XLbmHbeRD_c",
+      "video_id": "XLbmHbeRD_c",
+      "title": "ABKO AF108PRO 독거미 키보드 와인 그레이 신규 컬러 출시!! (구독자 이벤트) #앱코 #독거미키보드",
+      "channel_title": "디디딧 – Discover. Design. Detail.",
+      "published_at": "2026-05-13T12:15:10Z",
+      "view_count": "31238",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 af108pro abko x soai 콜라보 3모드 기계식 와인그레이 경해축",
+      "updated_at": "2026-06-17T14:48:59+00:00"
+    },
+    {
+      "cache_key": "product_code:122633313::switch:세이야축",
+      "product_name": "앱코 AF108PRO ABKO x SOAI 콜라보 3모드 기계식 와인그레이",
+      "raw_switch_name": "세이야축",
+      "switch_name": "SEIYA 세이야",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=XLbmHbeRD_c",
+      "video_id": "XLbmHbeRD_c",
+      "title": "ABKO AF108PRO 독거미 키보드 와인 그레이 신규 컬러 출시!! (구독자 이벤트) #앱코 #독거미키보드",
+      "channel_title": "디디딧 – Discover. Design. Detail.",
+      "published_at": "2026-05-13T12:15:10Z",
+      "view_count": "31238",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 af108pro abko x soai 콜라보 3모드 기계식 와인그레이 세이야축",
+      "updated_at": "2026-06-17T14:48:59+00:00"
+    },
+    {
+      "cache_key": "product_code:122633325::switch:소복눈축",
+      "product_name": "앱코 AF108PRO ABKO x SOAI 콜라보 3모드 기계식 와인그레이",
+      "raw_switch_name": "소복눈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=XLbmHbeRD_c",
+      "video_id": "XLbmHbeRD_c",
+      "title": "ABKO AF108PRO 독거미 키보드 와인 그레이 신규 컬러 출시!! (구독자 이벤트) #앱코 #독거미키보드",
+      "channel_title": "디디딧 – Discover. Design. Detail.",
+      "published_at": "2026-05-13T12:15:10Z",
+      "view_count": "31238",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 af108pro abko x soai 콜라보 3모드 기계식 와인그레이 소복눈축",
+      "updated_at": "2026-06-17T14:49:00+00:00"
+    },
+    {
+      "cache_key": "product_code:122633317::switch:저소음 너울축",
+      "product_name": "앱코 AF108PRO ABKO x SOAI 콜라보 3모드 기계식 와인그레이",
+      "raw_switch_name": "저소음 너울축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=XLbmHbeRD_c",
+      "video_id": "XLbmHbeRD_c",
+      "title": "ABKO AF108PRO 독거미 키보드 와인 그레이 신규 컬러 출시!! (구독자 이벤트) #앱코 #독거미키보드",
+      "channel_title": "디디딧 – Discover. Design. Detail.",
+      "published_at": "2026-05-13T12:15:10Z",
+      "view_count": "31238",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 af108pro abko x soai 콜라보 3모드 기계식 와인그레이 저소음 너울축",
+      "updated_at": "2026-06-17T14:49:01+00:00"
+    },
+    {
+      "cache_key": "product_code:36708881::switch:적축",
+      "product_name": "앱코 K561 교체축 유무선 블루투스 기계식 화이트",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=B4TPUVHm1DI",
+      "video_id": "B4TPUVHm1DI",
+      "title": "이제 기계식 키보드 입문은 이걸로 하세요 - 앱코 K580 (적축 / 갈축 / 청축)",
+      "channel_title": "JN테크리뷰",
+      "published_at": "2024-11-04T12:29:19Z",
+      "view_count": "40702",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k561 교체축 유무선 블루투스 기계식 화이트 적축",
+      "updated_at": "2026-06-17T14:49:01+00:00"
+    },
+    {
+      "cache_key": "product_code:36708887::switch:갈축",
+      "product_name": "앱코 K561 교체축 유무선 블루투스 기계식 화이트",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=B4TPUVHm1DI",
+      "video_id": "B4TPUVHm1DI",
+      "title": "이제 기계식 키보드 입문은 이걸로 하세요 - 앱코 K580 (적축 / 갈축 / 청축)",
+      "channel_title": "JN테크리뷰",
+      "published_at": "2024-11-04T12:29:19Z",
+      "view_count": "40702",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k561 교체축 유무선 블루투스 기계식 화이트 갈축",
+      "updated_at": "2026-06-17T14:49:02+00:00"
+    },
+    {
+      "cache_key": "product_code:36708878::switch:청축",
+      "product_name": "앱코 K561 교체축 유무선 블루투스 기계식 화이트",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=B4TPUVHm1DI",
+      "video_id": "B4TPUVHm1DI",
+      "title": "이제 기계식 키보드 입문은 이걸로 하세요 - 앱코 K580 (적축 / 갈축 / 청축)",
+      "channel_title": "JN테크리뷰",
+      "published_at": "2024-11-04T12:29:19Z",
+      "view_count": "40702",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k561 교체축 유무선 블루투스 기계식 화이트 청축",
+      "updated_at": "2026-06-17T14:49:02+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CHERRY XTRFY K37 유무선",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:94026245::switch:저소음 솜사탕축",
+      "product_name": "AULA F87 Pro 유무선 기계식 올리비아 화이트 한글",
+      "raw_switch_name": "저소음 솜사탕축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=hAwrs9tESpw",
+      "video_id": "hAwrs9tESpw",
+      "title": "나의 독거미 저소음 스위치 취향은?? 3종 타건소리 비교 (저소음 바다축, 저소음 솜사탕축, 저소음 피치축) AULA F108 #키보드 #keyboard #ASMR #typing",
+      "channel_title": "데브키 DevKey ASMR",
+      "published_at": "2025-03-23T14:16:43Z",
+      "view_count": "967754",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 유무선 기계식 올리비아 화이트 한글 저소음 솜사탕축",
+      "updated_at": "2026-06-17T14:49:03+00:00"
+    },
+    {
+      "cache_key": "product_code:59826155::switch:저소음 피치축 v2",
+      "product_name": "AULA F87 Pro 유무선 기계식 올리비아 화이트 한글",
+      "raw_switch_name": "저소음 피치축 V2",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=hAwrs9tESpw",
+      "video_id": "hAwrs9tESpw",
+      "title": "나의 독거미 저소음 스위치 취향은?? 3종 타건소리 비교 (저소음 바다축, 저소음 솜사탕축, 저소음 피치축) AULA F108 #키보드 #keyboard #ASMR #typing",
+      "channel_title": "데브키 DevKey ASMR",
+      "published_at": "2025-03-23T14:16:43Z",
+      "view_count": "967754",
+      "score": 16,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:3",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 유무선 기계식 올리비아 화이트 한글 저소음 피치축 v2",
+      "updated_at": "2026-06-17T14:49:04+00:00"
+    },
+    {
+      "cache_key": "product_code:59826398::switch:황축 v3",
+      "product_name": "AULA F87 Pro 유무선 기계식 올리비아 화이트 한글",
+      "raw_switch_name": "황축 V3",
+      "switch_name": "Yellow V3 황축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=4cS8JySiHUo",
+      "video_id": "4cS8JySiHUo",
+      "title": "신규컬러출시 59,000원 미쳤다는 말밖에 안나오는 독거미 키보드 AULA F87Pro리뷰",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2024-07-08T10:36:19Z",
+      "view_count": "148043",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:4",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 유무선 기계식 올리비아 화이트 한글 황축 v3",
+      "updated_at": "2026-06-17T14:49:04+00:00"
+    },
+    {
+      "cache_key": "product_code:59826344::switch:회목축 v4",
+      "product_name": "AULA F87 Pro 유무선 기계식 올리비아 화이트 한글",
+      "raw_switch_name": "회목축 V4",
+      "switch_name": "Grey Wood V4 회목축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=omDPZHbdULI",
+      "video_id": "omDPZHbdULI",
+      "title": "독거미 키보드 이렇게 사면 됩니다! 독거미(AULA) F87·F99·F108 비교 및 스위치 총정리!",
+      "channel_title": "발품파는남자",
+      "published_at": "2025-08-29T10:30:39Z",
+      "view_count": "216743",
+      "score": 13,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f87 pro 유무선 기계식 올리비아 화이트 한글 회목축 v4",
+      "updated_at": "2026-06-17T14:49:05+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K70 RGB CORE 게이밍 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "SPM PL108W 아라 유무선 기계식 화이트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash GD108 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 K26 3모드 무선 QMK VIA",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AM61 자석축 래피드 트리거",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX COS600 무선",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:14650697::switch:적축",
+      "product_name": "앱코 AN02 블랙 RGB BAR 축교환 기계식 키보드",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=4jhb0CMNWFI",
+      "video_id": "4jhb0CMNWFI",
+      "title": "[ABKO] AN02 RGB BAR 기계식 LED모드 / 타건영상 / 블랙,그레이,핑크",
+      "channel_title": "ABKO",
+      "published_at": "2021-07-05T06:17:42Z",
+      "view_count": "26952",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 an02 블랙 rgb bar 축교환 기계식 키보드 적축",
+      "updated_at": "2026-06-17T14:49:06+00:00"
+    },
+    {
+      "cache_key": "product_code:14650688::switch:갈축",
+      "product_name": "앱코 AN02 블랙 RGB BAR 축교환 기계식 키보드",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=4jhb0CMNWFI",
+      "video_id": "4jhb0CMNWFI",
+      "title": "[ABKO] AN02 RGB BAR 기계식 LED모드 / 타건영상 / 블랙,그레이,핑크",
+      "channel_title": "ABKO",
+      "published_at": "2021-07-05T06:17:42Z",
+      "view_count": "26952",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 an02 블랙 rgb bar 축교환 기계식 키보드 갈축",
+      "updated_at": "2026-06-17T14:49:06+00:00"
+    },
+    {
+      "cache_key": "product_code:14650640::switch:청축",
+      "product_name": "앱코 AN02 블랙 RGB BAR 축교환 기계식 키보드",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=scqkfa278L4",
+      "video_id": "scqkfa278L4",
+      "title": "청축 타건음 앱코 기계식 키보드 RGB BAR 축교환 핑크색",
+      "channel_title": "달메",
+      "published_at": "2023-07-07T06:24:29Z",
+      "view_count": "6653",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 an02 블랙 rgb bar 축교환 기계식 키보드 청축",
+      "updated_at": "2026-06-17T14:49:07+00:00"
+    },
+    {
+      "cache_key": "product_code:92044856::switch:경해축",
+      "product_name": "AULA F65 유무선 기계식 올리비아 화이트",
+      "raw_switch_name": "경해축",
+      "switch_name": "Blue Whale 경해축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=KXprwXXHeHI",
+      "video_id": "KXprwXXHeHI",
+      "title": "경해축 VS 세이야축 비교 타건 [AULA 독거미 F99 키보드]  #asmr",
+      "channel_title": "밍키",
+      "published_at": "2024-09-13T08:30:06Z",
+      "view_count": "758093",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f65 유무선 기계식 올리비아 화이트 경해축",
+      "updated_at": "2026-06-17T14:49:07+00:00"
+    },
+    {
+      "cache_key": "product_code:73325033::switch:세이야축",
+      "product_name": "AULA F65 유무선 기계식 올리비아 화이트",
+      "raw_switch_name": "세이야축",
+      "switch_name": "SEIYA 세이야",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=0vcXx5dvt5E",
+      "video_id": "0vcXx5dvt5E",
+      "title": "54,000원 작은 독거미 키보드 Aula F65 리뷰",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2025-01-22T09:00:01Z",
+      "view_count": "17866",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f65 유무선 기계식 올리비아 화이트 세이야축",
+      "updated_at": "2026-06-17T14:49:08+00:00"
+    },
+    {
+      "cache_key": "product_code:73696682::switch:저소음 바다축",
+      "product_name": "AULA F65 유무선 기계식 올리비아 화이트",
+      "raw_switch_name": "저소음 바다축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=0vcXx5dvt5E",
+      "video_id": "0vcXx5dvt5E",
+      "title": "54,000원 작은 독거미 키보드 Aula F65 리뷰",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2025-01-22T09:00:01Z",
+      "view_count": "17866",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f65 유무선 기계식 올리비아 화이트 저소음 바다축",
+      "updated_at": "2026-06-17T14:49:09+00:00"
+    },
+    {
+      "cache_key": "product_code:73325057::switch:황축 v3",
+      "product_name": "AULA F65 유무선 기계식 올리비아 화이트",
+      "raw_switch_name": "황축 V3",
+      "switch_name": "Yellow V3 황축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=0vcXx5dvt5E",
+      "video_id": "0vcXx5dvt5E",
+      "title": "54,000원 작은 독거미 키보드 Aula F65 리뷰",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2025-01-22T09:00:01Z",
+      "view_count": "17866",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f65 유무선 기계식 올리비아 화이트 황축 v3",
+      "updated_at": "2026-06-17T14:49:09+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 MK108 저소음 멤브레인",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "NZXT Function Elite MiniTKL",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CMF104 8K 무접점 다람쥐",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:13224059::switch:적축",
+      "product_name": "COX CK01 Navy 교체축 사이드 RGB 게이밍 기계식 키보드",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=mqiz0bXfiQc",
+      "video_id": "mqiz0bXfiQc",
+      "title": "고급 키캡 넣은 cox ck01 적축 ABS버전 언박싱&리뷰",
+      "channel_title": "디스튜디오",
+      "published_at": "2021-09-29T23:54:23Z",
+      "view_count": "16622",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "cox ck01 navy 교체축 사이드 rgb 게이밍 기계식 키보드 적축",
+      "updated_at": "2026-06-17T14:49:10+00:00"
+    },
+    {
+      "cache_key": "product_code:13224044::switch:갈축",
+      "product_name": "COX CK01 Navy 교체축 사이드 RGB 게이밍 기계식 키보드",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=cPsEDLfAj0M",
+      "video_id": "cPsEDLfAj0M",
+      "title": "COX CK01 TKL PBT 갈축 기계식 키보드",
+      "channel_title": "하루한",
+      "published_at": "2021-07-29T08:09:48Z",
+      "view_count": "31380",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:소리",
+        "views:1000+"
+      ],
+      "query": "cox ck01 navy 교체축 사이드 rgb 게이밍 기계식 키보드 갈축",
+      "updated_at": "2026-06-17T14:49:10+00:00"
+    },
+    {
+      "cache_key": "product_code:13224029::switch:청축",
+      "product_name": "COX CK01 Navy 교체축 사이드 RGB 게이밍 기계식 키보드",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=a7hyAvE6s74",
+      "video_id": "a7hyAvE6s74",
+      "title": "찾았다! 3만원대 킹성비 키보드👍 (콕스 CK01 PBT) #내돈내산",
+      "channel_title": "제이뷰J-VIEW",
+      "published_at": "2020-09-20T03:28:04Z",
+      "view_count": "764238",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "cox ck01 navy 교체축 사이드 rgb 게이밍 기계식 키보드 청축",
+      "updated_at": "2026-06-17T14:49:11+00:00"
+    },
+    {
+      "cache_key": "product_code:60145412::switch:저소음 피치축 v2",
+      "product_name": "AULA F99 유무선 기계식 인디고 블랙 한글",
+      "raw_switch_name": "저소음 피치축 V2",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=hAwrs9tESpw",
+      "video_id": "hAwrs9tESpw",
+      "title": "나의 독거미 저소음 스위치 취향은?? 3종 타건소리 비교 (저소음 바다축, 저소음 솜사탕축, 저소음 피치축) AULA F108 #키보드 #keyboard #ASMR #typing",
+      "channel_title": "데브키 DevKey ASMR",
+      "published_at": "2025-03-23T14:16:43Z",
+      "view_count": "967754",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:3",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f99 유무선 기계식 인디고 블랙 한글 저소음 피치축 v2",
+      "updated_at": "2026-06-17T14:49:12+00:00"
+    },
+    {
+      "cache_key": "product_code:60145427::switch:황축 v3",
+      "product_name": "AULA F99 유무선 기계식 인디고 블랙 한글",
+      "raw_switch_name": "황축 V3",
+      "switch_name": "Yellow V3 황축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=omDPZHbdULI",
+      "video_id": "omDPZHbdULI",
+      "title": "독거미 키보드 이렇게 사면 됩니다! 독거미(AULA) F87·F99·F108 비교 및 스위치 총정리!",
+      "channel_title": "발품파는남자",
+      "published_at": "2025-08-29T10:30:39Z",
+      "view_count": "216743",
+      "score": 13,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f99 유무선 기계식 인디고 블랙 한글 황축 v3",
+      "updated_at": "2026-06-17T14:49:12+00:00"
+    },
+    {
+      "cache_key": "product_code:60145436::switch:회목축 v4",
+      "product_name": "AULA F99 유무선 기계식 인디고 블랙 한글",
+      "raw_switch_name": "회목축 V4",
+      "switch_name": "Grey Wood V4 회목축",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=omDPZHbdULI",
+      "video_id": "omDPZHbdULI",
+      "title": "독거미 키보드 이렇게 사면 됩니다! 독거미(AULA) F87·F99·F108 비교 및 스위치 총정리!",
+      "channel_title": "발품파는남자",
+      "published_at": "2025-08-29T10:30:39Z",
+      "view_count": "216743",
+      "score": 13,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f99 유무선 기계식 인디고 블랙 한글 회목축 v4",
+      "updated_at": "2026-06-17T14:49:13+00:00"
+    },
+    {
+      "cache_key": "product_code:14440445::switch:적축",
+      "product_name": "COX CK01 TKL",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=0QsVyvtCzig",
+      "video_id": "0QsVyvtCzig",
+      "title": "Cox 콕스 저소음백축(COX CK01 PBT SL) , 적축(CK01 TKL) 타건소리 비교",
+      "channel_title": "하람 Haram log",
+      "published_at": "2023-04-29T08:45:20Z",
+      "view_count": "110668",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "cox ck01 tkl 적축",
+      "updated_at": "2026-06-17T14:49:13+00:00"
+    },
+    {
+      "cache_key": "product_code:14440436::switch:갈축",
+      "product_name": "COX CK01 TKL",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=cPsEDLfAj0M",
+      "video_id": "cPsEDLfAj0M",
+      "title": "COX CK01 TKL PBT 갈축 기계식 키보드",
+      "channel_title": "하루한",
+      "published_at": "2021-07-29T08:09:48Z",
+      "view_count": "31380",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:소리",
+        "views:1000+"
+      ],
+      "query": "cox ck01 tkl 갈축",
+      "updated_at": "2026-06-17T14:49:14+00:00"
+    },
+    {
+      "cache_key": "product_code:14440337::switch:청축",
+      "product_name": "COX CK01 TKL",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=a7hyAvE6s74",
+      "video_id": "a7hyAvE6s74",
+      "title": "찾았다! 3만원대 킹성비 키보드👍 (콕스 CK01 PBT) #내돈내산",
+      "channel_title": "제이뷰J-VIEW",
+      "published_at": "2020-09-20T03:28:04Z",
+      "view_count": "764238",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "cox ck01 tkl 청축",
+      "updated_at": "2026-06-17T14:49:15+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 ALTO KEYS K98M",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 ALTO KEYS K75M",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:94888451::switch:검은콩축",
+      "product_name": "앱코 AK87 슬림 프로 3모드 로우 프로파일 유무선 기계식",
+      "raw_switch_name": "검은콩축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=5k8D-97RjsI",
+      "video_id": "5k8D-97RjsI",
+      "title": "앱코에서 귀하다는 텐키리스 로우프로파일 키보드! 앱코 요즘 또 열일하네?! 앱코 AK87 SLIM PRO 로우프로파일",
+      "channel_title": "키노리",
+      "published_at": "2025-10-22T09:00:09Z",
+      "view_count": "5875",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 ak87 슬림 프로 3모드 로우 프로파일 유무선 기계식 검은콩축",
+      "updated_at": "2026-06-17T14:49:15+00:00"
+    },
+    {
+      "cache_key": "product_code:94888418::switch:햇살축",
+      "product_name": "앱코 AK87 슬림 프로 3모드 로우 프로파일 유무선 기계식",
+      "raw_switch_name": "햇살축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=5k8D-97RjsI",
+      "video_id": "5k8D-97RjsI",
+      "title": "앱코에서 귀하다는 텐키리스 로우프로파일 키보드! 앱코 요즘 또 열일하네?! 앱코 AK87 SLIM PRO 로우프로파일",
+      "channel_title": "키노리",
+      "published_at": "2025-10-22T09:00:09Z",
+      "view_count": "5872",
+      "score": 18,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 ak87 슬림 프로 3모드 로우 프로파일 유무선 기계식 햇살축",
+      "updated_at": "2026-06-17T14:49:16+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CKM510 게이밍 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:122645090::switch:벚꽃축",
+      "product_name": "앱코 ACH105 오피스워커 유무선 기계식 블랙",
+      "raw_switch_name": "벚꽃축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=lE70UdB0HtI",
+      "video_id": "lE70UdB0HtI",
+      "title": "저소음 스위치만 3종 옵션으로 출시한 앱코 ACH105 기계식 키보드👀ㅣ하이무 바다소금 리니어/택타일 & HMX 벚꽃축 타건 및 리뷰🌸",
+      "channel_title": "예뚱",
+      "published_at": "2026-02-02T11:01:22Z",
+      "view_count": "12627",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 ach105 오피스워커 유무선 기계식 블랙 벚꽃축",
+      "updated_at": "2026-06-17T14:49:17+00:00"
+    },
+    {
+      "cache_key": "product_code:122645087::switch:저소음 바다소금축",
+      "product_name": "앱코 ACH105 오피스워커 유무선 기계식 블랙",
+      "raw_switch_name": "저소음 바다소금축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=fpxi7qty6nM",
+      "video_id": "fpxi7qty6nM",
+      "title": "[구독자이벤트] 사무실 저소음 3종 출시? 이걸 어떻게 참아?🤷🏻‍♀️",
+      "channel_title": "꼬꼬마레이",
+      "published_at": "2026-01-18T14:20:03Z",
+      "view_count": "9034",
+      "score": 13,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:2",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 ach105 오피스워커 유무선 기계식 블랙 저소음 바다소금축",
+      "updated_at": "2026-06-17T14:49:17+00:00"
+    },
+    {
+      "cache_key": "product_code:122645088::switch:저소음 택타일 바다소금축",
+      "product_name": "앱코 ACH105 오피스워커 유무선 기계식 블랙",
+      "raw_switch_name": "저소음 택타일 바다소금축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=fpxi7qty6nM",
+      "video_id": "fpxi7qty6nM",
+      "title": "[구독자이벤트] 사무실 저소음 3종 출시? 이걸 어떻게 참아?🤷🏻‍♀️",
+      "channel_title": "꼬꼬마레이",
+      "published_at": "2026-01-18T14:20:03Z",
+      "view_count": "9034",
+      "score": 16,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:3",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 ach105 오피스워커 유무선 기계식 블랙 저소음 택타일 바다소금축",
+      "updated_at": "2026-06-17T14:49:18+00:00"
+    },
+    {
+      "cache_key": "product_code:87546017::switch:허니축",
+      "product_name": "COX C108 유무선 기계식 화이트 퍼플",
+      "raw_switch_name": "허니축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=mUHP8YRc4Kk",
+      "video_id": "mUHP8YRc4Kk",
+      "title": "이렇게 맛있는 저소음축이라니.. 입문용 극가성비 기계식 키보드 콕스 COX C87 & COX C108 허니축 용과",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2025-05-19T03:56:48Z",
+      "view_count": "27844",
+      "score": 16,
+      "score_reasons": [
+        "product_tokens:4",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "cox c108 유무선 기계식 화이트 퍼플 허니축",
+      "updated_at": "2026-06-17T14:49:18+00:00"
+    },
+    {
+      "cache_key": "product_code:87547550::switch:용과축",
+      "product_name": "COX C108 유무선 기계식 화이트 퍼플",
+      "raw_switch_name": "용과축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=Rkj0pbuhmOk",
+      "video_id": "Rkj0pbuhmOk",
+      "title": "최근 가장 반응좋은 기계식 풀배열 키보드 COX C108 C87 두가지 타건 용과축 저소음 허니축",
+      "channel_title": "키노리",
+      "published_at": "2025-04-29T09:45:03Z",
+      "view_count": "37186",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "cox c108 유무선 기계식 화이트 퍼플 용과축",
+      "updated_at": "2026-06-17T14:49:19+00:00"
+    },
+    {
+      "cache_key": "product_code:76331336::switch:청우축",
+      "product_name": "AULA F108 PRO 유무선 기계식 해외구매",
+      "raw_switch_name": "청우축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=qqC3vETnvio",
+      "video_id": "qqC3vETnvio",
+      "title": "AULA F108 PRO 모든 스위치 비교 (청우축, 카라멜라떼축, 풍령축)",
+      "channel_title": "잇템ITtem",
+      "published_at": "2025-02-01T07:53:58Z",
+      "view_count": "62385",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:asmr",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 해외구매 청우축",
+      "updated_at": "2026-06-17T14:49:19+00:00"
+    },
+    {
+      "cache_key": "product_code:76331351::switch:카라멜라떼축",
+      "product_name": "AULA F108 PRO 유무선 기계식 해외구매",
+      "raw_switch_name": "카라멜라떼축",
+      "switch_name": "카라멜 라떼",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=SSC_7QyOLjo",
+      "video_id": "SSC_7QyOLjo",
+      "title": "나의 독거미 AULA F108 / pro 키보드 정발&직구 스위치 취향은?? 8종 타건소리 비교 (황축,세이야축,경해축,풍령축,카라멜라떼축,청우축,저소음바다축,저소음솜사탕축)",
+      "channel_title": "데브키 DevKey ASMR",
+      "published_at": "2025-07-11T14:00:49Z",
+      "view_count": "224484",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 해외구매 카라멜라떼축",
+      "updated_at": "2026-06-17T14:49:20+00:00"
+    },
+    {
+      "cache_key": "product_code:76331342::switch:풍령축",
+      "product_name": "AULA F108 PRO 유무선 기계식 해외구매",
+      "raw_switch_name": "풍령축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=m4mjxl6HVMk",
+      "video_id": "m4mjxl6HVMk",
+      "title": "오만상사(?) | 5만원대 키보드 중 최고라는 화제의 독거미 F108 Pro 언빡싱&첫인상",
+      "channel_title": "ITSub잇섭",
+      "published_at": "2025-01-21T11:30:35Z",
+      "view_count": "1508110",
+      "score": 14,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f108 pro 유무선 기계식 해외구매 풍령축",
+      "updated_at": "2026-06-17T14:49:21+00:00"
+    },
+    {
+      "cache_key": "product_code:63466358::switch:세이야축",
+      "product_name": "AULA F99 기계식 라이트 올리비아 한글",
+      "raw_switch_name": "세이야축",
+      "switch_name": "SEIYA 세이야",
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=KXprwXXHeHI",
+      "video_id": "KXprwXXHeHI",
+      "title": "경해축 VS 세이야축 비교 타건 [AULA 독거미 F99 키보드]  #asmr",
+      "channel_title": "밍키",
+      "published_at": "2024-09-13T08:30:06Z",
+      "view_count": "758093",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "aula f99 기계식 라이트 올리비아 한글 세이야축",
+      "updated_at": "2026-06-17T14:49:21+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KM400 게이밍 콤보",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX COS500 무선",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:14471087::switch:적축",
+      "product_name": "앱코 K570 축교환 레인보우 무빙 LED 기계식 키보드",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=R3AyTAq-2OM",
+      "video_id": "R3AyTAq-2OM",
+      "title": "[ABKO] K570 축교환 기계식 타건 영상",
+      "channel_title": "ABKO",
+      "published_at": "2021-06-11T08:11:04Z",
+      "view_count": "14336",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:2",
+        "switch_tokens:1",
+        "media_hint:타건",
+        "views:1000+"
+      ],
+      "query": "앱코 k570 축교환 레인보우 무빙 led 기계식 키보드 적축",
+      "updated_at": "2026-06-17T14:49:22+00:00"
+    },
+    {
+      "cache_key": "product_code:14471114::switch:갈축",
+      "product_name": "앱코 K570 축교환 레인보우 무빙 LED 기계식 키보드",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=a2_FnBwOB68",
+      "video_id": "a2_FnBwOB68",
+      "title": "[ABKO] K570 축교환 기계식 무빙 LED 모드",
+      "channel_title": "ABKO",
+      "published_at": "2021-06-11T08:05:04Z",
+      "view_count": "15242",
+      "score": 12,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "views:1000+"
+      ],
+      "query": "앱코 k570 축교환 레인보우 무빙 led 기계식 키보드 갈축",
+      "updated_at": "2026-06-17T14:49:22+00:00"
+    },
+    {
+      "cache_key": "product_code:14471015::switch:청축",
+      "product_name": "앱코 K570 축교환 레인보우 무빙 LED 기계식 키보드",
+      "raw_switch_name": "청축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=YK20dTvpC8w",
+      "video_id": "YK20dTvpC8w",
+      "title": "앱코 축교환 레인보우 무빙 LED 기계식 키보드 청축, 블랙, K570, 일반형 높은 판매량 추천 #shorts 내돈내산",
+      "channel_title": "도리리뷰",
+      "published_at": "2022-12-29T01:04:53Z",
+      "view_count": "598",
+      "score": 15,
+      "score_reasons": [
+        "product_tokens:5",
+        "switch_tokens:1"
+      ],
+      "query": "앱코 k570 축교환 레인보우 무빙 led 기계식 키보드 청축",
+      "updated_at": "2026-06-17T14:49:23+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 G915 X LIGHTSPEED 블랙 (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "퓨전에프앤씨 INOTE X-Folding XK905B 블루투스",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:77706485::switch:적축",
+      "product_name": "앱코 K480 교체축 게이밍 기계식 젠틀맨",
+      "raw_switch_name": "적축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=B4TPUVHm1DI",
+      "video_id": "B4TPUVHm1DI",
+      "title": "이제 기계식 키보드 입문은 이걸로 하세요 - 앱코 K580 (적축 / 갈축 / 청축)",
+      "channel_title": "JN테크리뷰",
+      "published_at": "2024-11-04T12:29:19Z",
+      "view_count": "40702",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k480 교체축 게이밍 기계식 젠틀맨 적축",
+      "updated_at": "2026-06-17T14:49:24+00:00"
+    },
+    {
+      "cache_key": "product_code:77706518::switch:갈축",
+      "product_name": "앱코 K480 교체축 게이밍 기계식 젠틀맨",
+      "raw_switch_name": "갈축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=B4TPUVHm1DI",
+      "video_id": "B4TPUVHm1DI",
+      "title": "이제 기계식 키보드 입문은 이걸로 하세요 - 앱코 K580 (적축 / 갈축 / 청축)",
+      "channel_title": "JN테크리뷰",
+      "published_at": "2024-11-04T12:29:19Z",
+      "view_count": "40702",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:1",
+        "switch_tokens:1",
+        "media_hint:리뷰",
+        "views:1000+"
+      ],
+      "query": "앱코 k480 교체축 게이밍 기계식 젠틀맨 갈축",
+      "updated_at": "2026-06-17T14:49:24+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 K562 교체축 3모드 계산기 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "스카이디지탈 NKEYBOARD NKEY-매크로",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "cache_key": "product_code:91426367::switch:저소음 피치축",
+      "product_name": "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린",
+      "raw_switch_name": "저소음 피치축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=uFcFDc_R5Rs",
+      "video_id": "uFcFDc_R5Rs",
+      "title": "통 실리콘이 가스켓 결합 구조와 흡음역할까지 COX CSK105 & CSK88 #기계식키보드 #키보드추천 #저소음키보드 #사무용키보드",
+      "channel_title": "승업키보드 SeungupKBD",
+      "published_at": "2025-07-04T11:18:17Z",
+      "view_count": "26221",
+      "score": 10,
+      "score_reasons": [
+        "product_tokens:3",
+        "switch_tokens:1",
+        "views:1000+"
+      ],
+      "query": "cox csk88 via 실리콘 사운드 뎀퍼 유무선 기계식 그린 저소음 피치축",
+      "updated_at": "2026-06-17T14:49:25+00:00"
+    },
+    {
+      "cache_key": "product_code:91426376::switch:페블축",
+      "product_name": "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린",
+      "raw_switch_name": "페블축",
+      "switch_name": null,
+      "status": "matched",
+      "media_url": "https://www.youtube.com/watch?v=mj0Ib8xeiB0",
+      "video_id": "mj0Ib8xeiB0",
+      "title": "COX CSK105 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린 페블축 LED 영상",
+      "channel_title": "Sangchuul LEE",
+      "published_at": "2025-06-02T03:51:33Z",
+      "view_count": "82",
+      "score": 13,
+      "score_reasons": [
+        "product_tokens:4",
+        "switch_tokens:1"
+      ],
+      "query": "cox csk88 via 실리콘 사운드 뎀퍼 유무선 기계식 그린 페블축",
+      "updated_at": "2026-06-17T14:49:25+00:00"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 MK240 NANO (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR 갤리온 100 SD 스트림덱 LCD 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR 뱅가드 96 MLX 게이밍 무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 mx keys mini (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KN30BT 블루투스 유무선 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "MSI FORGE K200 WIRELESS",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KN35BT DRT 8K 염료승화 블루투스 유무선 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CMK87R 자석축 래피드 트리거",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 K380S",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "RHINO GEAR RG-K2 미니 키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 MK98 AI 코파일럿",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AK10 오피스 마스터 슬림 무선",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "NZXT FUNCTION 2 FULL",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 MK108W 무선",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CKM400K",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 K660S V2 카일 광축 V2 게이밍 옐로우",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash DKM100 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CHERRY XTRFY MX 8.3 TKL 8K 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 NTP84",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX 엔데버 텐키리스 RGB PBT 완전방수 무접점 화이트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CKM500 게이밍 키보드 마우스 콤보",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "MSI FORGE GK100",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "EVGA Z20 RGB 광축 게이밍 키보드 한글",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K100 AIR WIRELESS RGB Ultra Low Profile 게이밍 기계식 키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AKN10BT 반알만한 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CHERRY XTRFY K5 PRO TMR",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 ACM105 유무선",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AN06F TKL PBT 게이밍 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 LKN99 BT 로우 프로파일 슬림 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AR88 퍼스트스텝 리얼 알루미늄 커스텀 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K65 RGB PLUS 유무선 애플 에디션",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "AJAZZ AJ-AK01",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Teamwolf RAVEN 68 HE",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash DK108",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 LKN84BT 8K 로우 프로파일 슬림 유무선 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Createkeebs LUMINKEY Magger 68 HE 프로페셔널",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash GD100 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 WKM50 펜홀더형 무선 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 TOS300 매크로덱",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 MK87 저소음 텐키리스 멤브레인",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CKM400 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 MANIC KM330 무선 슬림 키보드 마우스 합본",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CMF104 8K 무접점 보타니컬",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX 엠프리스 RGB PBT 완전방수 무접점 블랙",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "로지텍 K380S (정품)",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AN04F PBT 특주축 게이밍 기계식 키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CKP01 PRO 3모드 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AP87W 3모드 유무선 게이밍 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "ATK RS7 Air",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KN35BT TKL DRT 8K 염료승화 블루투스 유무선 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CMK87",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "발키리 VK-87 MERLIN 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CM87KDW 3모드 조약돌",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Createkeebs LUMINKEY Magger 68 HE 퍼포먼스",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 MANIC KM530 무선 슬림 무소음 키보드 마우스 합본",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 HACKER K150 텐키리스 레인보우 LED 게이밍 멤브레인",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CM105KDW 3모드 조약돌",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K70 PRO TKL OPX 기계식 타이핑고래",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "발키리 VK-99 PRO LVBU 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 WIZMAX W85TKL 유무선 기계식 한글",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash GD68 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Razer Ornata V3 TKL + DeathAdder Essential + Gigantus V2 Blackpink edition",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Razer Huntsman V3 TKL 8K US",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Razer Ornata V3 TKL Blackpink edition",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K55 CORE RGB 멤브레인 게이밍",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 WIZMAX W85TKL 유무선 기계식 영문",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KN01C 텐키리스 PBT 무접점 키보드 핑크",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX 엔데버 텐키리스 RGB PBT 완전방수 무접점 블랙",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR MAKR 75 기계식 DIY 키트 베어본 MLX 펄스축",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX 엠프리스 RGB PBT 완전방수 무접점 화이트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR Drop Expression Series 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CMK63R",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX COS10 유선 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K55 CORE TKL 멤브레인",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CK20th Century 멤브레인",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K65 RGB PLUS 유무선 게이밍 기계식 영문",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 K669 카일 광축 게이밍",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "ATK RS6 Air",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Razer BlackWidow V4 75% 기계식 Phantom White",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K70 RGB TKL OPX 광적축 게이밍 기계식 키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 K660S V2 카일 광축 V2 게이밍 블랙",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CFL87+21 옴니키(원솔루션) 3모드 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "ASUS TUF Gaming K3 Gen II 하츠네미쿠 에디션 대원씨티에스",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 EX580 크리스탈 파스텔 광축",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K70 MAX 기계식 타이핑고래",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AK87H 텐키리스 홀리판다 V2 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KN01C 텐키리스 PBT 무접점 키보드 블루",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KN20C 삼색사출 PBT 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CKP01 VIA 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COUGAR VANTAR",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CM87KD 조약돌",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KP10 키패드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX XM108",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 HACKER KM700 게이밍 키보드 마우스 장패드 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CFL101 3모드 CMMK 특주축 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CMK108",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 K660S V2 카일 광축 V2 게이밍 화이트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "발키리 VK-99 유무선 기계식 한글",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 HACKER KM350 키보드 마우스 콤보 레인보우 LED 게이밍",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash DF98 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CK01SL TKL PBT 45GF 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX 엠프리스 오리지널 레트로 PBT 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KN03BT TKL 블루투스 무접점",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash GD87 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CQ8K108 유무선 기계식 에버그린",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash DKM200 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KN10C PBT 무접점 키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 TOS100 무선 키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX 엔데버 오리지널 레트로 PBT 무접점 텐키리스",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 WKM01 무선 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 KM500 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "발키리 VK-87 MIST 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 CPK-1 큰글씨 한글키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR K65 PRO MINI OPX 게이밍",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "1stPlayer NEO87 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 WKM03 무선 키보드마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CF75 유무선 기계식 블루레몬젤리",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 WIZMAX W101P V2 4세대 광축 완전방수 PBT",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CF75 유무선 기계식 핑크소다젤리",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash DFS99 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 K660S V2 카일 광축 V2 게이밍 핑크",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 K140 슬림 멤브레인",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "MSI FORGE GK100 콤보 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "NZXT FUNCTION 2 MINITKL",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "글로리어스 GMMK3 PRO HE 75%",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CM105KD 조약돌",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Razer Ornata V3 TKL Kuromi Edition",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 WKM620 TKL 멀티 컬러 육각키캡 무선 미니 키보드 마우스 세트",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "NZXT FUNCTION",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CK80 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "darkFlash DG104",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "CORSAIR DROP 반지의 제왕 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "Keydous NJ80-AP 유무선 핫스왑 풀윤활 기계식 차콜블랙",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "AULA AU75 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AN05 아이스큐브 옵티컬 게이밍",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CK01SL PBT 45GF",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AR61D 풀 알루미늄 유무선 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "쿨러마스터 CK570 Street Fighter 6 Chun-Li 기계식",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 MANIC K1400 유선 키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AK81BT 3MODE 유무선 기계식 루왁 커피",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "MadCatz S.T.R.I.K.E 6",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "마이크로닉스 MANIC K160 키보드 마우스 무선 합본",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 HACKER KN01 텐키리스 PBT RGB 무접점 블랙",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "글로리어스 GMMK3 PRO HE 65%",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "COX CQ8K108 유무선 기계식 소프트 라일락",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "앱코 AN03 옵티컬 게이밍",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    },
+    {
+      "status": "skipped",
+      "product_name": "갤럭시 갤라즈 GALAX EX-03 게이밍 기계식 키보드",
+      "raw_switch_name": null,
+      "switch_name": null,
+      "reason": "missing_switch_label_or_product_name"
+    }
+  ]
+}
