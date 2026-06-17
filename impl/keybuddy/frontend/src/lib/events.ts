@@ -13,6 +13,8 @@ import { getSessionId } from './session';
 
 export type EventType = 'purchase_click' | 'rating';
 
+const eventTimeoutMs = 5000;
+
 export interface PurchaseClickPayload {
   product_code: string | null;
 }
@@ -56,8 +58,11 @@ function getEventsTarget(): { url: string; anonKey: string } | null {
 export async function sendEvent(event: KeybuddyEvent): Promise<boolean> {
   const target = getEventsTarget();
   if (!target) return false;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), eventTimeoutMs);
   try {
     const response = await fetch(target.url, {
+      signal: controller.signal,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,6 +75,8 @@ export async function sendEvent(event: KeybuddyEvent): Promise<boolean> {
     return response.ok;
   } catch {
     return false;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 

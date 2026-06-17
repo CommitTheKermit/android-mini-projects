@@ -27,6 +27,7 @@ import type {
 } from './types';
 
 const switches = switchesData as SwitchDictionary;
+const RATING_STAR_SIZE = 34;
 
 function useAutoDismiss<T>(duration: number) {
   const [value, setValue] = useState<T | null>(null);
@@ -230,6 +231,7 @@ export default function App() {
   const [toast, showToast] = useAutoDismiss<string>(2000);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [hasLoggedRating, setHasLoggedRating] = useState(false);
 
   const runRecommend = async (input: RecommendInput) => {
     setLoading(true);
@@ -239,6 +241,9 @@ export default function App() {
       setResult(res);
       setActiveFilter('전체');
       setSortOrder('default');
+      setRating(0);
+      setHoverRating(0);
+      setHasLoggedRating(false);
       setView('results');
     } catch (e) {
       setError(e instanceof Error ? e.message : '추천 중 오류가 발생했습니다.');
@@ -252,6 +257,8 @@ export default function App() {
     setQuery('');
     setHomeTab('freeform');
     setRating(0);
+    setHoverRating(0);
+    setHasLoggedRating(false);
     setError(null);
     setView('home');
   };
@@ -799,21 +806,24 @@ export default function App() {
                     key={value}
                     className="relative h-[34px] w-[34px] cursor-pointer"
                     onMouseMove={(event) =>
-                      setHoverRating(event.nativeEvent.offsetX < 17 ? value - 0.5 : value)
+                      setHoverRating(event.nativeEvent.offsetX < RATING_STAR_SIZE / 2 ? value - 0.5 : value)
                     }
                     onClick={(event) => {
-                      const next = event.nativeEvent.offsetX < 17 ? value - 0.5 : value;
+                      const next = event.nativeEvent.offsetX < RATING_STAR_SIZE / 2 ? value - 0.5 : value;
                       setRating(next);
-                      // 추천 전체 별점을 피드백 이벤트로 적재만 한다(best-effort).
-                      void logRating(next);
+                      if (!hasLoggedRating) {
+                        setHasLoggedRating(true);
+                        // 추천 전체 별점은 한 추천 결과당 최초 1회만 적재한다(best-effort).
+                        void logRating(next);
+                      }
                     }}
                   >
-                    <Star size={34} className="pointer-events-none text-slate-300" fill="none" />
+                    <Star size={RATING_STAR_SIZE} className="pointer-events-none text-slate-300" fill="none" />
                     <div
                       className="pointer-events-none absolute inset-0 overflow-hidden"
                       style={{ width: `${fillRatio * 100}%` }}
                     >
-                      <Star size={34} className="text-blue-600" fill="#2563EB" />
+                      <Star size={RATING_STAR_SIZE} className="text-blue-600" fill="#2563EB" />
                     </div>
                   </div>
                 );

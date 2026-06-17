@@ -75,6 +75,7 @@ describe('events - sendEvent (PostgREST 적재)', () => {
     expect(init.method).toBe('POST');
     expect(init.headers.apikey).toBe('anon-key-123');
     expect(init.headers.Authorization).toBe('Bearer anon-key-123');
+    expect(init.signal).toBeInstanceOf(AbortSignal);
     expect(JSON.parse(init.body).event_type).toBe('rating');
   });
 

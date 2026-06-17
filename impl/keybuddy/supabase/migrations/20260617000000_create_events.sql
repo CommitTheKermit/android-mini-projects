@@ -20,7 +20,14 @@ create policy "anon can insert events"
   on public.events
   for insert
   to anon
-  with check (true);
+  with check (
+    event_type = 'purchase_click'
+    or (
+      event_type = 'rating'
+      and jsonb_typeof(payload->'rating') = 'number'
+      and (payload->>'rating')::numeric between 0.5 and 5.0
+    )
+  );
 
 -- 가설 검증 분석은 보통 "타입별 최신순"으로 조회하므로 복합 인덱스를 둔다.
 create index if not exists events_event_type_created_at_idx
