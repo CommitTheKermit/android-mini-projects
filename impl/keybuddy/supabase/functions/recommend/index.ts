@@ -225,9 +225,8 @@ function guidedAnswer(input: RecommendInput, question: string): string {
   return input.mode === 'guided' ? input.answers[question] ?? '' : '';
 }
 
-function scoreKeyboard(keyboard: Keyboard, input: RecommendInput): number {
-  const text = normalizedInputText(input);
-  const searchable = [
+function normalizedKeyboardText(keyboard: Keyboard): string {
+  return [
     keyboard.product_name,
     keyboard.brand,
     keyboard.switch_type,
@@ -236,7 +235,110 @@ function scoreKeyboard(keyboard: Keyboard, input: RecommendInput): number {
     keyboard.layout,
     keyboard.engraving,
     keyboard.backlight,
+    keyboard.raw_switch_name ?? '',
+    keyboard.switch_name ?? '',
   ].join(' ');
+}
+
+function parseKeyForce(force: string): number | null {
+  const match = force.match(/(\d+)/);
+  return match ? Number(match[1]) : null;
+}
+
+function hasWiredSupport(keyboard: Keyboard): boolean {
+  return /유선/.test(keyboard.connection) || /유선/.test(keyboard.wireless_type);
+}
+
+function hasWirelessSupport(keyboard: Keyboard): boolean {
+  return /무선|블루투스|동글|리시버|2\.4GHz/i.test(`${keyboard.connection} ${keyboard.wireless_type}`);
+}
+
+function matchesGuidedConnection(keyboard: Keyboard, answer: string): boolean {
+  const wirelessText = `${keyboard.connection} ${keyboard.wireless_type}`;
+  if (/^유선$/.test(answer)) return hasWiredSupport(keyboard);
+  if (/무선 USB 동글/.test(answer)) return /동글|리시버|2\.4GHz/i.test(wirelessText);
+  if (/블루투스/.test(answer)) return /블루투스/.test(wirelessText);
+  if (/유\/무선 모두/.test(answer)) return hasWiredSupport(keyboard) && hasWirelessSupport(keyboard);
+  return true;
+}
+
+function matchesGuidedLayout(keyboard: Keyboard, answer: string): boolean {
+  const text = normalizedKeyboardText(keyboard);
+  if (/풀배열/.test(answer)) return /풀배열|104키|108키/.test(text);
+  if (/1800/.test(answer)) return /1800|96키|98키|99키|100키/.test(text);
+  if (/텐키리스/.test(answer)) return /텐키리스|87키|TKL/i.test(text);
+  if (/75%/.test(answer)) return /75%|75배열|84키/.test(text);
+  if (/65%/.test(answer)) return /65%|65배열|68키/.test(text);
+  if (/60%/.test(answer)) return /미니|60%|60배열|61키/.test(text);
+  return true;
+}
+
+function matchesGuidedSound(keyboard: Keyboard, answer: string): boolean {
+  const text = normalizedKeyboardText(keyboard);
+  if (/매우 낮음|낮음/.test(answer)) {
+    return /무접점|펜타그래프|저소음|멤브레인/.test(text) && !/청축/.test(text);
+  }
+  if (/시끄러워도 됨|조금 큼/.test(answer)) {
+    return /기계식|광축|자석축|청축|갈축|적축/.test(text);
+  }
+  return true;
+}
+
+function matchesGuidedKeyFeel(keyboard: Keyboard, answer: string): boolean {
+  const text = normalizedKeyboardText(keyboard);
+  if (/또각또각|서걱서걱/.test(answer)) return /기계식/.test(text);
+  if (/보글보글/.test(answer)) return /무접점/.test(text);
+  return true;
+}
+
+function matchesGuidedKeyForce(keyboard: Keyboard, answer: string): boolean {
+  const force = parseKeyForce(keyboard.key_force);
+  if (/35~45g/.test(answer)) return force !== null && force >= 35 && force <= 45;
+  if (/45~55g/.test(answer)) return force !== null && force >= 45 && force <= 55;
+  if (/60g 이상/.test(answer)) return force !== null && force >= 60;
+  return true;
+}
+
+function matchesGuidedEngraving(keyboard: Keyboard, answer: string): boolean {
+  const engraving = keyboard.engraving;
+  if (/한국어, 영어/.test(answer)) return /한\/영|한영|한국어.*영어|영어.*한국어/.test(engraving);
+  if (/영어만/.test(answer)) return /영문/.test(engraving) && !/한\/영|한영/.test(engraving);
+  if (/한국어만/.test(answer)) return /한글|한국어/.test(engraving) && !/영문|영어|한\/영|한영/.test(engraving);
+  return true;
+}
+
+function matchesGuidedBacklight(keyboard: Keyboard, answer: string): boolean {
+  const backlight = keyboard.backlight;
+  if (/RGB/.test(answer)) return /RGB/.test(backlight);
+  if (/단색/.test(answer)) return /단색/.test(backlight);
+  if (/없어도/.test(answer)) return /없음|정보없음/.test(backlight);
+  return true;
+}
+
+function matchesGuidedSelections(keyboard: Keyboard, input: RecommendInput): boolean {
+  if (input.mode !== 'guided') {
+    return true;
+  }
+
+  const budget = budgetRange(input);
+  if (budget && (keyboard.price < budget.min || keyboard.price > budget.max)) {
+    return false;
+  }
+
+  return (
+    matchesGuidedConnection(keyboard, guidedAnswer(input, '연결방식')) &&
+    matchesGuidedLayout(keyboard, guidedAnswer(input, '크기')) &&
+    matchesGuidedSound(keyboard, guidedAnswer(input, '소리')) &&
+    matchesGuidedKeyFeel(keyboard, guidedAnswer(input, '키감')) &&
+    matchesGuidedKeyForce(keyboard, guidedAnswer(input, '키압')) &&
+    matchesGuidedEngraving(keyboard, guidedAnswer(input, '각인')) &&
+    matchesGuidedBacklight(keyboard, guidedAnswer(input, '백라이트'))
+  );
+}
+
+function scoreKeyboard(keyboard: Keyboard, input: RecommendInput): number {
+  const text = normalizedInputText(input);
+  const searchable = normalizedKeyboardText(keyboard);
 
   let score = 0;
   const budget = budgetRange(input);
@@ -287,6 +389,7 @@ function scoreKeyboard(keyboard: Keyboard, input: RecommendInput): number {
 function selectCandidates(input: RecommendInput): Candidate[] {
   return keyboards
     .map((keyboard, index) => ({ keyboard, index, score: scoreKeyboard(keyboard, input) }))
+    .filter(({ keyboard }) => matchesGuidedSelections(keyboard, input))
     .sort((a, b) => b.score - a.score || a.keyboard.price - b.keyboard.price)
     .slice(0, maxCandidates);
 }
@@ -600,6 +703,16 @@ Deno.serve(async (request) => {
 
     const input = parseInput(await request.json());
     const candidates = selectCandidates(input);
+    if (input.mode === 'guided' && candidates.length === 0) {
+      return Response.json(
+        {
+          summary: '선택하신 조건을 모두 만족하는 상품이 catalog에 없습니다.',
+          recommendations: [],
+          meta: { version: appVersion },
+        },
+        { headers: versionHeaders },
+      );
+    }
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), openaiTimeoutMs);
