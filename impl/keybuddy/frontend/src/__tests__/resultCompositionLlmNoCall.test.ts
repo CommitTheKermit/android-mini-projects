@@ -261,12 +261,36 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
 
     it('MAX_RESULTS 초과 결과의 요약 생성(경계) - LLM 미호출', () => {
       const items = Array.from({ length: 35 }, (_, i) =>
-        makeSearchResultItem({ keyboardIndex: i, score: 35 - i }),
+        makeSearchResultItem({
+          keyboard: makeKeyboard({ product_name: `요약 테스트 키보드 ${i}` }),
+          keyboardIndex: i,
+          score: 35 - i,
+        }),
       );
       const output = makeSearchOutput({ results: items });
 
       buildSummary(output);
 
+      expect(createSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('같은 상품명이 반복되면 요약 개수도 제품 단위로 계산한다 - LLM 미호출', () => {
+      const output = makeSearchOutput({
+        results: [
+          makeSearchResultItem({
+            keyboard: makeKeyboard({ product_name: '중복 상품', brand: 'A' }),
+            keyboardIndex: 0,
+          }),
+          makeSearchResultItem({
+            keyboard: makeKeyboard({ product_name: '중복 상품', brand: 'A', product_code: 'variant-2' }),
+            keyboardIndex: 1,
+          }),
+        ],
+      });
+
+      const summary = buildSummary(output, 3);
+
+      expect(summary).toContain('1개');
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
   });
@@ -373,13 +397,61 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
 
     it('MAX_RESULTS(30개) 초과 결과 슬라이스 변환 - LLM 미호출', () => {
       const items = Array.from({ length: 40 }, (_, i) =>
-        makeSearchResultItem({ keyboardIndex: i, score: 40 - i }),
+        makeSearchResultItem({
+          keyboard: makeKeyboard({ product_name: `테스트 키보드 ${i}` }),
+          keyboardIndex: i,
+          score: 40 - i,
+        }),
       );
       const output = makeSearchOutput({ results: items });
 
       const recs = toRecommendations(output);
 
       expect(recs).toHaveLength(30);
+      expect(createSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('같은 상품명이 스위치 옵션별로 반복되어도 제품 단위로 1개만 반환한다 - LLM 미호출', () => {
+      const output = makeSearchOutput({
+        results: [
+          makeSearchResultItem({
+            keyboard: makeKeyboard({
+              product_name: 'AULA F108 PRO 유무선 기계식 치즈 화이트 한글',
+              brand: 'AULA',
+              switch_name: 'Blue Whale 경해축',
+              product_code: '94026473',
+            }),
+            keyboardIndex: 0,
+            score: 10,
+          }),
+          makeSearchResultItem({
+            keyboard: makeKeyboard({
+              product_name: 'AULA F108 PRO 유무선 기계식 치즈 화이트 한글',
+              brand: 'AULA',
+              switch_name: '저소음 바다축',
+              product_code: '94026476',
+            }),
+            keyboardIndex: 1,
+            score: 9,
+          }),
+          makeSearchResultItem({
+            keyboard: makeKeyboard({
+              product_name: 'FL-ESPORTS NX108 유무선 기계식 크림 말차',
+              brand: 'FL-ESPORTS',
+            }),
+            keyboardIndex: 2,
+            score: 8,
+          }),
+        ],
+      });
+
+      const recs = toRecommendations(output, 3);
+
+      expect(recs).toHaveLength(2);
+      expect(recs.map((item) => item.product_name)).toEqual([
+        'AULA F108 PRO 유무선 기계식 치즈 화이트 한글',
+        'FL-ESPORTS NX108 유무선 기계식 크림 말차',
+      ]);
       expect(createSpy).toHaveBeenCalledTimes(0);
     });
   });
@@ -393,7 +465,11 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
       const output: SearchOutput = {
         results: [
           {
-            keyboard: makeKeyboard({ switch_type: '기계식', backlight: 'RGB 백라이트' }),
+            keyboard: makeKeyboard({
+              product_name: '게이밍 RGB 키보드',
+              switch_type: '기계식',
+              backlight: 'RGB 백라이트',
+            }),
             keyboardIndex: 0,
             score: 3,
             matchedTags: ['게이밍', '기계식', 'RGB'] as SoftIntentTag[],
@@ -403,7 +479,7 @@ describe('Sub-AC 7.3.3: 결과 조합 모듈 LLM 호출 횟수 === 0', () => {
             relaxationStepCount: 0,
           },
           {
-            keyboard: makeKeyboard({ switch_type: '무접점', backlight: '없음' }),
+            keyboard: makeKeyboard({ product_name: '무접점 비교 키보드', switch_type: '무접점', backlight: '없음' }),
             keyboardIndex: 1,
             score: 0,
             matchedTags: [] as SoftIntentTag[],

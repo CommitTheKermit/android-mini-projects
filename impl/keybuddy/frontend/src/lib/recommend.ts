@@ -5,8 +5,8 @@
  *   태그추출만 받고(LLM 키는 서버 secret에만), 검색·랭킹은 클라이언트 결정론 파이프라인이 수행.
  * - guided(단계선택): selectionOptionConverter로 답변을 태그로 직접 변환(LLM 0회).
  *
- * 두 경로 모두 expandIntents → searchWithProfile(점수순 정렬) → 상위 MAX_RESULTS개로 끝난다.
- * 점수 내림차순은 searchWithProfile/deriveRankOrder가 보장하므로 결과는 "점수순 top N"이다.
+ * freeform은 의미 있는 추출 신호가 있을 때만 expandIntents → searchWithProfile로 검색한다.
+ * guided는 사용자가 고른 모든 선택지를 만족하는 상품만 별도 strict filter로 검색한다.
  */
 
 import catalog from '../data/keyboards.json';
@@ -14,7 +14,7 @@ import type { Keyboard, RecommendInput, RecommendResult } from '../types';
 import { sanitizeTags, type ExtractedTags, type IntentExtraction } from './extractRawTags';
 import { expandIntents, isIntentTag } from './intentProfile';
 import { searchWithProfile } from './intentSearch';
-import { toRecommendations, buildSummary } from './searchResultComposition';
+import { EMPTY_RESULT_SUMMARY, toRecommendations, buildSummary } from './searchResultComposition';
 import { selectionOptionConverter } from './guidedInputMapper';
 import type { SearchOutput, SearchResultItem } from './searchEngine';
 import { deriveRankOrder, getMatchedSoftTags, scoreBySoftTags } from './softScorer';
@@ -64,6 +64,61 @@ function sanitizeExtraction(data: unknown): IntentExtraction {
   return { intents, hardConstraints, softIntentTags };
 }
 
+function emptySearchResult(): RecommendResult {
+  return {
+    summary: EMPTY_RESULT_SUMMARY,
+    recommendations: [],
+  };
+}
+
+function hasMeaningfulHardConstraints(extraction: IntentExtraction): boolean {
+  return Object.values(extraction.hardConstraints).some((value) => {
+    if (typeof value === 'number') {
+      return value > 0;
+    }
+    return typeof value === 'string' && value.trim().length > 0;
+  });
+}
+
+function hasSearchSignal(extraction: IntentExtraction): boolean {
+  return (
+    extraction.intents.length > 0 ||
+    hasMeaningfulHardConstraints(extraction) ||
+    extraction.softIntentTags.length > 0
+  );
+}
+
+function hasBroadKeyboardIntent(query: string): boolean {
+  return /키보드|키캡|스위치|타건|배열|풀배열|텐키리스|무접점|기계식|펜타그래프|축|백라이트|rgb|유선|무선|블루투스|게이밍|사무/i.test(
+    query,
+  );
+}
+
+function hasRawExtractionSignal(data: unknown): boolean {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return false;
+  }
+
+  const record = data as Record<string, unknown>;
+  const hardConstraints = record.hardConstraints;
+  const hasRawHardConstraint =
+    !!hardConstraints &&
+    typeof hardConstraints === 'object' &&
+    !Array.isArray(hardConstraints) &&
+    Object.values(hardConstraints).some((value) => {
+      if (typeof value === 'number') {
+        return value > 0;
+      }
+      return typeof value === 'string' && value.trim().length > 0;
+    });
+
+  return (
+    (Array.isArray(record.intents) && record.intents.length > 0) ||
+    (Array.isArray(record.softIntentTags) && record.softIntentTags.length > 0) ||
+    hasRawHardConstraint
+  );
+}
+
 /** Edge Function 태그추출 모드 호출: 자연어 → IntentExtraction (OpenAI, 키는 서버에만). */
 async function extractTags(query: string): Promise<IntentExtraction> {
   const target = getRecommendTarget();
@@ -98,7 +153,12 @@ async function extractTags(query: string): Promise<IntentExtraction> {
     throw new Error(message);
   }
 
-  return sanitizeExtraction(await response.json());
+  const data = await response.json();
+  const extraction = sanitizeExtraction(data);
+  if (hasRawExtractionSignal(data) && !hasSearchSignal(extraction)) {
+    console.warn('[keybuddy] 태그 추출 응답이 클라이언트 스키마 정제 후 비었습니다.', data);
+  }
+  return extraction;
 }
 
 /** 의도 확장 → 결정론 검색 → 점수순 상위 MAX_RESULTS개로 결과를 만든다. */
@@ -294,6 +354,13 @@ export async function recommend(input: RecommendInput): Promise<RecommendResult>
 
   // freeform: 서버에서 OpenAI 태그추출만, 검색·랭킹은 클라 결정론
   const extraction = await extractTags(input.query);
+  if (!hasSearchSignal(extraction)) {
+    if (hasBroadKeyboardIntent(input.query)) {
+      return runDeterministicSearch([], { hardConstraints: {}, softIntentTags: [] });
+    }
+    return emptySearchResult();
+  }
+
   return runDeterministicSearch(extraction.intents, {
     hardConstraints: extraction.hardConstraints,
     softIntentTags: extraction.softIntentTags,
