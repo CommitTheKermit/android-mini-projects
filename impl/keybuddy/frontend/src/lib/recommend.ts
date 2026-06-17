@@ -16,6 +16,8 @@ import { expandIntents, isIntentTag } from './intentProfile';
 import { searchWithProfile } from './intentSearch';
 import { toRecommendations, buildSummary } from './searchResultComposition';
 import { selectionOptionConverter } from './guidedInputMapper';
+import type { SearchOutput, SearchResultItem } from './searchEngine';
+import { deriveRankOrder, getMatchedSoftTags, scoreBySoftTags } from './softScorer';
 
 const recommendTimeoutMs = 55000;
 
@@ -109,11 +111,185 @@ function runDeterministicSearch(intents: string[], explicit: ExtractedTags): Rec
   };
 }
 
+function keyboardText(keyboard: Keyboard): string {
+  return [
+    keyboard.product_name,
+    keyboard.brand,
+    keyboard.switch_type,
+    keyboard.connection,
+    keyboard.layout,
+    keyboard.key_force,
+    keyboard.wireless_type,
+    keyboard.engraving,
+    keyboard.backlight,
+    keyboard.raw_switch_name ?? '',
+    keyboard.switch_name ?? '',
+  ].join(' ');
+}
+
+function parseKeyForce(force: string): number | null {
+  const match = force.match(/(\d+)/);
+  return match ? Number(match[1]) : null;
+}
+
+function hasWiredSupport(keyboard: Keyboard): boolean {
+  return /유선/.test(keyboard.connection) || /유선/.test(keyboard.wireless_type);
+}
+
+function hasWirelessSupport(keyboard: Keyboard): boolean {
+  return /무선|블루투스|동글|리시버|2\.4GHz/i.test(`${keyboard.connection} ${keyboard.wireless_type}`);
+}
+
+function matchesPurpose(keyboard: Keyboard, answer: string): boolean {
+  const text = keyboardText(keyboard);
+  if (answer === '사무용') {
+    return /무접점|펜타그래프|저소음|멤브레인/.test(text) && !/청축/.test(text);
+  }
+  if (answer === '게임용') {
+    return /기계식|광축|자석축/.test(text);
+  }
+  return true;
+}
+
+function matchesPortability(keyboard: Keyboard, answer: string): boolean {
+  if (answer !== '자주 가지고 다닐래요') {
+    return true;
+  }
+
+  const text = keyboardText(keyboard);
+  const hasCompactLayout = /텐키리스|미니|75%|75배열|65%|65배열|60%|60배열|87키|84키|68키|61키/.test(text);
+  const hasPortableWeight = typeof keyboard.weight_g === 'number' && keyboard.weight_g > 0 && keyboard.weight_g <= 900;
+
+  return hasWirelessSupport(keyboard) && (hasCompactLayout || hasPortableWeight);
+}
+
+function matchesSound(keyboard: Keyboard, answer: string): boolean {
+  const text = keyboardText(keyboard);
+  if (/매우 낮음|낮음/.test(answer)) {
+    return /무접점|펜타그래프|저소음|멤브레인/.test(text) && !/청축/.test(text);
+  }
+  if (/조금 큼|시끄러워도 됨/.test(answer)) {
+    return /기계식|광축|자석축|청축|갈축|적축/.test(text);
+  }
+  return true;
+}
+
+function matchesKeyFeel(keyboard: Keyboard, answer: string): boolean {
+  const text = keyboardText(keyboard);
+  if (/또각또각|서걱서걱/.test(answer)) return /기계식/.test(text);
+  if (/보글보글/.test(answer)) return /무접점/.test(text);
+  return true;
+}
+
+function matchesKeyForce(keyboard: Keyboard, answer: string): boolean {
+  const force = parseKeyForce(keyboard.key_force);
+  if (/35~45g/.test(answer)) return force !== null && force >= 35 && force <= 45;
+  if (/45~55g/.test(answer)) return force !== null && force >= 45 && force <= 55;
+  if (/60g 이상/.test(answer)) return force !== null && force >= 60;
+  return true;
+}
+
+function matchesConnection(keyboard: Keyboard, answer: string): boolean {
+  const text = `${keyboard.connection} ${keyboard.wireless_type}`;
+  if (answer === '유선') return hasWiredSupport(keyboard);
+  if (answer === '무선 USB 동글') return /동글|리시버|2\.4GHz/i.test(text);
+  if (answer === '블루투스') return /블루투스/.test(text);
+  if (answer === '유/무선 모두') return hasWiredSupport(keyboard) && hasWirelessSupport(keyboard);
+  return true;
+}
+
+function matchesLayout(keyboard: Keyboard, answer: string): boolean {
+  const text = keyboardText(keyboard);
+  if (/풀배열/.test(answer)) return /풀배열|104키|108키/.test(text);
+  if (/1800/.test(answer)) return /1800|96키|98키|99키|100키/.test(text);
+  if (/텐키리스/.test(answer)) return /텐키리스|87키|TKL/i.test(text);
+  if (/75%/.test(answer)) return /75%|75배열|84키/.test(text);
+  if (/65%/.test(answer)) return /65%|65배열|68키/.test(text);
+  if (/60%/.test(answer)) return /미니|60%|60배열|61키/.test(text);
+  return true;
+}
+
+function matchesEngraving(keyboard: Keyboard, answer: string): boolean {
+  const engraving = keyboard.engraving;
+  if (answer === '한국어, 영어가 모두 필요해요') return /한\/영|한영|한국어.*영어|영어.*한국어/.test(engraving);
+  if (answer === '영어만 적혀있길 바라요') return /영문/.test(engraving) && !/한\/영|한영/.test(engraving);
+  if (answer === '한국어만 적혀있길 바라요') return /한글|한국어/.test(engraving) && !/영문|영어|한\/영|한영/.test(engraving);
+  return true;
+}
+
+function matchesBacklight(keyboard: Keyboard, answer: string): boolean {
+  const backlight = keyboard.backlight;
+  if (answer === '화려한 RGB가 좋아요') return /RGB/.test(backlight);
+  if (answer === '은은한 단색 조명이 좋아요') return /단색/.test(backlight);
+  if (answer === '없어도 돼요 (배터리 절약)') return /없음|정보없음/.test(backlight);
+  return true;
+}
+
+function matchesGuidedAnswers(
+  keyboard: Keyboard,
+  answers: Record<string, string>,
+  budget: { min: number; max: number },
+): boolean {
+  if (keyboard.price < budget.min || keyboard.price > budget.max) {
+    return false;
+  }
+
+  return (
+    matchesPurpose(keyboard, answers['용도'] ?? '') &&
+    matchesPortability(keyboard, answers['휴대성'] ?? '') &&
+    matchesSound(keyboard, answers['소리'] ?? '') &&
+    matchesKeyFeel(keyboard, answers['키감'] ?? '') &&
+    matchesKeyForce(keyboard, answers['키압'] ?? '') &&
+    matchesConnection(keyboard, answers['연결방식'] ?? '') &&
+    matchesLayout(keyboard, answers['크기'] ?? '') &&
+    matchesEngraving(keyboard, answers['각인'] ?? '') &&
+    matchesBacklight(keyboard, answers['백라이트'] ?? '')
+  );
+}
+
+function runGuidedStrictSearch(
+  answers: Record<string, string>,
+  budget: { min: number; max: number },
+): RecommendResult {
+  const explicit = selectionOptionConverter(answers, budget);
+  const filtered = keyboards.filter((keyboard) => matchesGuidedAnswers(keyboard, answers, budget));
+  const scoreVector = scoreBySoftTags(filtered, explicit.softIntentTags);
+  const rankOrder = deriveRankOrder(scoreVector);
+  const catalogIndex = new Map<Keyboard, number>(keyboards.map((keyboard, index) => [keyboard, index]));
+
+  const results: SearchResultItem[] = rankOrder.map((filteredIndex) => {
+    const keyboard = filtered[filteredIndex];
+    const { score } = scoreVector[filteredIndex];
+    const matchedTags = getMatchedSoftTags(keyboard, explicit.softIntentTags);
+    return {
+      keyboard,
+      keyboardIndex: catalogIndex.get(keyboard) ?? -1,
+      score,
+      matchedTags,
+      satisfiesHardConstraints: true,
+      isFallback: false,
+      relaxedConstraints: [],
+      relaxationStepCount: 0,
+    };
+  });
+
+  const output: SearchOutput = {
+    results,
+    isFallback: false,
+    relaxedConstraints: [],
+    relaxationStepCount: 0,
+  };
+
+  return {
+    summary: buildSummary(output, MAX_RESULTS),
+    recommendations: toRecommendations(output, MAX_RESULTS),
+  };
+}
+
 export async function recommend(input: RecommendInput): Promise<RecommendResult> {
   // guided: 선택 답변을 결정론으로 태그 변환 (서버/LLM 호출 0회)
   if (input.mode === 'guided') {
-    const explicit = selectionOptionConverter(input.answers, input.budget);
-    return runDeterministicSearch([], explicit);
+    return runGuidedStrictSearch(input.answers, input.budget);
   }
 
   // freeform: 서버에서 OpenAI 태그추출만, 검색·랭킹은 클라 결정론
