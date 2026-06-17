@@ -24,6 +24,7 @@ function extractResponse(body: object): Response {
 
 describe('recommend - 경로2 배선 + 점수순 상위 3개', () => {
   afterEach(() => {
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
     vi.unstubAllEnvs();
   });
@@ -98,6 +99,28 @@ describe('recommend - 경로2 배선 + 점수순 상위 3개', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(result.recommendations).toHaveLength(0);
     expect(result.summary).toContain('찾지 못했어요');
+  });
+
+  it('freeform: 원시 추출값이 정제 후 모두 버려지면 스키마 불일치 경고를 남긴다', async () => {
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const fetchMock = vi.fn().mockResolvedValue(
+      extractResponse({
+        intents: ['없는의도'],
+        hardConstraints: { layout: '없는배열' },
+        softIntentTags: ['없는태그'],
+      }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await recommend({ mode: 'freeform', query: '응가' });
+
+    expect(result.recommendations).toHaveLength(0);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[keybuddy] 태그 추출 응답이 클라이언트 스키마 정제 후 비었습니다.',
+      expect.any(Object),
+    );
+    warnSpy.mockRestore();
   });
 
   it('guided: 결정론 검색으로 결과는 1~3개', async () => {

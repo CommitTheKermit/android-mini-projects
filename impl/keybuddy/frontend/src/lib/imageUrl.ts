@@ -1,6 +1,14 @@
 const DANURI_IMAGE_HOST = 'img.danuri.io';
 const DISPLAY_IMAGE_SIZE = 600;
 
+function buildDisplayImageUrl(url: URL): string {
+  const params = Array.from(url.searchParams.entries())
+    .filter(([key]) => key !== 'shrink')
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+  params.push(`shrink=${DISPLAY_IMAGE_SIZE}:${DISPLAY_IMAGE_SIZE}`);
+  return `${url.origin}${url.pathname}?${params.join('&')}${url.hash}`;
+}
+
 export function getDisplayImageUrl(src: string): string {
   if (!src) return src;
 
@@ -10,13 +18,7 @@ export function getDisplayImageUrl(src: string): string {
       return src;
     }
 
-    url.searchParams.set('shrink', `${DISPLAY_IMAGE_SIZE}:${DISPLAY_IMAGE_SIZE}`);
-    return url
-      .toString()
-      .replace(
-        /([?&]shrink=)\d+%3A\d+/,
-        `$1${DISPLAY_IMAGE_SIZE}:${DISPLAY_IMAGE_SIZE}`,
-      );
+    return buildDisplayImageUrl(url);
   } catch {
     return src;
   }

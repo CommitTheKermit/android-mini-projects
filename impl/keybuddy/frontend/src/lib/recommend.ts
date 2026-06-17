@@ -94,6 +94,31 @@ function hasBroadKeyboardIntent(query: string): boolean {
   );
 }
 
+function hasRawExtractionSignal(data: unknown): boolean {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return false;
+  }
+
+  const record = data as Record<string, unknown>;
+  const hardConstraints = record.hardConstraints;
+  const hasRawHardConstraint =
+    !!hardConstraints &&
+    typeof hardConstraints === 'object' &&
+    !Array.isArray(hardConstraints) &&
+    Object.values(hardConstraints).some((value) => {
+      if (typeof value === 'number') {
+        return value > 0;
+      }
+      return typeof value === 'string' && value.trim().length > 0;
+    });
+
+  return (
+    (Array.isArray(record.intents) && record.intents.length > 0) ||
+    (Array.isArray(record.softIntentTags) && record.softIntentTags.length > 0) ||
+    hasRawHardConstraint
+  );
+}
+
 /** Edge Function 태그추출 모드 호출: 자연어 → IntentExtraction (OpenAI, 키는 서버에만). */
 async function extractTags(query: string): Promise<IntentExtraction> {
   const target = getRecommendTarget();
@@ -128,7 +153,12 @@ async function extractTags(query: string): Promise<IntentExtraction> {
     throw new Error(message);
   }
 
-  return sanitizeExtraction(await response.json());
+  const data = await response.json();
+  const extraction = sanitizeExtraction(data);
+  if (hasRawExtractionSignal(data) && !hasSearchSignal(extraction)) {
+    console.warn('[keybuddy] 태그 추출 응답이 클라이언트 스키마 정제 후 비었습니다.', data);
+  }
+  return extraction;
 }
 
 /** 의도 확장 → 결정론 검색 → 점수순 상위 MAX_RESULTS개로 결과를 만든다. */

@@ -9,6 +9,7 @@ describe('getDisplayImageUrl', () => {
 
     expect(result).toContain('shrink=600:600');
     expect(result).toContain('_v=20260610124800');
+    expect(result).not.toContain('600%3A600');
   });
 
   it('다나와 catalog 이미지에 shrink가 없으면 표시용 shrink를 추가한다', () => {
