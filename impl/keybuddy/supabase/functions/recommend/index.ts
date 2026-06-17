@@ -612,7 +612,7 @@ ${enumLines}
 
 응답 형식: {"intents": [...], "hardConstraints": {...}, "softIntentTags": [...]}
 
-사용자 입력: "${query}"
+사용자 입력: "${query.replace(/"/g, '\\"')}"
 `;
 }
 
@@ -620,9 +620,16 @@ function parseExtractJson(text: string): unknown {
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');
   if (start === -1 || end === -1 || end <= start) {
-    throw new Error('LLM 응답에서 JSON을 찾지 못했습니다.');
+    return null;
   }
-  return JSON.parse(text.slice(start, end + 1));
+  // start/end가 맞아도 부분문자열이 유효 JSON이 아닐 수 있다(LLM이 중간에 {}를 포함한 설명을
+  // 붙이거나 중첩 따옴표로 파싱이 깨지는 경우). SyntaxError가 외부 catch로 올라가 500이 되지
+  // 않도록 null로 폴백하고, sanitizeExtraction(null)이 빈 추출로 graceful degrade 한다.
+  try {
+    return JSON.parse(text.slice(start, end + 1));
+  } catch {
+    return null;
+  }
 }
 
 // LLM 출력을 신뢰하지 않는다는 전제로 어휘/스키마 밖 값을 서버에서 1차 폐기한다.

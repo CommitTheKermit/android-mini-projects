@@ -11,12 +11,11 @@
 
 import catalog from '../data/keyboards.json';
 import type { Keyboard, RecommendInput, RecommendResult } from '../types';
-import type { ExtractedTags, HardConstraints, IntentExtraction } from './extractRawTags';
+import { sanitizeTags, type ExtractedTags, type IntentExtraction } from './extractRawTags';
 import { expandIntents, isIntentTag } from './intentProfile';
 import { searchWithProfile } from './intentSearch';
 import { toRecommendations, buildSummary } from './searchResultComposition';
 import { selectionOptionConverter } from './guidedInputMapper';
-import { isSoftIntentTag, type SoftIntentTag } from './tagSchema';
 
 const recommendTimeoutMs = 55000;
 
@@ -55,14 +54,10 @@ function sanitizeExtraction(data: unknown): IntentExtraction {
     ? rec.intents.filter((x): x is string => typeof x === 'string' && isIntentTag(x))
     : [];
 
-  const softIntentTags = Array.isArray(rec.softIntentTags)
-    ? rec.softIntentTags.filter((x): x is SoftIntentTag => typeof x === 'string' && isSoftIntentTag(x))
-    : [];
-
-  const hardConstraints =
-    rec.hardConstraints && typeof rec.hardConstraints === 'object' && !Array.isArray(rec.hardConstraints)
-      ? (rec.hardConstraints as HardConstraints)
-      : {};
+  // hardConstraints/softIntentTags는 sanitizeTags로 키별 타입·어휘를 검증해 재사용한다.
+  // 단순 캐스트가 아니라 sanitizeHardConstraints(숫자/열거형 검증)를 거치므로
+  // 서버 sanitizeExtraction과 동일 수준의 2중 방어가 실제로 동작한다.
+  const { hardConstraints, softIntentTags } = sanitizeTags(rec);
 
   return { intents, hardConstraints, softIntentTags };
 }
