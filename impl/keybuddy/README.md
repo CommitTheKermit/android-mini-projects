@@ -34,6 +34,7 @@ keybuddy/
 - `docs/tag-extraction-flow.md` - 자연어를 의도/제약 태그로 번역하고 결정론적으로 확장하는 흐름
 - `docs/intent-harness-before-after.md` - 의도 하네스 적용 전/후 정성 비교
 - `docs/deployment-version-management.md` - 배포 및 버전 관리 규칙
+- `docs/youtube-media-enrichment.md` - YouTube 타건 영상 링크 수집·캐시·동기화 운영 규칙
 
 ## 크롤링 데이터와 스위치 매칭
 
@@ -57,6 +58,19 @@ keybuddy/
 저장합니다. 옵션 링크가 없는 상품은 상품명 링크를 사용하며, 링크를 확인할 수 없으면
 `null`로 저장합니다. `media_url`은 실제 자료를 확보하기 전까지 `null`로 저장하고
 `media_url_is_placeholder`로 준비 중 상태를 표시합니다.
+
+타건 영상 링크는 기본 크롤링에는 포함하지 않고, 공식 YouTube Data API 키가 있을 때만
+선택적으로 보강합니다. 검색어는 `상품명 + raw_switch_name`(없으면 `switch_name`)이며,
+결과는 `../output/youtube_media_cache.json`에 누적합니다. 다음 실행에서는 캐시를 먼저
+입혀 이미 수집한 링크를 `keyboards.json`에 다시 반영하고, 캐시에 없는 항목만 새로
+검색합니다.
+
+```bash
+cd impl
+YOUTUBE_API_KEY=<key> python3 crawl.py --with-youtube --youtube-limit 90
+```
+
+`--youtube-limit 0`은 새 검색 없이 기존 캐시만 반영할 때 사용합니다.
 
 ## 요청 흐름
 

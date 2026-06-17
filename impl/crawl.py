@@ -5,8 +5,10 @@
 제품-스위치 조합별 레코드로 펼쳐 JSON과 CSV에 저장한다.
 """
 
+import argparse
 import csv
 import json
+import os
 import re
 import time
 from collections import defaultdict
@@ -15,6 +17,11 @@ from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
+
+try:
+    from .youtube_media import enrich_items_with_youtube
+except ImportError:
+    from youtube_media import enrich_items_with_youtube
 
 LIST_URL = "https://prod.danawa.com/list/"
 LIST_AJAX_URL = "https://prod.danawa.com/list/ajax/getProductList.ajax.php"
@@ -28,6 +35,8 @@ OUTPUT_DIR = BASE_DIR / "output"
 SWITCH_DATA_DIR = BASE_DIR / "keybuddy" / "frontend" / "src" / "data"
 SWITCHES_PATH = SWITCH_DATA_DIR / "switches.json"
 SWITCH_ALIASES_PATH = SWITCH_DATA_DIR / "switch_aliases.json"
+YOUTUBE_CACHE_PATH = OUTPUT_DIR / "youtube_media_cache.json"
+YOUTUBE_REPORT_PATH = OUTPUT_DIR / "youtube_media_report.json"
 
 # 기존 데이터셋의 완전성 기준은 유지한다. 새 스위치 필드는 결측을 허용한다.
 REQUIRED_FIELDS = (
@@ -636,8 +645,47 @@ def save_results(collected: list[dict]) -> None:
     print(f"미매칭 스위치: {unmatched_path} ({len(unmatched)}종)")
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="다나와 키보드 목록 크롤러")
+    parser.add_argument(
+        "--with-youtube",
+        action="store_true",
+        help="공식 YouTube Data API로 타건 영상 링크를 보강합니다.",
+    )
+    parser.add_argument(
+        "--youtube-limit",
+        type=int,
+        default=90,
+        help="이번 실행에서 새로 검색할 YouTube query 수입니다. 캐시 hit는 제외합니다.",
+    )
+    parser.add_argument(
+        "--youtube-refresh",
+        action="store_true",
+        help="기존 YouTube cache를 무시하고 새로 검색합니다.",
+    )
+    parser.add_argument(
+        "--youtube-cache-path",
+        type=Path,
+        default=YOUTUBE_CACHE_PATH,
+        help="YouTube 검색 결과 cache JSON 경로입니다.",
+    )
+    parser.add_argument(
+        "--youtube-report-path",
+        type=Path,
+        default=YOUTUBE_REPORT_PATH,
+        help="YouTube 검색 리포트 JSON 경로입니다.",
+    )
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    youtube_limit = max(0, args.youtube_limit)
+    youtube_api_key = os.environ.get("YOUTUBE_API_KEY", "").strip()
+    if args.with_youtube and youtube_limit > 0 and not youtube_api_key:
+        raise SystemExit("YOUTUBE_API_KEY 환경변수가 필요합니다.")
+
     switches, aliases = load_switch_data()
 
     collected = []
@@ -695,6 +743,26 @@ def main():
                 break
             page += 1
             time.sleep(DELAY_SEC)
+
+    if args.with_youtube:
+        youtube_stats = enrich_items_with_youtube(
+            collected,
+            api_key=youtube_api_key,
+            cache_path=args.youtube_cache_path,
+            report_path=args.youtube_report_path,
+            search_limit=youtube_limit,
+            refresh=args.youtube_refresh,
+        )
+        print(
+            "YouTube 보강: "
+            f"cache {youtube_stats['cache_hits']}, "
+            f"검색 {youtube_stats['api_searches']}, "
+            f"매칭 {youtube_stats['matched']}, "
+            f"미발견 {youtube_stats['not_found']}, "
+            f"스킵 {youtube_stats['skipped']}, "
+            f"제한 {youtube_stats['limited']}, "
+            f"오류 {youtube_stats['errors']}"
+        )
 
     save_results(collected)
     print(f"\n상품 {product_count}개에서 제품-스위치 조합 {len(collected)}개 수집 완료")

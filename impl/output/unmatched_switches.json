@@ -7,7 +7,6 @@
       "COX CK01 PBT 마이애미 나이트 에디션 게이밍 기계식",
       "COX CK01 PBT 이색사출 사이드 RGB 기계식 키보드",
       "COX CK01 TKL",
-      "앱코 AN02 다크그레이 RGB BAR 축교환 기계식 키보드",
       "앱코 AN02 블랙 RGB BAR 축교환 기계식 키보드",
       "앱코 AN02 핑크 RGB BAR 축교환 기계식 키보드",
       "앱코 HACKER K515 축교환 측면 RGB 라이팅 이중사출 게이밍 기계식 블랙",
@@ -20,27 +19,7 @@
       "앱코 K840 사각 레트로 축교환 기계식 블랙",
       "앱코 K840 사각 레트로 축교환 기계식 화이트"
     ],
-    "count": 16
-  },
-  {
-    "raw_switch_name": "갈축",
-    "switch_manufacturer": "GTMX",
-    "product_names": [
-      "COX CK01 Navy 교체축 사이드 RGB 게이밍 기계식 키보드",
-      "COX CK01 PBT 이색사출 사이드 RGB 기계식 키보드",
-      "COX CK01 TKL",
-      "앱코 AN02 다크그레이 RGB BAR 축교환 기계식 키보드",
-      "앱코 AN02 블랙 RGB BAR 축교환 기계식 키보드",
-      "앱코 AN02 핑크 RGB BAR 축교환 기계식 키보드",
-      "앱코 HACKER K515 축교환 측면 RGB 라이팅 이중사출 게이밍 기계식 블랙",
-      "앱코 HACKER K515 축교환 측면 RGB 라이팅 이중사출 게이밍 기계식 화이트",
-      "앱코 HACKER K640 축교환 게이밍 기계식 블랙",
-      "앱코 K1924 RETRO GTMX NON-LED 게이밍 기계식",
-      "앱코 K517 레트로 기계식",
-      "앱코 K840 사각 레트로 축교환 기계식 블랙",
-      "앱코 K840 사각 레트로 축교환 기계식 화이트"
-    ],
-    "count": 13
+    "count": 15
   },
   {
     "raw_switch_name": "적축",
@@ -61,6 +40,25 @@
       "앱코 K840 사각 레트로 축교환 기계식 블랙"
     ],
     "count": 13
+  },
+  {
+    "raw_switch_name": "갈축",
+    "switch_manufacturer": "GTMX",
+    "product_names": [
+      "COX CK01 Navy 교체축 사이드 RGB 게이밍 기계식 키보드",
+      "COX CK01 PBT 이색사출 사이드 RGB 기계식 키보드",
+      "COX CK01 TKL",
+      "앱코 AN02 블랙 RGB BAR 축교환 기계식 키보드",
+      "앱코 AN02 핑크 RGB BAR 축교환 기계식 키보드",
+      "앱코 HACKER K515 축교환 측면 RGB 라이팅 이중사출 게이밍 기계식 블랙",
+      "앱코 HACKER K515 축교환 측면 RGB 라이팅 이중사출 게이밍 기계식 화이트",
+      "앱코 HACKER K640 축교환 게이밍 기계식 블랙",
+      "앱코 K1924 RETRO GTMX NON-LED 게이밍 기계식",
+      "앱코 K517 레트로 기계식",
+      "앱코 K840 사각 레트로 축교환 기계식 블랙",
+      "앱코 K840 사각 레트로 축교환 기계식 화이트"
+    ],
+    "count": 12
   },
   {
     "raw_switch_name": "저소음 스노우축",
@@ -165,30 +163,55 @@
       "AULA F75 MAX 유무선 기계식 올리비아 화이트",
       "AULA F87 Pro 기계식 다크 올리비아 한글",
       "AULA F87 Pro 기계식 라이트 올리비아 한글",
-      "AULA F99 기계식 다크 올리비아 한글",
       "LEOBOG Hi8SE 유무선 기계식 스카이 실버",
-      "LEOBOG Hi8SE 유무선 기계식 올리비아 화이트",
       "LEOBOG Hi8SE 유무선 기계식 카키 블랙"
     ],
-    "count": 11
+    "count": 9
+  },
+  {
+    "raw_switch_name": "갈축",
+    "switch_manufacturer": "게이트론",
+    "product_names": [
+      "CORSAIR DROP CSTM80 기계식",
+      "COX CK87 PBT SUNSHINE GD 기계식",
+      "COX CK87 네이비 게이트론 LED 게이밍 기계식",
+      "COX CK87 블랙 게이트론 LED 게이밍 기계식",
+      "COX CK87 크림블루 게이트론 LED 게이밍 기계식",
+      "COX CKT87 RGB 반투광사출 기계식 텐키리스",
+      "COX CX108G PBT 가스켓 마운트 게이밍 기계식 키보드",
+      "COX 피네스 66키 아크릴 RGB 게이트론 퀵스왑 키보드"
+    ],
+    "count": 8
+  },
+  {
+    "raw_switch_name": "저소음 적축",
+    "switch_manufacturer": "체리",
+    "product_names": [
+      "CHERRY MX BOARD 2.0S MX2A 화이트",
+      "CORSAIR K70 RGB PRO",
+      "CORSAIR K70 RGB TKL CHAMPION 한글",
+      "Deck CBL-108XN Hassium 거북선 블랙에디션",
+      "Ducky MECHA MINI RGB PBT 이중사출 한글",
+      "Ducky ONE 2 TKL SEAMLESS TUXEDO PBT 이중사출 한글",
+      "Ducky ONE 3 SF RGB DayBreak PBT 이중사출 한글",
+      "MOUNTAIN EVEREST MAX 그레이"
+    ],
+    "count": 8
   },
   {
     "raw_switch_name": "저소음 피치축",
     "switch_manufacturer": null,
     "product_names": [
-      "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 핑크",
-      "QSENN Q104 PBT 풀윤활 가스켓 유무선 기계식 화이트",
       "앱코 AK87 3모드 OTEMU 특주축 유무선 기계식 그레이",
       "앱코 AK87 3모드 OTEMU 특주축 유무선 기계식 다크 그라데이션",
       "앱코 AK87 3모드 OTEMU 특주축 유무선 기계식 블랙",
       "앱코 AK87 3모드 OTEMU 특주축 유무선 기계식 올리비아",
-      "앱코 AK94BT 유무선 기계식 스카이블루",
       "앱코 AK99 유무선 기계식 그린",
       "앱코 AK99 유무선 기계식 핑크",
       "앱코 AK998 8K OTEMU 특주축 기계식 블랙",
       "앱코 AK998 8K OTEMU 특주축 기계식 스카이 블루"
     ],
-    "count": 11
+    "count": 8
   },
   {
     "raw_switch_name": "청축",
@@ -200,39 +223,51 @@
       "COX CK580 교체축 게이밍 기계식 그레이&핑크",
       "COX CK580 교체축 게이밍 기계식 화이트",
       "앱코 K480 교체축 게이밍 기계식 스카이",
-      "앱코 K480 교체축 게이밍 기계식 젠틀맨",
       "앱코 K580 교체축 게이밍 기계식 스카이",
       "앱코 K580 교체축 게이밍 기계식 젠틀맨"
     ],
-    "count": 9
+    "count": 8
   },
   {
     "raw_switch_name": "갈축",
     "switch_manufacturer": "체리",
     "product_names": [
       "CORSAIR K70 RGB PRO",
+      "Deck CBL-108XN Hassium 거북선 블랙에디션",
       "Ducky DUCKY ONE 2 SF RGB PBT 이중사출 한글",
       "Ducky MECHA MINI RGB PBT 이중사출 한글",
       "Ducky One 2 SEAMLESS ROSA PBT 이중사출 한글",
-      "MOUNTAIN EVEREST CORE",
       "MOUNTAIN EVEREST MAX 그레이",
-      "VARMILO VA87M MONOGRAY PBT 염료승화 한글"
+      "앱코 HACKER K660M TKL 이색사출 PBT 체리 키보드 딥로얄"
+    ],
+    "count": 7
+  },
+  {
+    "raw_switch_name": "적축",
+    "switch_manufacturer": "독자 규격",
+    "product_names": [
+      "COUGAR PURI TKL RGB",
+      "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 블랙",
+      "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 화이트",
+      "마이크로닉스 메카 ZK2 마닉축 RGB 게이밍 기계식 키보드",
+      "마이크로닉스 워프 WK2 마닉축 RGB 게이밍 기계식 키보드",
+      "마이크로닉스 워프 WK3 마닉축 블루투스 RGB 텐키리스 게이밍 기계식 키보드",
+      "마이크로닉스 워프 WK4 마닉축 RGB 텐키리스 게이밍 기계식 키보드"
     ],
     "count": 7
   },
   {
     "raw_switch_name": "갈축",
-    "switch_manufacturer": "게이트론",
+    "switch_manufacturer": "독자 규격",
     "product_names": [
-      "CORSAIR DROP CSTM80 기계식",
-      "COX CK87 PBT SUNSHINE GD 기계식",
-      "COX CK87 블랙 게이트론 LED 게이밍 기계식",
-      "COX CK87 크림블루 게이트론 LED 게이밍 기계식",
-      "COX CKT87 RGB 반투광사출 기계식 텐키리스",
-      "COX CX108G PBT 가스켓 마운트 게이밍 기계식 키보드",
-      "COX 피네스 66키 아크릴 RGB 게이트론 퀵스왑 키보드"
+      "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 블랙",
+      "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 화이트",
+      "마이크로닉스 메카 ZK2 마닉축 RGB 게이밍 기계식 키보드",
+      "마이크로닉스 워프 WK2 마닉축 RGB 게이밍 기계식 키보드",
+      "마이크로닉스 워프 WK3 마닉축 블루투스 RGB 텐키리스 게이밍 기계식 키보드",
+      "마이크로닉스 워프 WK4 마닉축 RGB 텐키리스 게이밍 기계식 키보드"
     ],
-    "count": 7
+    "count": 6
   },
   {
     "raw_switch_name": "갈축",
@@ -274,25 +309,12 @@
     "count": 6
   },
   {
-    "raw_switch_name": "저소음 적축",
-    "switch_manufacturer": "체리",
-    "product_names": [
-      "CHERRY MX BOARD 2.0S MX2A 화이트",
-      "CORSAIR K70 RGB PRO",
-      "CORSAIR K70 RGB TKL CHAMPION 한글",
-      "Ducky MECHA MINI RGB PBT 이중사출 한글",
-      "MOUNTAIN EVEREST CORE",
-      "MOUNTAIN EVEREST MAX 그레이"
-    ],
-    "count": 6
-  },
-  {
-    "raw_switch_name": "적축",
+    "raw_switch_name": "청축",
     "switch_manufacturer": "독자 규격",
     "product_names": [
-      "COUGAR PURI TKL RGB",
       "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 블랙",
       "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 화이트",
+      "마이크로닉스 메카 ZK2 마닉축 RGB 게이밍 기계식 키보드",
       "마이크로닉스 워프 WK2 마닉축 RGB 게이밍 기계식 키보드",
       "마이크로닉스 워프 WK3 마닉축 블루투스 RGB 텐키리스 게이밍 기계식 키보드",
       "마이크로닉스 워프 WK4 마닉축 RGB 텐키리스 게이밍 기계식 키보드"
@@ -300,26 +322,14 @@
     "count": 6
   },
   {
-    "raw_switch_name": "갈축",
-    "switch_manufacturer": "독자 규격",
+    "raw_switch_name": "저소음 피치축",
+    "switch_manufacturer": "오테뮤",
     "product_names": [
-      "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 블랙",
-      "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 화이트",
-      "마이크로닉스 워프 WK2 마닉축 RGB 게이밍 기계식 키보드",
-      "마이크로닉스 워프 WK3 마닉축 블루투스 RGB 텐키리스 게이밍 기계식 키보드",
-      "마이크로닉스 워프 WK4 마닉축 RGB 텐키리스 게이밍 기계식 키보드"
-    ],
-    "count": 5
-  },
-  {
-    "raw_switch_name": "은축",
-    "switch_manufacturer": "체리",
-    "product_names": [
-      "CORSAIR K100 RGB MX SPEED 영문",
-      "CORSAIR K60 RGB PRO LP",
-      "CORSAIR K70 RGB TKL CHAMPION 한글",
-      "Ducky ONE 2 SEAMLESS TUXEDO PBT 이중사출 한글",
-      "Ducky One 2 SEAMLESS ROSA PBT 이중사출 한글"
+      "COX CSK105 VIA 실리콘 사운드 뎀퍼 유무선 기계식 핑크",
+      "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린",
+      "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 핑크",
+      "앱코 AK94BT 유무선 기계식 스카이블루",
+      "앱코 AK94BT 유무선 기계식 피치"
     ],
     "count": 5
   },
@@ -332,18 +342,6 @@
       "COX CY104K V2 카일 광축 V2 게이밍 화이트&핑크",
       "마이크로닉스 MECHA ZK-1 RGB 게이밍 기계식 키보드",
       "앱코 AG75 가스켓 마운트 기계식 로즈 핑크"
-    ],
-    "count": 5
-  },
-  {
-    "raw_switch_name": "청축",
-    "switch_manufacturer": "독자 규격",
-    "product_names": [
-      "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 블랙",
-      "마이크로닉스 WARP WK-1 마닉축 RGB 게이밍 기계식 키보드 화이트",
-      "마이크로닉스 워프 WK2 마닉축 RGB 게이밍 기계식 키보드",
-      "마이크로닉스 워프 WK3 마닉축 블루투스 RGB 텐키리스 게이밍 기계식 키보드",
-      "마이크로닉스 워프 WK4 마닉축 RGB 텐키리스 게이밍 기계식 키보드"
     ],
     "count": 5
   },
@@ -426,6 +424,17 @@
     "count": 4
   },
   {
+    "raw_switch_name": "페블축",
+    "switch_manufacturer": "오테뮤",
+    "product_names": [
+      "COX CSK105 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린",
+      "COX CSK105 VIA 실리콘 사운드 뎀퍼 유무선 기계식 핑크",
+      "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린",
+      "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 핑크"
+    ],
+    "count": 4
+  },
+  {
     "raw_switch_name": "허니축",
     "switch_manufacturer": "오테뮤",
     "product_names": [
@@ -477,12 +486,12 @@
     "count": 3
   },
   {
-    "raw_switch_name": "벚꽃축",
-    "switch_manufacturer": "HAIMU",
+    "raw_switch_name": "은축",
+    "switch_manufacturer": "체리",
     "product_names": [
-      "앱코 ACH105 오피스워커 유무선 기계식 라벤더",
-      "앱코 ACH105 오피스워커 유무선 기계식 블랙",
-      "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루"
+      "CORSAIR K70 RGB TKL CHAMPION 한글",
+      "Deck CBL-108XN Hassium 거북선 블랙에디션",
+      "Ducky One 2 SEAMLESS ROSA PBT 이중사출 한글"
     ],
     "count": 3
   },
@@ -497,42 +506,12 @@
     "count": 3
   },
   {
-    "raw_switch_name": "저소음 바다소금축",
-    "switch_manufacturer": "HAIMU",
-    "product_names": [
-      "앱코 ACH105 오피스워커 유무선 기계식 라벤더",
-      "앱코 ACH105 오피스워커 유무선 기계식 블랙",
-      "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루"
-    ],
-    "count": 3
-  },
-  {
-    "raw_switch_name": "저소음 택타일 바다소금축",
-    "switch_manufacturer": "HAIMU",
-    "product_names": [
-      "앱코 ACH105 오피스워커 유무선 기계식 라벤더",
-      "앱코 ACH105 오피스워커 유무선 기계식 블랙",
-      "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루"
-    ],
-    "count": 3
-  },
-  {
     "raw_switch_name": "저소음 파도축",
     "switch_manufacturer": null,
     "product_names": [
       "FL-ESPORTS NX108 유무선 기계식 크림 말차",
       "FL-ESPORTS NX108 유무선 기계식 크림 핑크",
       "FL-ESPORTS X80 유무선 기계식 크림 핑크"
-    ],
-    "count": 3
-  },
-  {
-    "raw_switch_name": "저소음 피치축",
-    "switch_manufacturer": "오테뮤",
-    "product_names": [
-      "COX CSK105 VIA 실리콘 사운드 뎀퍼 유무선 기계식 핑크",
-      "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린",
-      "앱코 AK94BT 유무선 기계식 피치"
     ],
     "count": 3
   },
@@ -567,16 +546,6 @@
     "count": 3
   },
   {
-    "raw_switch_name": "페블축",
-    "switch_manufacturer": "오테뮤",
-    "product_names": [
-      "COX CSK105 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린",
-      "COX CSK105 VIA 실리콘 사운드 뎀퍼 유무선 기계식 핑크",
-      "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 그린"
-    ],
-    "count": 3
-  },
-  {
     "raw_switch_name": "피치축",
     "switch_manufacturer": null,
     "product_names": [
@@ -587,20 +556,29 @@
     "count": 3
   },
   {
-    "raw_switch_name": "갈축",
-    "switch_manufacturer": "MANIC",
-    "product_names": [
-      "마이크로닉스 MANIC EX89 텐키리스PRO 게이밍기계식 RGB",
-      "마이크로닉스 MANIC X240 LED 게이밍 기계식 키보드"
-    ],
-    "count": 2
-  },
-  {
     "raw_switch_name": "딥씨축",
     "switch_manufacturer": null,
     "product_names": [
       "COX CK88 유무선 기계식 민트화이트",
       "COX CK88 유무선 기계식 블랙로얄"
+    ],
+    "count": 2
+  },
+  {
+    "raw_switch_name": "라임축",
+    "switch_manufacturer": "오테뮤",
+    "product_names": [
+      "앱코 AK94BT 유무선 기계식 스카이블루",
+      "앱코 AK94BT 유무선 기계식 피치"
+    ],
+    "count": 2
+  },
+  {
+    "raw_switch_name": "벚꽃축",
+    "switch_manufacturer": "HAIMU",
+    "product_names": [
+      "앱코 ACH105 오피스워커 유무선 기계식 라벤더",
+      "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루"
     ],
     "count": 2
   },
@@ -641,11 +619,29 @@
     "count": 2
   },
   {
+    "raw_switch_name": "저소음 바다소금축",
+    "switch_manufacturer": "HAIMU",
+    "product_names": [
+      "앱코 ACH105 오피스워커 유무선 기계식 라벤더",
+      "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루"
+    ],
+    "count": 2
+  },
+  {
     "raw_switch_name": "저소음 솜사탕축",
     "switch_manufacturer": null,
     "product_names": [
       "AULA F108 PRO 유무선 기계식 오로라 블랙 한글",
       "AULA F108 PRO 유무선 기계식 치즈 화이트 한글"
+    ],
+    "count": 2
+  },
+  {
+    "raw_switch_name": "저소음 솜사탕축",
+    "switch_manufacturer": "오테뮤",
+    "product_names": [
+      "AULA F87 Pro 유무선 기계식 올리비아 화이트 한글",
+      "AULA F87 Pro 유무선 기계식 인디고 블랙 한글"
     ],
     "count": 2
   },
@@ -668,11 +664,38 @@
     "count": 2
   },
   {
+    "raw_switch_name": "저소음 택타일 바다소금축",
+    "switch_manufacturer": "HAIMU",
+    "product_names": [
+      "앱코 ACH105 오피스워커 유무선 기계식 라벤더",
+      "앱코 ACH105 오피스워커 유무선 기계식 앨리스블루"
+    ],
+    "count": 2
+  },
+  {
+    "raw_switch_name": "저소음 피치축 V2",
+    "switch_manufacturer": "오테뮤",
+    "product_names": [
+      "AULA F87 Pro 유무선 기계식 올리비아 화이트 한글",
+      "AULA F87 Pro 유무선 기계식 인디고 블랙 한글"
+    ],
+    "count": 2
+  },
+  {
     "raw_switch_name": "청축",
     "switch_manufacturer": "JIXIAN",
     "product_names": [
       "앱코 K560 축교환 레인보우 무빙 LED 기계식 블랙",
       "앱코 K561 교체축 유무선 블루투스 기계식 화이트"
+    ],
+    "count": 2
+  },
+  {
+    "raw_switch_name": "청축",
+    "switch_manufacturer": "체리",
+    "product_names": [
+      "CORSAIR K70 RGB PRO",
+      "Deck CBL-108XN Hassium 거북선 블랙에디션"
     ],
     "count": 2
   },
@@ -687,10 +710,10 @@
   },
   {
     "raw_switch_name": "청축",
-    "switch_manufacturer": "체리",
+    "switch_manufacturer": "게이트론",
     "product_names": [
-      "CORSAIR K70 RGB PRO",
-      "MOUNTAIN EVEREST CORE"
+      "COX CK87 BT 게이트론 블루투스 5.0 텐키리스 기계식 게이밍 화이트",
+      "COX CK87 크림블루 게이트론 LED 게이밍 기계식"
     ],
     "count": 2
   },
@@ -756,14 +779,6 @@
     "count": 1
   },
   {
-    "raw_switch_name": "Gift축",
-    "switch_manufacturer": null,
-    "product_names": [
-      "발키리 VK-99 유무선 기계식 영문"
-    ],
-    "count": 1
-  },
-  {
     "raw_switch_name": "S1, 녹축",
     "switch_manufacturer": "게이트론",
     "product_names": [
@@ -780,26 +795,26 @@
     "count": 1
   },
   {
-    "raw_switch_name": "SNOW축",
-    "switch_manufacturer": null,
+    "raw_switch_name": "갈축",
+    "switch_manufacturer": "ET",
     "product_names": [
-      "ASUS ROG AZOTH X 유무선 기계식"
-    ],
-    "count": 1
-  },
-  {
-    "raw_switch_name": "STORM축",
-    "switch_manufacturer": null,
-    "product_names": [
-      "ASUS ROG AZOTH X 유무선 기계식"
+      "앱코 K570 축교환 레인보우 무빙 LED 기계식 키보드"
     ],
     "count": 1
   },
   {
     "raw_switch_name": "갈축",
-    "switch_manufacturer": "ET",
+    "switch_manufacturer": "카일 박스 V2",
     "product_names": [
-      "앱코 K570 축교환 레인보우 무빙 LED 기계식 키보드"
+      "FL-ESPORTS CMK99 유무선 핫스왑 풀윤활 기계식 화이트 그레이 한글"
+    ],
+    "count": 1
+  },
+  {
+    "raw_switch_name": "갈축",
+    "switch_manufacturer": "MANIC",
+    "product_names": [
+      "마이크로닉스 MANIC X240 LED 게이밍 기계식 키보드"
     ],
     "count": 1
   },
@@ -821,17 +836,9 @@
   },
   {
     "raw_switch_name": "게이트론축",
-    "switch_manufacturer": "체리",
+    "switch_manufacturer": "게이트론",
     "product_names": [
       "마이크로닉스 CALUX"
-    ],
-    "count": 1
-  },
-  {
-    "raw_switch_name": "녹축",
-    "switch_manufacturer": "RAZER",
-    "product_names": [
-      "Razer BlackWidow V3 TKL KR"
     ],
     "count": 1
   },
@@ -852,18 +859,10 @@
     "count": 1
   },
   {
-    "raw_switch_name": "라임축",
-    "switch_manufacturer": "오테뮤",
-    "product_names": [
-      "앱코 AK94BT 유무선 기계식 피치"
-    ],
-    "count": 1
-  },
-  {
-    "raw_switch_name": "라임축",
+    "raw_switch_name": "레몬축",
     "switch_manufacturer": null,
     "product_names": [
-      "앱코 AK94BT 유무선 기계식 스카이블루"
+      "FL-ESPORTS NX108HE 네온 그레이"
     ],
     "count": 1
   },
@@ -908,6 +907,22 @@
     "count": 1
   },
   {
+    "raw_switch_name": "백축",
+    "switch_manufacturer": "카일 박스 V2",
+    "product_names": [
+      "FL-ESPORTS CMK99 유무선 핫스왑 풀윤활 기계식 화이트 그레이 한글"
+    ],
+    "count": 1
+  },
+  {
+    "raw_switch_name": "벚꽃축",
+    "switch_manufacturer": "HMX",
+    "product_names": [
+      "앱코 ACH105 오피스워커 유무선 기계식 블랙"
+    ],
+    "count": 1
+  },
+  {
     "raw_switch_name": "복고축",
     "switch_manufacturer": null,
     "product_names": [
@@ -916,10 +931,18 @@
     "count": 1
   },
   {
-    "raw_switch_name": "애플민트축",
+    "raw_switch_name": "아이비축",
     "switch_manufacturer": null,
     "product_names": [
-      "QSENN Q104 PBT 풀윤활 가스켓 유무선 기계식 화이트"
+      "FL-ESPORTS NX108HE 네온 그레이"
+    ],
+    "count": 1
+  },
+  {
+    "raw_switch_name": "저소음 눈송이축",
+    "switch_manufacturer": null,
+    "product_names": [
+      "프리플로우 archon AK74 PRO 유무선 기계식 마카롱"
     ],
     "count": 1
   },
@@ -933,9 +956,9 @@
   },
   {
     "raw_switch_name": "저소음 바다소금축",
-    "switch_manufacturer": null,
+    "switch_manufacturer": "HMX",
     "product_names": [
-      "QSENN Q104 PBT 풀윤활 가스켓 유무선 기계식 화이트"
+      "앱코 ACH105 오피스워커 유무선 기계식 블랙"
     ],
     "count": 1
   },
@@ -972,18 +995,18 @@
     "count": 1
   },
   {
-    "raw_switch_name": "저소음 솜사탕축",
-    "switch_manufacturer": "오테뮤",
+    "raw_switch_name": "저소음 블루축",
+    "switch_manufacturer": null,
     "product_names": [
-      "AULA F87 Pro 유무선 기계식 인디고 블랙 한글"
+      "프리플로우 archon AK74 PRO 유무선 기계식 마카롱"
     ],
     "count": 1
   },
   {
-    "raw_switch_name": "저소음 솜사탕축",
-    "switch_manufacturer": "REOBOG",
+    "raw_switch_name": "저소음 스톰축",
+    "switch_manufacturer": null,
     "product_names": [
-      "AULA F87 Pro 유무선 기계식 올리비아 화이트 한글"
+      "FL-ESPORTS NX108HE 네온 그레이"
     ],
     "count": 1
   },
@@ -996,18 +1019,10 @@
     "count": 1
   },
   {
-    "raw_switch_name": "저소음 피치축 V2",
-    "switch_manufacturer": "오테뮤",
+    "raw_switch_name": "저소음 택타일 바다소금축",
+    "switch_manufacturer": "HMX",
     "product_names": [
-      "AULA F87 Pro 유무선 기계식 인디고 블랙 한글"
-    ],
-    "count": 1
-  },
-  {
-    "raw_switch_name": "저소음 피치축 V2",
-    "switch_manufacturer": "REOBOG",
-    "product_names": [
-      "AULA F87 Pro 유무선 기계식 올리비아 화이트 한글"
+      "앱코 ACH105 오피스워커 유무선 기계식 블랙"
     ],
     "count": 1
   },
@@ -1016,6 +1031,22 @@
     "switch_manufacturer": null,
     "product_names": [
       "AULA F99 유무선 기계식 인디고 블랙 한글"
+    ],
+    "count": 1
+  },
+  {
+    "raw_switch_name": "저소음 흑축",
+    "switch_manufacturer": "체리",
+    "product_names": [
+      "Deck CBL-108XN Hassium 거북선 블랙에디션"
+    ],
+    "count": 1
+  },
+  {
+    "raw_switch_name": "적축",
+    "switch_manufacturer": "ET",
+    "product_names": [
+      "앱코 K570 축교환 레인보우 무빙 LED 기계식 키보드"
     ],
     "count": 1
   },
@@ -1029,9 +1060,9 @@
   },
   {
     "raw_switch_name": "적축",
-    "switch_manufacturer": "ET",
+    "switch_manufacturer": "카일 박스 V2",
     "product_names": [
-      "앱코 K570 축교환 레인보우 무빙 LED 기계식 키보드"
+      "FL-ESPORTS CMK99 유무선 핫스왑 풀윤활 기계식 화이트 그레이 한글"
     ],
     "count": 1
   },
@@ -1061,14 +1092,6 @@
   },
   {
     "raw_switch_name": "청축",
-    "switch_manufacturer": "게이트론",
-    "product_names": [
-      "COX CK87 크림블루 게이트론 LED 게이밍 기계식"
-    ],
-    "count": 1
-  },
-  {
-    "raw_switch_name": "청축",
     "switch_manufacturer": "MANIC",
     "product_names": [
       "마이크로닉스 MANIC X240 LED 게이밍 기계식 키보드"
@@ -1077,7 +1100,7 @@
   },
   {
     "raw_switch_name": "체리축",
-    "switch_manufacturer": "체리",
+    "switch_manufacturer": "게이트론",
     "product_names": [
       "마이크로닉스 CALUX"
     ],
@@ -1092,10 +1115,10 @@
     "count": 1
   },
   {
-    "raw_switch_name": "페블축",
-    "switch_manufacturer": null,
+    "raw_switch_name": "클리어축",
+    "switch_manufacturer": "체리",
     "product_names": [
-      "COX CSK88 VIA 실리콘 사운드 뎀퍼 유무선 기계식 핑크"
+      "Ducky ONE 3 SF RGB DayBreak PBT 이중사출 한글"
     ],
     "count": 1
   },
@@ -1136,14 +1159,6 @@
     "switch_manufacturer": "카일",
     "product_names": [
       "앱코 AK87 슬림 프로 3모드 로우 프로파일 유무선 기계식"
-    ],
-    "count": 1
-  },
-  {
-    "raw_switch_name": "황축",
-    "switch_manufacturer": "RAZER",
-    "product_names": [
-      "Razer BlackWidow V3 TKL KR"
     ],
     "count": 1
   }
