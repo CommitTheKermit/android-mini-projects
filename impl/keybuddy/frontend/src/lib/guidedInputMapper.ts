@@ -73,13 +73,14 @@ export const LAYOUT_OPTIONS = {
   FULL: '숫자 패드가 있는 일반 키보드 (풀배열)',
   COMPACT_FULL: '숫자 패드가 있지만 콤팩트함 (1800배열)',
   TKL: '숫자 패드가 없음 (텐키리스)',
-  SEVENTY_FIVE: '숫자 패드도, 일부 특수키도 없음 (75%/65%)',
+  SEVENTY_FIVE: 'F열은 있고 숫자패드만 없는 콤팩트 (75%)',
+  SIXTY_FIVE: 'F열 없이 방향키는 있는 콤팩트 (65%)',
   MINI: 'F1~F12키도 없는 미니 (60%)',
 } as const;
 
 /**
  * 크기 선택지를 layout 하드 제약으로 변환한다.
- * - 1800배열(COMPACT_FULL)과 75%/65%(SEVENTY_FIVE)는 스키마 단일 열거형으로 표현 불가
+ * - 1800배열(COMPACT_FULL), 75%(SEVENTY_FIVE), 65%(SIXTY_FIVE)는 스키마 단일 열거형으로 표현 불가
  *   -> 하드 제약 없음(빈 객체 반환)
  */
 export function mapLayoutToConstraints(answer: string): Pick<HardConstraints, 'layout'> {
@@ -90,9 +91,10 @@ export function mapLayoutToConstraints(answer: string): Pick<HardConstraints, 'l
       return { layout: '텐키리스' };
     case LAYOUT_OPTIONS.MINI:
       return { layout: '미니' };
-    // 1800배열, 75%/65%: 스키마 매핑 없음 -> 하드 제약 미생성
+    // 1800배열, 75%, 65%: 스키마 매핑 없음 -> 하드 제약 미생성
     case LAYOUT_OPTIONS.COMPACT_FULL:
     case LAYOUT_OPTIONS.SEVENTY_FIVE:
+    case LAYOUT_OPTIONS.SIXTY_FIVE:
     default:
       return {};
   }
@@ -387,6 +389,7 @@ export function mapLayoutToSoftTags(answer: string): SoftIntentTag[] {
     case LAYOUT_OPTIONS.TKL:
       return ['텐키리스', '휴대성'];
     case LAYOUT_OPTIONS.SEVENTY_FIVE:
+    case LAYOUT_OPTIONS.SIXTY_FIVE:
       return ['텐키리스', '휴대성'];
     case LAYOUT_OPTIONS.MINI:
       return ['미니', '휴대성'];

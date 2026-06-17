@@ -271,10 +271,12 @@ describe('dispatchStepToTagSet - Step 6 (크기)', () => {
   });
 
   it('75%/65% -> hard: {} (스키마 매핑 없음), soft: [텐키리스, 휴대성]', () => {
-    const r = dispatchStepToTagSet(6, LAYOUT_OPTIONS.SEVENTY_FIVE);
-    expect(r.hard.layout).toBeUndefined();
-    expect(r.soft).toContain('텐키리스');
-    expect(r.soft).toContain('휴대성');
+    for (const layout of [LAYOUT_OPTIONS.SEVENTY_FIVE, LAYOUT_OPTIONS.SIXTY_FIVE]) {
+      const r = dispatchStepToTagSet(6, layout);
+      expect(r.hard.layout).toBeUndefined();
+      expect(r.soft).toContain('텐키리스');
+      expect(r.soft).toContain('휴대성');
+    }
   });
 
   it('미니(60%) -> hard: {layout:미니}, soft: [미니, 휴대성]', () => {
