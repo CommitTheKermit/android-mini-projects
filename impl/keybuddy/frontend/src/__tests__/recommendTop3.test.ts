@@ -73,6 +73,20 @@ describe('recommend - 경로2 배선 + 점수순 상위 3개', () => {
     expect(result.recommendations.length).toBeLessThanOrEqual(3);
   });
 
+  it('freeform: 키보드 도메인이 아닌 추천 입력은 추출 결과가 비면 후보를 반환하지 않는다', async () => {
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(extractResponse({ intents: [], hardConstraints: {}, softIntentTags: [] }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await recommend({ mode: 'freeform', query: '와인 추천해줘' });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.recommendations).toHaveLength(0);
+    expect(result.summary).toContain('찾지 못했어요');
+  });
+
   it('freeform: softIntentTags만 있어도 신호로 보고 검색한다', async () => {
     vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
     const fetchMock = vi

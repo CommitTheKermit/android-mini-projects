@@ -89,7 +89,7 @@ function hasSearchSignal(extraction: IntentExtraction): boolean {
 }
 
 function hasBroadKeyboardIntent(query: string): boolean {
-  return /키보드|키캡|스위치|타건|배열|풀배열|텐키리스|무접점|기계식|펜타그래프|축|백라이트|rgb|유선|무선|블루투스|게이밍|사무|추천/i.test(
+  return /키보드|키캡|스위치|타건|배열|풀배열|텐키리스|무접점|기계식|펜타그래프|축|백라이트|rgb|유선|무선|블루투스|게이밍|사무/i.test(
     query,
   );
 }
