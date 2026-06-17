@@ -17,6 +17,7 @@ import {
 import switchesData from './data/switches.json';
 import { recommend } from './lib/recommend';
 import { getBeginnerGuide, getProductTags } from './lib/productDisplay';
+import { getDisplaySummary, getResultHeadline } from './lib/resultCopy';
 import { getSwitchDisplayData, type GraphLevel } from './lib/switchDisplay';
 import type {
   Recommendation,
@@ -2333,7 +2334,9 @@ export default function App() {
     const isAllFilter = activeFilter === '전체';
     const headerTitle = searchContextTitle;
     const resultCount = isAllFilter ? all.length : processed.length;
-    const resultCountSpan = <span className="text-blue-600">{resultCount}개</span>;
+    const resultHeadline = getResultHeadline(activeFilter, resultCount, all);
+    const [headlinePrefix, headlineSuffix = ''] = resultHeadline.split(`${resultCount}개`);
+    const resultSummary = getDisplaySummary(result?.summary, all);
 
     return (
       <div className="max-w-6xl mx-auto bg-white min-h-screen border-x border-slate-100 pb-10">
@@ -2353,17 +2356,12 @@ export default function App() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 gap-4">
             <div>
               <h2 className="text-xl font-extrabold text-slate-900">
-                {isAllFilter ? (
-                  <>총 {resultCountSpan}의 상품을 찾았어요</>
-                ) : (
-                  <>
-                    <span className="text-blue-600">{activeFilter}</span> 필터로{' '}
-                    {resultCountSpan}의 상품이 남았어요
-                  </>
-                )}
+                {headlinePrefix}
+                <span className="text-blue-600">{resultCount}개</span>
+                {headlineSuffix}
               </h2>
               <p className="text-slate-500 text-sm mt-1">
-                {result?.summary ?? '입력하신 조건에 가장 잘 맞는 추천 목록입니다.'}
+                {resultSummary}
               </p>
             </div>
 

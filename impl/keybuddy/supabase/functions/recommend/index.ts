@@ -427,6 +427,31 @@ function composeRecommendations(
   return recommendations;
 }
 
+const noMatchSummaryPattern =
+  /(만족|일치|맞는|해당|조건|상품|제품|후보).{0,40}(없|찾지 못|못 찾)|(?:없|찾지 못|못 찾).{0,40}(상품|제품|후보|조건)/;
+
+function summarySaysNoMatches(summary: string): boolean {
+  return noMatchSummaryPattern.test(summary);
+}
+
+function responseSummary(rawSummary: string, recommendations: RecommendationResult[]): string {
+  const summary = rawSummary.trim();
+
+  if (recommendations.length === 0) {
+    return summary || '해당 조건에 맞는 제품이 없습니다.';
+  }
+
+  if (summary && !summarySaysNoMatches(summary)) {
+    return summary;
+  }
+
+  if (recommendations.every((item) => item.is_fallback)) {
+    return '입력하신 모든 조건을 동시에 만족하는 상품은 catalog에 없어, 조건에 가까운 후보를 우선 보여드려요.';
+  }
+
+  return '입력하신 조건에 가까운 추천 후보를 찾았어요. 일부 조건은 상품별로 다를 수 있어 세부 사양을 함께 확인해 주세요.';
+}
+
 function buildPrompt(input: RecommendInput, candidates: Candidate[]) {
   return `당신은 한국어 키보드 추천 도우미 "keybuddy"입니다.
 
@@ -436,6 +461,7 @@ function buildPrompt(input: RecommendInput, candidates: Candidate[]) {
 - catalog에 없는 상품을 만들지 마세요.
 - 반드시 catalog index로만 상품을 선택하세요.
 - 사용자 조건에 맞는 상품만 추천하되, 관련 후보가 충분하면 ${maxRecommendations}개에 가깝게 추천하고 최대 ${maxRecommendations}개를 넘기지 마세요.
+- recommendations를 1개 이상 반환한다면 summary에서 상품이 없다고만 말하지 말고, 완전 일치 여부와 근접 후보 성격을 함께 설명하세요.
 - reason은 사용자 조건과 제품 특성이 왜 맞는지 한 문장 존댓말로 적으세요.
 - 최종 응답은 JSON 객체 하나만 반환하세요.
 
@@ -612,7 +638,7 @@ Deno.serve(async (request) => {
 
     return Response.json(
       {
-        summary: raw.summary,
+        summary: responseSummary(raw.summary, recommendations),
         recommendations,
         meta: { version: appVersion },
       },
