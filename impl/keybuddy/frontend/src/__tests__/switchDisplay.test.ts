@@ -80,6 +80,32 @@ describe('getSwitchDisplayData', () => {
     });
   });
 
+  it('switch_name이 null이어도 raw_switch_name이 사전에 있으면 그래프 값을 반환한다', () => {
+    expect(
+      getSwitchDisplayData(
+        { switch_name: null, raw_switch_name: '저소음 피치축 V2' },
+        rawSwitches as SwitchDictionary,
+      ),
+    ).toEqual({
+      switchName: '저소음 피치축 V2',
+      tactility: 1,
+      noise: 1,
+    });
+  });
+
+  it('switch_name이 사전에 없으면 raw_switch_name 사전 매칭을 사용한다', () => {
+    expect(
+      getSwitchDisplayData(
+        { switch_name: 'Missing', raw_switch_name: 'Linear' },
+        switches,
+      ),
+    ).toEqual({
+      switchName: 'Linear',
+      tactility: 1,
+      noise: 3,
+    });
+  });
+
   it('switch_type만 null이면 걸림만 null로 반환한다', () => {
     expect(getSwitchDisplayData({ switch_name: 'UnknownType' }, switches)).toEqual({
       switchName: 'UnknownType',
