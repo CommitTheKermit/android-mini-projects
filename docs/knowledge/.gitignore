@@ -1,0 +1,4 @@
+# 훅 활성화 시 생성되는 런타임 파일 (커밋 대상 아님)
+.extract-state
+.nudge-stamp
+extract.log
