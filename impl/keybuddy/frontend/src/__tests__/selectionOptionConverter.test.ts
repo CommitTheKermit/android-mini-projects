@@ -168,9 +168,11 @@ describe('selectionOptionConverter - 하드 제약 단계 단일 입력 스키�
   });
 
   it('크기: 75%/65% -> 스키마 통과 (layout 하드 제약 없음)', () => {
-    const result = assertPassesSchema({ 크기: LAYOUT_OPTIONS.SEVENTY_FIVE });
-    expect(result.hardConstraints.layout).toBeUndefined();
-    expect(result.softIntentTags).toContain('텐키리스');
+    for (const layout of [LAYOUT_OPTIONS.SEVENTY_FIVE, LAYOUT_OPTIONS.SIXTY_FIVE]) {
+      const result = assertPassesSchema({ 크기: layout });
+      expect(result.hardConstraints.layout).toBeUndefined();
+      expect(result.softIntentTags).toContain('텐키리스');
+    }
   });
 
   it('각인: 한국어+영어 -> 스키마 통과', () => {

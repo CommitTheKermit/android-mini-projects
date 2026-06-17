@@ -278,9 +278,11 @@ describe('mapLayoutToSoftTags', () => {
   });
 
   it('75%/65% -> [텐키리스, 휴대성]', () => {
-    const result = mapLayoutToSoftTags(LAYOUT_OPTIONS.SEVENTY_FIVE);
-    expect(result).toContain('텐키리스');
-    expect(result).toContain('휴대성');
+    for (const layout of [LAYOUT_OPTIONS.SEVENTY_FIVE, LAYOUT_OPTIONS.SIXTY_FIVE]) {
+      const result = mapLayoutToSoftTags(layout);
+      expect(result).toContain('텐키리스');
+      expect(result).toContain('휴대성');
+    }
   });
 
   it('미니(60%) -> [미니, 휴대성]', () => {
@@ -559,9 +561,10 @@ describe('guidedAnswersToSoftTags', () => {
   });
 
   it('75%/65%는 텐키리스 소프트 태그를 생성한다 (하드 제약이 없는 크기)', () => {
-    const answers = { 크기: '숫자 패드도, 일부 특수키도 없음 (75%/65%)' };
-    const result = guidedAnswersToSoftTags(answers);
-    expect(result).toContain('텐키리스');
+    for (const layout of [LAYOUT_OPTIONS.SEVENTY_FIVE, LAYOUT_OPTIONS.SIXTY_FIVE]) {
+      const result = guidedAnswersToSoftTags({ 크기: layout });
+      expect(result).toContain('텐키리스');
+    }
   });
 });
 
