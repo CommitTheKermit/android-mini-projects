@@ -11,8 +11,13 @@ export function getDisplayImageUrl(src: string): string {
     }
 
     url.searchParams.set('shrink', `${DISPLAY_IMAGE_SIZE}:${DISPLAY_IMAGE_SIZE}`);
-    return url.toString();
+    return url
+      .toString()
+      .replace(
+        /([?&]shrink=)\d+%3A\d+/,
+        `$1${DISPLAY_IMAGE_SIZE}:${DISPLAY_IMAGE_SIZE}`,
+      );
   } catch {
-    return src.replace(/([?&]shrink=)\d+:\d+/, `$1${DISPLAY_IMAGE_SIZE}:${DISPLAY_IMAGE_SIZE}`);
+    return src;
   }
 }

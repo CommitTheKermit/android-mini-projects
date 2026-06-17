@@ -2,6 +2,7 @@ import type { Recommendation } from '../types';
 import type { SearchOutput, SearchResultItem } from './searchEngine';
 
 const maxResults = 30;
+export const EMPTY_RESULT_SUMMARY = '입력하신 조건에 맞는 제품을 찾지 못했어요. 조건을 바꿔 다시 시도해 주세요.';
 
 const relaxLabels: Record<string, string> = {
   price_min: '최소 가격',
@@ -25,7 +26,7 @@ function productIdentity(item: SearchResultItem): string {
   if (nameKey) {
     return nameKey;
   }
-  return item.keyboard.image_url || String(item.keyboardIndex);
+  return item.keyboard.product_code || String(item.keyboardIndex);
 }
 
 function uniqueByProduct(items: SearchResultItem[]): SearchResultItem[] {
@@ -67,7 +68,7 @@ export function toRecommendations(
 
 export function buildSummary(output: SearchOutput, limit: number = maxResults): string {
   if (output.results.length === 0) {
-    return '입력하신 조건에 맞는 제품을 찾지 못했어요. 조건을 바꿔 다시 시도해 주세요.';
+    return EMPTY_RESULT_SUMMARY;
   }
   const count = Math.min(uniqueByProduct(output.results).length, limit);
   if (output.isFallback) {

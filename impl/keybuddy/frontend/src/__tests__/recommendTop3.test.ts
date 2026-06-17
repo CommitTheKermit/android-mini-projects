@@ -58,6 +58,48 @@ describe('recommend - 경로2 배선 + 점수순 상위 3개', () => {
     expect(result.summary).toContain('찾지 못했어요');
   });
 
+  it('freeform: 넓은 키보드 추천 입력은 추출 결과가 비어도 기본 후보를 반환한다', async () => {
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(extractResponse({ intents: [], hardConstraints: {}, softIntentTags: [] }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await recommend({ mode: 'freeform', query: '키보드 추천해줘' });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.recommendations.length).toBeGreaterThan(0);
+    expect(result.recommendations.length).toBeLessThanOrEqual(3);
+  });
+
+  it('freeform: softIntentTags만 있어도 신호로 보고 검색한다', async () => {
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(extractResponse({ intents: [], hardConstraints: {}, softIntentTags: ['저소음'] }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await recommend({ mode: 'freeform', query: '조용한 키보드' });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.recommendations.length).toBeGreaterThan(0);
+    expect(result.recommendations.length).toBeLessThanOrEqual(3);
+  });
+
+  it('freeform: price_max 0만 추출되면 검색 신호로 보지 않는다', async () => {
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(extractResponse({ intents: [], hardConstraints: { price_max: 0 }, softIntentTags: [] }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await recommend({ mode: 'freeform', query: '응가' });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.recommendations).toHaveLength(0);
+    expect(result.summary).toContain('찾지 못했어요');
+  });
+
   it('guided: 결정론 검색으로 결과는 1~3개', async () => {
     // 네트워크 미호출 불변식 자체는 recommendLlmNoCall.test.ts에서 단언한다.
     // 여기서는 fetch를 reject로 막아 결정론 경로임을 보장하면서 상위 3개 컷만 확인한다.

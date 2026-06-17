@@ -14,7 +14,7 @@ import type { Keyboard, RecommendInput, RecommendResult } from '../types';
 import { sanitizeTags, type ExtractedTags, type IntentExtraction } from './extractRawTags';
 import { expandIntents, isIntentTag } from './intentProfile';
 import { searchWithProfile } from './intentSearch';
-import { toRecommendations, buildSummary } from './searchResultComposition';
+import { EMPTY_RESULT_SUMMARY, toRecommendations, buildSummary } from './searchResultComposition';
 import { selectionOptionConverter } from './guidedInputMapper';
 import type { SearchOutput, SearchResultItem } from './searchEngine';
 import { deriveRankOrder, getMatchedSoftTags, scoreBySoftTags } from './softScorer';
@@ -66,16 +66,31 @@ function sanitizeExtraction(data: unknown): IntentExtraction {
 
 function emptySearchResult(): RecommendResult {
   return {
-    summary: '입력하신 조건에 맞는 제품을 찾지 못했어요. 조건을 바꿔 다시 시도해 주세요.',
+    summary: EMPTY_RESULT_SUMMARY,
     recommendations: [],
   };
+}
+
+function hasMeaningfulHardConstraints(extraction: IntentExtraction): boolean {
+  return Object.values(extraction.hardConstraints).some((value) => {
+    if (typeof value === 'number') {
+      return value > 0;
+    }
+    return typeof value === 'string' && value.trim().length > 0;
+  });
 }
 
 function hasSearchSignal(extraction: IntentExtraction): boolean {
   return (
     extraction.intents.length > 0 ||
-    Object.keys(extraction.hardConstraints).length > 0 ||
+    hasMeaningfulHardConstraints(extraction) ||
     extraction.softIntentTags.length > 0
+  );
+}
+
+function hasBroadKeyboardIntent(query: string): boolean {
+  return /키보드|키캡|스위치|타건|배열|풀배열|텐키리스|무접점|기계식|펜타그래프|축|백라이트|rgb|유선|무선|블루투스|게이밍|사무|추천/i.test(
+    query,
   );
 }
 
@@ -310,6 +325,9 @@ export async function recommend(input: RecommendInput): Promise<RecommendResult>
   // freeform: 서버에서 OpenAI 태그추출만, 검색·랭킹은 클라 결정론
   const extraction = await extractTags(input.query);
   if (!hasSearchSignal(extraction)) {
+    if (hasBroadKeyboardIntent(input.query)) {
+      return runDeterministicSearch([], { hardConstraints: {}, softIntentTags: [] });
+    }
     return emptySearchResult();
   }
 

@@ -7,7 +7,7 @@ describe('getDisplayImageUrl', () => {
       'https://img.danuri.io/catalog-image/476/026/094/a2377078683d4985b1880e8ea1f7a7a4.jpg?shrink=130:130&_v=20260610124800',
     );
 
-    expect(result).toContain('shrink=600%3A600');
+    expect(result).toContain('shrink=600:600');
     expect(result).toContain('_v=20260610124800');
   });
 
@@ -16,7 +16,7 @@ describe('getDisplayImageUrl', () => {
       'https://img.danuri.io/catalog-image/476/026/094/a2377078683d4985b1880e8ea1f7a7a4.jpg',
     );
 
-    expect(result).toContain('shrink=600%3A600');
+    expect(result).toContain('shrink=600:600');
   });
 
   it('다나와 catalog 이미지가 아니면 원본 URL을 유지한다', () => {
