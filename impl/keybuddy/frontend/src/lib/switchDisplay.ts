@@ -24,6 +24,15 @@ const GENERIC_SWITCH_PROFILES: SwitchDictionary = {
   '청축': { switch_type: 'clicky', is_silent: false },
 };
 
+const NON_MECHANICAL_DISPLAY_PROFILES: Record<
+  string,
+  Pick<SwitchDisplayData, 'tactility' | 'noise'>
+> = {
+  '멤브레인': { tactility: 2, noise: 1 },
+  '펜타그래프': { tactility: 2, noise: 2 },
+  '무접점': { tactility: 1, noise: 1 },
+};
+
 export function getTactilityLevel(
   switchType: SwitchBehavior | null,
 ): GraphLevel | null {
@@ -37,21 +46,39 @@ export function getNoiseLevel(isSilent: boolean | null): GraphLevel | null {
 }
 
 export function getSwitchDisplayData(
-  keyboard: Pick<Keyboard, 'switch_name' | 'raw_switch_name'>,
+  keyboard: Pick<Keyboard, 'switch_name' | 'raw_switch_name'> &
+    Partial<Pick<Keyboard, 'switch_type'>>,
   switches: SwitchDictionary,
 ): SwitchDisplayData {
   const switchName = keyboard.switch_name ?? null;
-  const matchedSwitchInfo = switchName ? switches[switchName] : null;
+  const rawSwitchName = keyboard.raw_switch_name?.trim() ?? null;
+  const switchType = keyboard.switch_type?.trim() ?? '';
+  const nonMechanicalDisplayProfile = Object.entries(NON_MECHANICAL_DISPLAY_PROFILES)
+    .find(([type]) => switchType.includes(type))?.[1] ?? null;
+
+  if (nonMechanicalDisplayProfile) {
+    return {
+      switchName: rawSwitchName || switchName,
+      ...nonMechanicalDisplayProfile,
+    };
+  }
+
+  const matchedSwitchName =
+    switchName && switches[switchName]
+      ? switchName
+      : rawSwitchName && switches[rawSwitchName]
+        ? rawSwitchName
+        : null;
+  const matchedSwitchInfo = matchedSwitchName ? switches[matchedSwitchName] : null;
 
   if (matchedSwitchInfo) {
     return {
-      switchName,
+      switchName: matchedSwitchName,
       tactility: getTactilityLevel(matchedSwitchInfo.switch_type),
       noise: getNoiseLevel(matchedSwitchInfo.is_silent),
     };
   }
 
-  const rawSwitchName = keyboard.raw_switch_name?.trim() ?? null;
   const genericSwitchInfo = rawSwitchName
     ? GENERIC_SWITCH_PROFILES[rawSwitchName]
     : null;

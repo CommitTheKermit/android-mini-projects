@@ -21,3 +21,28 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+@keyframes keybuddy-rgb-shift {
+  0% {
+    filter: hue-rotate(0deg) saturate(1.08);
+    box-shadow: 0 0 6px rgba(96, 165, 250, 0.28);
+  }
+  50% {
+    filter: hue-rotate(150deg) saturate(1.25);
+    box-shadow: 0 0 11px rgba(244, 114, 182, 0.34);
+  }
+  100% {
+    filter: hue-rotate(360deg) saturate(1.08);
+    box-shadow: 0 0 6px rgba(96, 165, 250, 0.28);
+  }
+}
+
+.keybuddy-rgb-key {
+  animation: keybuddy-rgb-shift 2.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .keybuddy-rgb-key {
+    animation: none;
+  }
+}

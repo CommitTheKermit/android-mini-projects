@@ -4,7 +4,7 @@
 추천해 주는 웹 서비스입니다.
 
 브라우저에서 OpenAI API를 직접 호출하지 않고, Supabase Edge Function이 서버사이드에서
-OpenAI를 호출합니다. Edge Function에서 먼저 후보를 25개 이하로 압축한 뒤 추천 품질을
+OpenAI를 호출합니다. Edge Function에서 먼저 후보를 40개 이하로 압축한 뒤 추천 품질을
 위해 `gpt-5.4` 모델에 넘깁니다.
 
 ## 구조
@@ -26,6 +26,15 @@ keybuddy/
         index.ts                    OpenAI 호출 + 후보 압축 + 결과 매핑
         keyboards.json              추천 후보 카탈로그
 ```
+
+## 더 읽을거리 (기술 문서)
+
+설계·운영 관련 기술 문서는 저장소 루트 `docs/`에 모여 있습니다.
+
+- `docs/tag-extraction-flow.md` - 자연어를 의도/제약 태그로 번역하고 결정론적으로 확장하는 흐름
+- `docs/intent-harness-before-after.md` - 의도 하네스 적용 전/후 정성 비교
+- `docs/deployment-version-management.md` - 배포 및 버전 관리 규칙
+- `docs/youtube-media-enrichment.md` - YouTube 타건 영상 링크 수집·캐시·동기화 운영 규칙
 
 ## 크롤링 데이터와 스위치 매칭
 
@@ -50,13 +59,26 @@ keybuddy/
 `null`로 저장합니다. `media_url`은 실제 자료를 확보하기 전까지 `null`로 저장하고
 `media_url_is_placeholder`로 준비 중 상태를 표시합니다.
 
+타건 영상 링크는 기본 크롤링에는 포함하지 않고, 공식 YouTube Data API 키가 있을 때만
+선택적으로 보강합니다. 검색어는 `상품명 + raw_switch_name`(없으면 `switch_name`)이며,
+결과는 `../output/youtube_media_cache.json`에 누적합니다. 다음 실행에서는 캐시를 먼저
+입혀 이미 수집한 링크를 `keyboards.json`에 다시 반영하고, 캐시에 없는 항목만 새로
+검색합니다.
+
+```bash
+cd impl
+YOUTUBE_API_KEY=<key> python3 crawl.py --with-youtube --youtube-limit 90
+```
+
+`--youtube-limit 0`은 새 검색 없이 기존 캐시만 반영할 때 사용합니다.
+
 ## 요청 흐름
 
 ```text
 React 브라우저
   -> Supabase Edge Function /recommend
   -> OPENAI_API_KEY secret 읽기
-  -> 후보 25개 이하로 압축
+  -> 후보 40개 이하로 압축
   -> OpenAI gpt-5.4 모델 호출
   -> catalog index 기반 추천 JSON 반환
   -> 프론트가 결과 렌더링
@@ -374,7 +396,7 @@ npm run sync:data
 - `VITE_` 환경변수는 브라우저 번들에 포함됩니다.
 - `OPENAI_API_KEY`는 Supabase secret으로만 저장합니다.
 - 기본 모델은 추천 품질을 고려해 `gpt-5.4`로 설정합니다.
-- Edge Function은 LLM 호출 전에 후보를 25개 이하로 줄여 입력 토큰을 줄입니다.
+- Edge Function은 LLM 호출 전에 후보를 40개 이하로 줄여 입력 토큰을 줄입니다.
 - `recommend` 함수에는 IP 기준 1분 10회 best-effort rate limit을 둡니다.
 - `recommend` 함수는 공개 엔드포인트이므로 운영 시 Supabase Dashboard의 Edge
   Functions rate limit 또는 별도 인증/사용량 제한을 반드시 설정합니다.

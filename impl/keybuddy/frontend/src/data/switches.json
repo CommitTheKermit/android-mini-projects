@@ -1426,5 +1426,165 @@
   "POM+": {
     "switch_type": "linear",
     "is_silent": false
+  },
+  "리치베리축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "저소음 바다축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "맘모스축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "덕킹축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "딥 사운드축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "조약돌 슈팅스타축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "페블축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "허니축": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "거북이 등껍질축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "저소음 피치축 V2": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "저소음 피치축 V3": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "베이비 화이트축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "소복눈축": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "스피드 은축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "저소음 너울축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "저소음 안개축": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "카라멜 커피 V1축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "코코아 크림 V2축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "검은콩축": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "다크적축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "마그네틱축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "바닐라 아이스크림축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "복고축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "블랙빈축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "아이비축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "저소음 눈송이축": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "저소음 로즈축": {
+    "switch_type": "tactile",
+    "is_silent": true
+  },
+  "저소음 스톰축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "청우축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "체리축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "퀀텀축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "풍령축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "퓨전축": {
+    "switch_type": "tactile",
+    "is_silent": false
+  },
+  "플라스마축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "햇살축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "Carda축": {
+    "switch_type": "linear",
+    "is_silent": false
+  },
+  "Deep Oil축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "저소음 Deep Oil축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "저소음 솜사탕축": {
+    "switch_type": "linear",
+    "is_silent": true
+  },
+  "저소음 블루축": {
+    "switch_type": "linear",
+    "is_silent": true
   }
 }
