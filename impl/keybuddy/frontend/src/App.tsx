@@ -2515,29 +2515,22 @@ export default function App() {
                           href={item.price_compare_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700"
-                          aria-label={`${item.product_name} 가격 비교 페이지 열기`}
+                          className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-blue-700"
+                          aria-label={`${item.product_name} 구매 가격 비교 페이지 열기`}
                         >
-                          가격 비교
-                          <ExternalLink size={16} aria-hidden="true" />
+                          <ShoppingCart size={16} aria-hidden="true" />
+                          구매하기
                         </a>
                       ) : (
-                        <div
-                          role="status"
-                          className="rounded-xl bg-slate-200 px-4 py-3 text-center text-sm font-semibold text-slate-500"
+                        <button
+                          type="button"
+                          onClick={() => showToast('준비 중인 기능입니다')}
+                          className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-blue-700"
                         >
-                          가격 비교 정보 확인 중
-                        </div>
+                          <ShoppingCart size={16} aria-hidden="true" />
+                          구매하기
+                        </button>
                       )}
-
-                      <button
-                        type="button"
-                        onClick={() => showToast('준비 중인 기능입니다')}
-                        className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-blue-700"
-                      >
-                        <ShoppingCart size={16} aria-hidden="true" />
-                        구매하기
-                      </button>
                     </div>
                   </article>
                 );
